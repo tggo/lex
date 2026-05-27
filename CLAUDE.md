@@ -65,11 +65,12 @@ date — a legal tool that hides staleness is harmful.
 
 - All docs, code comments, identifiers, and ADRs/PRDs in **English**.
 - Conversation with the maintainer may be in Ukrainian; docs stay English.
-- Scrapers must respect `robots.txt` and rate-limit politely. Record the
-  source's terms in the country README.
-- Ukrainian normative acts are not objects of copyright (excluded by the
-  Copyright law) — redistribution of the *text* is fine; be correct about
-  *scraping etiquette*, not about copyright.
+- Prefer a country's **official open-data export** over HTML scraping. Respect
+  `robots.txt`; record the source, endpoints, and license in the country README
+  and an ADR. For Ukraine: `data.rada.gov.ua` open data, CC BY 4.0 — NOT
+  scraping `zakon.rada.gov.ua` (which disallows bots). See ADR-0009.
+- Ukrainian normative acts are not objects of copyright; the open dataset is
+  CC BY 4.0 — redistribution is fine **with attribution to the source**.
 - One ADR per real decision; supersede rather than rewrite history.
 
 ## Build / run

@@ -58,9 +58,11 @@ server is country-agnostic. PRs welcome.
 
 ## Legal note
 
-Legislative texts of Ukraine are not objects of copyright. `lex` redistributes
-*texts*, with attribution to the official source. Scrapers respect each
-source's `robots.txt` and rate limits. See each country's README.
+Legislative texts of Ukraine are not objects of copyright, and the source data
+is published as **open data under CC BY 4.0**. `lex` redistributes texts with
+attribution to the official source (`data.rada.gov.ua` / Verkhovna Rada for
+Ukraine). We use official open-data exports, not website scraping. See each
+country's README.
 
 ## License
 
