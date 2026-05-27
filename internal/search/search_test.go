@@ -87,6 +87,72 @@ func TestSearch_punctuationSafe(t *testing.T) {
 	}
 }
 
+func TestReplaceAct_idempotent(t *testing.T) {
+	idx, _ := OpenMemory()
+	defer idx.Close()
+
+	if err := idx.ReplaceAct(sampleAct()); err != nil {
+		t.Fatal(err)
+	}
+	n1, _ := idx.Count()
+	// Re-indexing the same act must not duplicate documents.
+	if err := idx.ReplaceAct(sampleAct()); err != nil {
+		t.Fatal(err)
+	}
+	n2, _ := idx.Count()
+	if n1 != n2 {
+		t.Errorf("count changed on re-index: %d -> %d", n1, n2)
+	}
+	if n1 != 3 { // 1 title + 2 articles
+		t.Errorf("count = %d, want 3", n1)
+	}
+
+	// A query still returns exactly one title hit (not two).
+	hits, _ := idx.Search("Цивільний", 10)
+	titles := 0
+	for _, h := range hits {
+		if h.Kind == KindTitle {
+			titles++
+		}
+	}
+	if titles != 1 {
+		t.Errorf("title hits = %d, want 1", titles)
+	}
+}
+
+func TestRemoveAct(t *testing.T) {
+	idx, _ := OpenMemory()
+	defer idx.Close()
+	_ = idx.AddAct(sampleAct())
+	if err := idx.RemoveAct(sampleAct().ResourceURI()); err != nil {
+		t.Fatal(err)
+	}
+	if n, _ := idx.Count(); n != 0 {
+		t.Errorf("count after remove = %d, want 0", n)
+	}
+	if err := idx.ReplaceAct(nil); err == nil {
+		t.Error("ReplaceAct(nil) should error")
+	}
+}
+
+func TestClosedIndex_errors(t *testing.T) {
+	idx, _ := OpenMemory()
+	idx.Close() // every operation should now fail, not panic
+
+	if err := idx.AddAct(sampleAct()); err == nil {
+		t.Error("AddAct on closed index should error")
+	}
+	if err := idx.RemoveAct("x"); err == nil {
+		t.Error("RemoveAct on closed index should error")
+	}
+	if _, err := idx.Count(); err == nil {
+		t.Error("Count on closed index should error")
+	}
+	if _, err := idx.Search("кодекс", 5); err == nil {
+		t.Error("Search on closed index should error")
+	}
+}
+
 func TestAddAct_nil(t *testing.T) {
 	idx, _ := OpenMemory()
 	defer idx.Close()

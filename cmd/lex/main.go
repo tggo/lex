@@ -11,6 +11,7 @@ import (
 	"context"
 	"flag"
 	"log"
+	"path/filepath"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -20,28 +21,38 @@ import (
 )
 
 func main() {
-	dataDir := flag.String("data", "ua/data/graph", "Badger triplestore directory")
+	root := flag.String("data", "ua/data", "dataset root directory (holds graph/ and index.fts)")
 	flag.Parse()
 
+	graphDir := filepath.Join(*root, "graph")
+	indexPath := filepath.Join(*root, "index.fts")
+
 	// Logs go to stderr; stdout is the MCP protocol channel.
-	st, err := store.Open(*dataDir)
+	st, err := store.Open(graphDir)
 	if err != nil {
-		log.Fatalf("lex: open store %q: %v", *dataDir, err)
+		log.Fatalf("lex: open store %q: %v", graphDir, err)
 	}
 	defer st.Close()
 
-	idx, err := search.OpenMemory()
+	idx, err := search.Open(indexPath)
 	if err != nil {
-		log.Fatalf("lex: open index: %v", err)
+		log.Fatalf("lex: open index %q: %v", indexPath, err)
 	}
 	defer idx.Close()
 
-	if err := mcp.BuildIndex(st, idx); err != nil {
-		log.Fatalf("lex: build index: %v", err)
+	// Fall back to building the index from the store if it wasn't built at
+	// import time (e.g. an older dataset).
+	if n, err := idx.Count(); err != nil {
+		log.Fatalf("lex: index count: %v", err)
+	} else if n == 0 {
+		log.Printf("lex: empty index, building from store…")
+		if err := mcp.BuildIndex(st, idx); err != nil {
+			log.Fatalf("lex: build index: %v", err)
+		}
 	}
 
 	srv := mcp.NewServer(mcp.NewService(st, idx))
-	log.Printf("lex MCP server ready (data=%s)", *dataDir)
+	log.Printf("lex MCP server ready (data=%s)", *root)
 	if err := srv.Run(context.Background(), &sdk.StdioTransport{}); err != nil {
 		log.Fatalf("lex: serve: %v", err)
 	}

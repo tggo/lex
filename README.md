@@ -43,13 +43,14 @@ official source ──scraper (Go, per country)──▶ RDF (ELI ontology)
 ## Quick start
 
 ```bash
-# 1. Build the Ukraine dataset (or download a prebuilt one from Releases):
-go run ./ua/scripts/import -out ua/data/graph            # metadata
-go run ./ua/scripts/import -out ua/data/graph -articles  # + article text (slower)
+# 1. Build the Ukraine dataset (or download a prebuilt one from Releases).
+#    A dataset is a directory holding graph/ (Badger) + index.fts (full text):
+go run ./ua/scripts/import -out ua/data            # metadata
+go run ./ua/scripts/import -out ua/data -articles  # + article text (slower)
 
-# 2. Build and run the MCP server over that data:
+# 2. Build and run the MCP server over that dataset:
 go build -o lex ./cmd/lex
-./lex -data ua/data/graph
+./lex -data ua/data
 ```
 
 Then register `lex` as a stdio MCP server in your client (e.g. Claude Code).

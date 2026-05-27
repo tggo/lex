@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/tggo/lex/internal/schema"
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 	"github.com/tggo/lex/ua/scripts/ogd"
 )
@@ -26,6 +27,7 @@ const (
 type Config struct {
 	BaseURL      string       // OGD base, e.g. https://data.rada.gov.ua/ogd/zak
 	OutDir       string       // Badger store directory
+	IndexPath    string       // FTS index file; if empty, no index is built
 	UA           string       // HTTP User-Agent
 	Client       *http.Client // defaults to http.DefaultClient if nil
 	Now          time.Time    // retrieval timestamp recorded on each act
@@ -77,16 +79,31 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 	defer st.Close()
 
+	// Optional full-text index, built incrementally alongside the store.
+	var idx *search.Index
+	if cfg.IndexPath != "" {
+		idx, err = search.Open(cfg.IndexPath)
+		if err != nil {
+			return 0, err
+		}
+		defer idx.Close()
+	}
+
 	for _, r := range recs {
 		if cfg.WithArticles && r.TextFile != "" {
-			if arts, err := fetchArticles(ctx, cfg, r.TextFile); err != nil {
+			arts, err := fetchArticles(ctx, cfg, r.TextFile)
+			if err != nil {
 				return 0, fmt.Errorf("articles for %s: %w", r.Act.Number, err)
-			} else {
-				r.Act.Expression.Articles = arts
 			}
+			r.Act.Expression.Articles = arts
 		}
 		if err := st.AddAct(r.Act); err != nil {
 			return 0, fmt.Errorf("add act %s: %w", r.Act.Number, err)
+		}
+		if idx != nil {
+			if err := idx.ReplaceAct(r.Act); err != nil {
+				return 0, fmt.Errorf("index act %s: %w", r.Act.Number, err)
+			}
 		}
 	}
 	return len(recs), nil

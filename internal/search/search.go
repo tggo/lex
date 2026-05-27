@@ -100,6 +100,36 @@ func (i *Index) AddAct(a *schema.Act) error {
 	return tx.Commit()
 }
 
+// RemoveAct deletes all indexed documents (title + articles) of an act, so a
+// re-import can replace them. Safe to call when the act is absent.
+func (i *Index) RemoveAct(actURI string) error {
+	if _, err := i.db.Exec(`DELETE FROM docs WHERE act_uri = ?`, actURI); err != nil {
+		return fmt.Errorf("search: remove %s: %w", actURI, err)
+	}
+	return nil
+}
+
+// ReplaceAct re-indexes an act idempotently: removes any prior docs for it, then
+// adds the current ones. Use this for incremental (re-)imports.
+func (i *Index) ReplaceAct(a *schema.Act) error {
+	if a == nil || a.Expression == nil {
+		return fmt.Errorf("search: nil act or expression")
+	}
+	if err := i.RemoveAct(a.ResourceURI()); err != nil {
+		return err
+	}
+	return i.AddAct(a)
+}
+
+// Count returns the number of indexed documents.
+func (i *Index) Count() (int, error) {
+	var n int
+	if err := i.db.QueryRow(`SELECT count(*) FROM docs`).Scan(&n); err != nil {
+		return 0, fmt.Errorf("search: count: %w", err)
+	}
+	return n, nil
+}
+
 // Search runs a full-text query and returns ranked hits (best first).
 func (i *Index) Search(query string, limit int) ([]Hit, error) {
 	match := toMatch(query)
