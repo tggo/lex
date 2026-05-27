@@ -2,6 +2,7 @@ package importer
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -96,6 +97,105 @@ func TestRun_endToEnd(t *testing.T) {
 	wantAmend := schema.ResourceURI("au", "act", 2026, "C2026A00004")
 	if len(a.Expression.AmendedBy) != 1 || a.Expression.AmendedBy[0] != wantAmend {
 		t.Errorf("amendedBy = %v, want [%s]", a.Expression.AmendedBy, wantAmend)
+	}
+}
+
+// TestRun_withArticles serves the /documents manifest and the EPUB body at the
+// real paths so the importer parses and attaches section text offline.
+func TestRun_withArticles(t *testing.T) {
+	fxDir := filepath.Join("..", "frl", "testdata")
+	srv := fixtureServer(t)
+	defer srv.Close()
+
+	// The default fixture server only mounts OData paths; wrap it with a mux
+	// that also serves the documents list and the EPUB body. The frl fixtures
+	// are for C1901A00002, but the document.sample.html body parses standalone.
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v1/documents", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"value":[{"titleId":"C1901A00002","start":"2026-01-15T00:00:00","format":"Epub","compilationNumber":"0"}]}`))
+	})
+	// EPUB body for the (as-made) document_1; document_2 404s to end the loop.
+	mux.HandleFunc("/C1901A00002/asmade/2026-01-15/text/original/epub/OEBPS/document_1/document_1.html",
+		func(w http.ResponseWriter, r *http.Request) {
+			b, _ := os.ReadFile(filepath.Join(fxDir, "document.sample.html"))
+			_, _ = w.Write(b)
+		})
+	// All other paths proxy to the OData fixture server's handler set.
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "not found", http.StatusNotFound)
+	})
+	mux.HandleFunc("/v1/titles", srvProxy(srv, "/v1/titles"))
+	mux.HandleFunc("/v1/titles/C1901A00002", srvProxy(srv, "/v1/titles/C1901A00002"))
+	mux.HandleFunc("/v1/Versions/Default.Find(titleId='C1901A00002',asAtSpecification='current')",
+		srvProxy(srv, "/v1/Versions/Default.Find(titleId='C1901A00002',asAtSpecification='current')"))
+
+	combined := httptest.NewServer(mux)
+	defer combined.Close()
+
+	cfg := baseCfg(t, combined)
+	cfg.Client = combined.Client()
+	cfg.SiteURL = combined.URL
+	cfg.WithArticles = true
+
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	st, _ := store.Open(cfg.OutDir)
+	defer st.Close()
+	a, err := st.GetAct(schema.ResourceURI("au", "act", 1901, "C1901A00002"))
+	if err != nil {
+		t.Fatalf("GetAct: %v", err)
+	}
+	if len(a.Expression.Articles) != 3 {
+		t.Fatalf("got %d articles, want 3", len(a.Expression.Articles))
+	}
+	if a.Expression.Articles[0].Number != "1" {
+		t.Errorf("article 0 number = %q, want 1", a.Expression.Articles[0].Number)
+	}
+}
+
+// srvProxy returns a handler that forwards the request to another test server.
+func srvProxy(srv *httptest.Server, path string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		resp, err := srv.Client().Get(srv.URL + r.URL.RequestURI())
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadGateway)
+			return
+		}
+		defer resp.Body.Close()
+		w.WriteHeader(resp.StatusCode)
+		_, _ = io.Copy(w, resp.Body)
+	}
+}
+
+// TestRun_withArticlesTolerated: when no EPUB document exists, the act still
+// imports with metadata only (no articles).
+func TestRun_withArticlesTolerated(t *testing.T) {
+	srv := fixtureServer(t)
+	defer srv.Close()
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v1/documents", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"value":[]}`)) // no EPUB
+	})
+	mux.HandleFunc("/v1/titles", srvProxy(srv, "/v1/titles"))
+	mux.HandleFunc("/v1/titles/C1901A00002", srvProxy(srv, "/v1/titles/C1901A00002"))
+	mux.HandleFunc("/v1/Versions/Default.Find(titleId='C1901A00002',asAtSpecification='current')",
+		srvProxy(srv, "/v1/Versions/Default.Find(titleId='C1901A00002',asAtSpecification='current')"))
+	combined := httptest.NewServer(mux)
+	defer combined.Close()
+
+	cfg := baseCfg(t, combined)
+	cfg.Client = combined.Client()
+	cfg.SiteURL = combined.URL
+	cfg.WithArticles = true
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	st, _ := store.Open(cfg.OutDir)
+	defer st.Close()
+	a, _ := st.GetAct(schema.ResourceURI("au", "act", 1901, "C1901A00002"))
+	if len(a.Expression.Articles) != 0 {
+		t.Errorf("expected no articles, got %d", len(a.Expression.Articles))
 	}
 }
 

@@ -84,7 +84,23 @@ go run ./lu/scripts/import -out lu/data/graph
 ```
 
 Flags: `-out`, `-endpoint`, `-ua`, `-limit`, `-rps` (request rate limit,
-default 2/s).
+default 2/s), `-articles` (also fetch each act's French HTML full text and
+parse article-level text).
+
+### Full text (`-articles`)
+
+The act metadata comes from SPARQL; the article text comes from each act's
+**French HTML manifestation**, which Legilux serves from its filestore at
+`<workURI>/fr/html` (a stable, no-auth URL — content negotiation redirects to
+the filestore `.html` file). The body is XHTML in which each article is a
+`<div class="richtext_article" id="art_<num>">` carrying a
+`<p class="richtext_num_article">Art. N.</p>` heading and the article body;
+quoted articles inserted by an amendment are nested with an empty `id` and stay
+part of their host article's text. Acts that have no HTML embodiment (notably
+old scanned Mémorial pages published only as PDF) return the site's Angular
+shell, which has no `richtext_article` elements and parses to zero articles —
+those acts stay metadata-only. Article fetch/parse is best-effort: a per-act
+failure is logged and skipped, never fatal.
 
 - `scripts/legilux/` — pure, offline parser + mapper: SPARQL JSON results
   (acts page / relations) → `schema.Act`. Golden-tested on committed real
@@ -102,7 +118,9 @@ cites / consolidates edges from the `modifies` / `repeals` / `cites` /
 
 ✅ Metadata + relations pass works end-to-end (identity, French title, version
 date, status, source URL, amends/repeals/cites/consolidates edges).
-🚧 Next: **article-level full text** (deferred — articles live in the
-consolidation Work's structure / XML manifestation, not the base Act metadata);
-German & Luxembourgish expressions; point-in-time consolidations as revision
-nodes; then the MCP server + search index (country-agnostic, shared with UA).
+✅ **Article-level full text** via `-articles` (French HTML manifestation,
+`<workURI>/fr/html`); legislative acts (LOI/RGD/…) carry per-article text,
+PDF-only acts stay metadata-only.
+🚧 Next: German & Luxembourgish expressions; point-in-time consolidations as
+revision nodes; then the MCP server + search index (country-agnostic, shared
+with UA).

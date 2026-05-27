@@ -20,7 +20,8 @@ Base: `https://api.prod.legislation.gov.au/v1`
 | `GET /titles?$filter=&$top=&$skip=&$count=true` | paginated title list (`{@odata.count, value}`) |
 | `GET /titles/{id}` | title detail — `name`, `collection`, `seriesType`, `year`, `number`, `status`, `makingDate` |
 | `GET /Versions/Default.Find(titleId='{id}',asAtSpecification='current')` | current compilation — `start` (as-of date), `status`, `reasons[]` (amend/repeal edges) |
-| `GET /documents?$filter=titleId eq '{id}'` | document manifests — full text only as `.docx`/`.pdf`/`.epub` |
+| `GET /documents?$filter=titleId eq '{id}'` | document manifests (`format` ∈ Word/Pdf/Epub, `start`, `compilationNumber`) |
+| `GET https://www.legislation.gov.au/{id}/{asmade\|date}/{date}/text/original/epub/OEBPS/document_N/document_N.html` | the act's EPUB body as HTML — OPC section markup; the source for section text |
 
 Each title's register id (e.g. `C1901A00002`) maps to the human page
 `https://www.legislation.gov.au/C1901A00002` — stored as `lex:sourceURL`.
@@ -70,7 +71,16 @@ go run ./au/scripts/import -out au/data/graph -collection Act -from 2020 -to 202
 ```
 
 Flags: `-out`, `-base`, `-ua`, `-collection` (default `Act`), `-from`, `-to`
-(both required), `-rps` (request rate limit, default 5/s).
+(both required), `-articles` (also fetch each act's EPUB body and parse section
+text into `lex:Article` rows), `-rps` (request rate limit, default 5/s).
+
+Section text (with `-articles`): the FRL serves an act's body as an EPUB whose
+`document_N.html` files carry OPC section markup. Each `<p class="ActHead5">`
+with a `<span class="CharSectno">` opens a section; following paragraphs (incl.
+flattened tables/schedules) are its text, parsed by `frl.ParseArticles` into
+`schema.Article{Number,Label,Text}`. The body URL is built from the latest EPUB
+in the `/documents` manifest (`EpubDocPath`/`LatestEpub`). Per-act failures
+(no EPUB, 404, unparseable) are logged and skipped — metadata still imports.
 
 - `scripts/frl/` — pure, offline parser + mapper: title list / detail / version
   → `schema.Act`. Golden-tested on committed real fixtures.
@@ -88,8 +98,9 @@ Version's `reasons[]` (acts that affected this title → `eli:amended_by` /
 
 ✅ Metadata + relations pass works end-to-end (identity, title, version date,
 status, source URL, amended-by / repealed-by edges).
-🚧 Next: **section text** — the FRL serves full text only as binary
-`.docx`/`.pdf`/`.epub`, so `lex:Article` (section) extraction needs an
-OOXML/PDF channel and is deferred (see ADR-0024); inverse `eli:amends`/`cites`
-edges from the amending act's record; point-in-time revisions; then the MCP
-server + search index (country-agnostic, shared with UA/PL).
+✅ **Section text** — `-articles` parses each act's EPUB body (OPC section
+markup) into `lex:Article` rows, powering `get_article` and article search.
+Verified live on the 2025 Acts collection (79 acts → 2 313 article rows).
+🚧 Next: inverse `eli:amends`/`cites` edges from the amending act's record;
+point-in-time revisions; then the MCP server + search index (country-agnostic,
+shared with UA/PL).

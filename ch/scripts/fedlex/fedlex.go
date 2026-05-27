@@ -72,6 +72,11 @@ func ParseResults(b []byte) ([]binding, error) {
 // val returns the value of variable v, or "" if unbound.
 func (b binding) val(v string) string { return b[v].Value }
 
+// Val returns the value of SPARQL variable v in this solution, or "" if it is
+// unbound. Exported so the importer can read variables (e.g. a resolved file
+// URL) from a parsed result set.
+func (b binding) Val(v string) string { return b[v].Value }
+
 // TypeSlug maps a Swiss act, identified by its short title and full title, to
 // an ELI type_document slug. Switzerland does not carry a single machine "type"
 // field on the SR work, so we infer from the German title/abbreviation, the

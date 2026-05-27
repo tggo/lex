@@ -10,11 +10,13 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"time"
 
 	"github.com/tggo/lex/au/scripts/frl"
+	"github.com/tggo/lex/internal/schema"
 	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 )
@@ -33,18 +35,29 @@ const (
 
 // Config controls an import run.
 type Config struct {
-	BaseURL    string       // OData base, e.g. https://api.prod.legislation.gov.au/v1
-	OutDir     string       // Badger store directory
-	IndexPath  string       // FTS index file; if empty, no index is built
-	Lang       string       // stemming language for the FTS index (e.g. "en")
-	UA         string       // HTTP User-Agent
-	Client     *http.Client // defaults to http.DefaultClient if nil
-	Now        time.Time    // retrieval timestamp recorded on each act
-	Collection string       // FRL collection filter, e.g. "Act" (default "Act")
-	FromYear   int          // inclusive lower bound (0 = no bound)
-	ToYear     int          // inclusive upper bound (0 = no bound)
-	RatePerSec float64      // request rate limit; <=0 disables throttling
+	BaseURL      string       // OData base, e.g. https://api.prod.legislation.gov.au/v1
+	SiteURL      string       // host serving EPUB document bodies (default SiteBase; overridable for tests)
+	OutDir       string       // Badger store directory
+	IndexPath    string       // FTS index file; if empty, no index is built
+	Lang         string       // stemming language for the FTS index (e.g. "en")
+	UA           string       // HTTP User-Agent
+	Client       *http.Client // defaults to http.DefaultClient if nil
+	Now          time.Time    // retrieval timestamp recorded on each act
+	Collection   string       // FRL collection filter, e.g. "Act" (default "Act")
+	FromYear     int          // inclusive lower bound (0 = no bound)
+	ToYear       int          // inclusive upper bound (0 = no bound)
+	WithArticles bool         // also fetch each act's EPUB body and parse section text
+	RatePerSec   float64      // request rate limit; <=0 disables throttling
 }
+
+// SiteBase is the human-facing host that also serves the EPUB document-body
+// HTML (the reader iframe source). lex fetches section text from here.
+const SiteBase = "https://www.legislation.gov.au"
+
+// maxEpubDocs caps how many split document_N files we probe per act before
+// giving up (large acts split their body across several files; we stop at the
+// first 404).
+const maxEpubDocs = 50
 
 // Run fetches the configured years and writes acts to the store. It returns the
 // number of acts written.
@@ -57,6 +70,9 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 	if cfg.Collection == "" {
 		cfg.Collection = "Act"
+	}
+	if cfg.SiteURL == "" {
+		cfg.SiteURL = SiteBase
 	}
 
 	c := &client{cfg: cfg, limiter: newLimiter(cfg.RatePerSec)}
@@ -163,6 +179,17 @@ func (c *client) importTitle(ctx context.Context, st *store.Store, idx *search.I
 	if err != nil {
 		return err
 	}
+
+	// Optionally enrich with parsed section text. The FRL serves an act's body
+	// as an EPUB whose document HTML carries OPC section markup. Per-act source
+	// quirks (no EPUB, a 404, an unparseable body) must not abort an otherwise
+	// healthy run, so they are logged and skipped — only metadata is stored.
+	if c.cfg.WithArticles {
+		if arts := c.fetchArticles(ctx, id); len(arts) > 0 {
+			act.Expression.Articles = arts
+		}
+	}
+
 	if err := st.AddAct(act); err != nil {
 		return err
 	}
@@ -174,13 +201,78 @@ func (c *client) importTitle(ctx context.Context, st *store.Store, idx *search.I
 	return nil
 }
 
+// fetchArticles fetches the act's EPUB document body and parses its sections.
+// It returns nil (and logs) on any source quirk — a missing EPUB, a 404, or an
+// unparseable body — so the caller still stores metadata. Context cancellation
+// stops the run by returning nil here and letting the next OData fetch surface
+// the error.
+func (c *client) fetchArticles(ctx context.Context, id string) []schema.Article {
+	dl, err := c.fetchDocuments(ctx, id)
+	if err != nil {
+		if ctx.Err() == nil {
+			log.Printf("au import: %s: documents: %v (metadata only)", id, err)
+		}
+		return nil
+	}
+	tid, date, asMade, ok := frl.LatestEpub(dl)
+	if !ok || date == "" {
+		log.Printf("au import: %s: no EPUB document (metadata only)", id)
+		return nil
+	}
+
+	var all []schema.Article
+	for n := 1; n <= maxEpubDocs; n++ {
+		u := c.cfg.SiteURL + "/" + frl.EpubDocPath(tid, date, asMade, n)
+		b, err := c.fetchHTML(ctx, u)
+		if err == errNotFound {
+			break // no more split documents
+		}
+		if err != nil {
+			if ctx.Err() == nil {
+				log.Printf("au import: %s: fetch body %d: %v", id, n, err)
+			}
+			break
+		}
+		arts, err := frl.ParseArticles(b)
+		if err != nil {
+			log.Printf("au import: %s: parse body %d: %v", id, n, err)
+			break
+		}
+		all = append(all, arts...)
+	}
+	if len(all) == 0 {
+		log.Printf("au import: %s: no sections parsed (metadata only)", id)
+	}
+	return all
+}
+
+// fetchDocuments lists a title's downloadable renditions.
+func (c *client) fetchDocuments(ctx context.Context, id string) (*frl.DocumentList, error) {
+	q := url.Values{}
+	q.Set("$filter", fmt.Sprintf("titleId eq '%s'", id))
+	b, err := c.fetch(ctx, c.cfg.BaseURL+"/documents?"+q.Encode())
+	if err != nil {
+		return nil, err
+	}
+	return frl.ParseDocumentList(b)
+}
+
 // errNotFound marks a 404 so a missing current version is tolerated (some
 // titles have no compilation; metadata still imports).
 var errNotFound = fmt.Errorf("not found")
 
-// fetch GETs url with the configured User-Agent, throttled and retried on
-// transient errors (429 / 5xx). A 404 returns errNotFound.
+// fetch GETs a JSON url with the configured User-Agent, throttled and retried
+// on transient errors (429 / 5xx). A 404 returns errNotFound.
 func (c *client) fetch(ctx context.Context, url string) ([]byte, error) {
+	return c.fetchAccept(ctx, url, "application/json")
+}
+
+// fetchHTML GETs an HTML url (an EPUB document body) with the same retry policy.
+func (c *client) fetchHTML(ctx context.Context, url string) ([]byte, error) {
+	return c.fetchAccept(ctx, url, "text/html")
+}
+
+func (c *client) fetchAccept(ctx context.Context, url, accept string) ([]byte, error) {
 	var lastErr error
 	for attempt := 0; attempt <= maxRetries; attempt++ {
 		c.limiter.wait(ctx)
@@ -189,7 +281,7 @@ func (c *client) fetch(ctx context.Context, url string) ([]byte, error) {
 			return nil, err
 		}
 		req.Header.Set("User-Agent", c.cfg.UA)
-		req.Header.Set("Accept", "application/json")
+		req.Header.Set("Accept", accept)
 		resp, err := c.cfg.Client.Do(req)
 		if err != nil {
 			lastErr = fmt.Errorf("fetch %s: %w", url, err)

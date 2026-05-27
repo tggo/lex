@@ -65,6 +65,73 @@ type Detail struct {
 	MakingDate  string `json:"makingDate"` // YYYY-MM-DDThh:mm:ss
 }
 
+// Document is one entry from GET /documents?$filter=titleId eq '{id}': a
+// downloadable rendition of a compilation. lex consumes the EPUB (HTML) format.
+type Document struct {
+	TitleID           string `json:"titleId"`
+	Start             string `json:"start"` // YYYY-MM-DDThh:mm:ss — compilation date
+	Format            string `json:"format"`
+	CompilationNumber string `json:"compilationNumber"`
+	RegisterID        string `json:"registerId"`
+}
+
+// DocumentList is the OData envelope returned by GET /documents.
+type DocumentList struct {
+	Value []Document `json:"value"`
+}
+
+// ParseDocumentList decodes a GET /documents page.
+func ParseDocumentList(b []byte) (*DocumentList, error) {
+	var l DocumentList
+	if err := json.Unmarshal(b, &l); err != nil {
+		return nil, fmt.Errorf("frl: parse document list: %w", err)
+	}
+	return &l, nil
+}
+
+// EpubDocPath builds the relative path (under SourceBase) of the Nth EPUB
+// document-body HTML file for a title's compilation, the same resource the
+// human site loads in its reader iframe. n is 1-based.
+//
+// The path differs by compilation: the as-made text (compilationNumber "0")
+// lives under ".../asmade/{date}/...", while a later compilation lives under
+// ".../{date}/{date}/...". date is the compilation's start day (YYYY-MM-DD).
+func EpubDocPath(id, date string, asMade bool, n int) string {
+	mid := date + "/" + date
+	if asMade {
+		mid = "asmade/" + date
+	}
+	return fmt.Sprintf("%s/%s/text/original/epub/OEBPS/document_%d/document_%d.html", id, mid, n, n)
+}
+
+// LatestEpub picks the EPUB document with the most recent start date (the
+// current compilation). It returns the title id, the start day (YYYY-MM-DD),
+// whether it is the as-made text, and ok=false when no EPUB document exists.
+func LatestEpub(dl *DocumentList) (id, date string, asMade, ok bool) {
+	var best *Document
+	for i := range dl.Value {
+		d := &dl.Value[i]
+		if !strings.EqualFold(d.Format, "Epub") {
+			continue
+		}
+		if best == nil || d.Start > best.Start {
+			best = d
+		}
+	}
+	if best == nil {
+		return "", "", false, false
+	}
+	day := best.Start
+	if len(day) >= 10 {
+		day = day[:10]
+	}
+	tid := best.TitleID
+	if tid == "" {
+		tid = best.RegisterID
+	}
+	return tid, day, best.CompilationNumber == "0", true
+}
+
 // affectedByTitle is the target act of a version reason.
 type affectedByTitle struct {
 	TitleID    string `json:"titleId"`
@@ -225,9 +292,10 @@ func resourceURIForTitle(t *affectedByTitle) string {
 // version may be nil (no compilation found); then status/version_date fall back
 // to the detail. retrievedAt is recorded as lex:retrievedAt.
 //
-// Articles (sections) are intentionally absent: the FRL API exposes full text
-// only as binary Word/PDF/Epub, with no structured section channel, so section
-// text is deferred to a later phase (see ADR-0024).
+// Section text is not attached here: the importer optionally fetches the act's
+// EPUB document body and fills Expression.Articles via ParseArticles (see
+// EpubDocPath/LatestEpub). ToAct stays pure metadata so it can be golden-tested
+// without the body.
 func ToAct(d *Detail, v *Version, retrievedAt time.Time) (*schema.Act, error) {
 	if d == nil || d.ID == "" {
 		return nil, fmt.Errorf("frl: nil or unidentified detail")

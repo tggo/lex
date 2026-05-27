@@ -21,6 +21,7 @@ func main() {
 	root := flag.String("out", "lu/data", "dataset root directory (holds graph/ and index.fts)")
 	flag.StringVar(&cfg.UA, "ua", importer.DefaultUA, "HTTP User-Agent")
 	flag.IntVar(&cfg.Limit, "limit", 0, "max acts to import (0 = no bound)")
+	flag.BoolVar(&cfg.WithArticles, "articles", false, "also fetch each act's French HTML manifestation and parse article text")
 	flag.Float64Var(&cfg.RatePerSec, "rps", importer.DefaultRatePerSec, "request rate limit per second")
 	flag.Parse()
 

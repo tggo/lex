@@ -24,6 +24,7 @@ func main() {
 	flag.IntVar(&cfg.FromYear, "from", 0, "earliest year to import (required)")
 	flag.IntVar(&cfg.ToYear, "to", 0, "latest year to import (required)")
 	flag.Float64Var(&cfg.RatePerSec, "rps", importer.DefaultRatePerSec, "request rate limit per second")
+	flag.BoolVar(&cfg.WithArticles, "articles", false, "also fetch each act's EPUB body and parse section text")
 	flag.Parse()
 
 	cfg.OutDir = filepath.Join(*root, "graph")

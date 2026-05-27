@@ -10,11 +10,13 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
+	"github.com/tggo/lex/internal/schema"
 	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 	"github.com/tggo/lex/lu/scripts/legilux"
@@ -32,15 +34,16 @@ const (
 
 // Config controls an import run.
 type Config struct {
-	Endpoint   string       // SPARQL endpoint, e.g. https://data.legilux.public.lu/sparqlendpoint
-	OutDir     string       // Badger store directory
-	IndexPath  string       // FTS index file; if empty, no index is built
-	Lang       string       // search language for stemming (e.g. "fr")
-	UA         string       // HTTP User-Agent
-	Client     *http.Client // defaults to http.DefaultClient if nil
-	Now        time.Time    // retrieval timestamp recorded on each act
-	Limit      int          // max acts to import (0 = no bound)
-	RatePerSec float64      // request rate limit; <=0 disables throttling
+	Endpoint     string       // SPARQL endpoint, e.g. https://data.legilux.public.lu/sparqlendpoint
+	OutDir       string       // Badger store directory
+	IndexPath    string       // FTS index file; if empty, no index is built
+	Lang         string       // search language for stemming (e.g. "fr")
+	UA           string       // HTTP User-Agent
+	Client       *http.Client // defaults to http.DefaultClient if nil
+	Now          time.Time    // retrieval timestamp recorded on each act
+	Limit        int          // max acts to import (0 = no bound)
+	WithArticles bool         // also fetch each act's French HTML manifestation and parse article text
+	RatePerSec   float64      // request rate limit; <=0 disables throttling
 }
 
 // Run pages the acts query and writes acts to the store. It returns the number
@@ -163,6 +166,9 @@ func (c *client) importAct(ctx context.Context, st *store.Store, r legilux.ActRo
 	if act == nil {
 		return nil // no version date → skip (ontology invariant)
 	}
+	if c.cfg.WithArticles {
+		c.attachArticles(ctx, act, r.WorkURI)
+	}
 	if err := st.AddAct(act); err != nil {
 		return err
 	}
@@ -172,6 +178,65 @@ func (c *client) importAct(ctx context.Context, st *store.Store, r legilux.ActRo
 		}
 	}
 	return nil
+}
+
+// attachArticles fetches the act's French HTML manifestation and attaches the
+// parsed articles to its expression. Article text is a best-effort enrichment:
+// a fetch or parse failure (a missing HTML embodiment, a transient network
+// error, or a malformed page) is logged and skipped — it must never abort an
+// otherwise-healthy run. Acts with no HTML embodiment (e.g. PDF-only scans)
+// yield zero articles and are left as metadata-only.
+func (c *client) attachArticles(ctx context.Context, act *schema.Act, workURI string) {
+	body, err := c.fetchHTML(ctx, legilux.FullTextURL(workURI))
+	if err != nil {
+		if ctx.Err() != nil {
+			return // cancellation/timeout: leave run-level handling to the caller
+		}
+		log.Printf("lu import: %s: full text fetch: %v", workURI, err)
+		return
+	}
+	arts, err := legilux.ParseArticles(body)
+	if err != nil {
+		log.Printf("lu import: %s: parse articles: %v", workURI, err)
+		return
+	}
+	act.Expression.Articles = arts
+}
+
+// fetchHTML GETs url as HTML, throttled and retried on transient errors.
+func (c *client) fetchHTML(ctx context.Context, url string) ([]byte, error) {
+	var lastErr error
+	for attempt := 0; attempt <= maxRetries; attempt++ {
+		c.limiter.wait(ctx)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("User-Agent", c.cfg.UA)
+		req.Header.Set("Accept", "text/html")
+		resp, err := c.cfg.Client.Do(req)
+		if err != nil {
+			lastErr = fmt.Errorf("fetch %s: %w", url, err)
+			if !sleepBackoff(ctx, attempt) {
+				return nil, lastErr
+			}
+			continue
+		}
+		body, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		switch {
+		case resp.StatusCode == http.StatusOK:
+			return body, nil
+		case resp.StatusCode == http.StatusTooManyRequests || resp.StatusCode >= 500:
+			lastErr = fmt.Errorf("fetch %s: status %d", url, resp.StatusCode)
+			if !sleepBackoff(ctx, attempt) {
+				return nil, lastErr
+			}
+		default:
+			return nil, fmt.Errorf("fetch %s: status %d", url, resp.StatusCode)
+		}
+	}
+	return nil, lastErr
 }
 
 // query issues a SPARQL SELECT and returns the JSON results body, throttled and

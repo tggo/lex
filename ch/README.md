@@ -81,7 +81,8 @@ go run ./ch/scripts/import -out ch/data/graph -limit 500
 
 Flags: `-endpoint`, `-out`, `-ua`, `-sr` (comma-separated SR notations; empty =
 all), `-limit` (SPARQL `LIMIT`, 0 = none), `-rps` (request rate limit, default
-2/s).
+2/s), `-articles` (also fetch each act's German Akoma Ntoso full text and attach
+parsed article-level text).
 
 - `scripts/fedlex/` — pure, offline parser + mapper: SPARQL JSON results →
   `[]schema.Act`. Golden-tested on a committed real SPARQL JSON fixture.
@@ -98,8 +99,13 @@ all), `-limit` (SPARQL `LIMIT`, 0 = none), `-rps` (request rate limit, default
 ✅ Metadata pass works end-to-end (identity via SR notation, German title +
 short title, version date, in-force/repealed status, source URL, ELI/FRBR
 resource+expression).
-🚧 Next (all additive, no schema change): article full text (`lex:Article`,
-served via separate Fedlex XML/HTML manifestations); amend/repeal/cite edges
+✅ Article full text (`-articles`): each act's German Akoma Ntoso XML
+manifestation is located via SPARQL (newest `jolux:Consolidation` whose
+`dateApplicability <= now`, its de `Expression` → XML `Manifestation` →
+`isExemplifiedBy` filestore URL), fetched, and parsed into `[]schema.Article`
+(`<article eId="art_N">` → number from `<num>`, prose minus `<authorialNote>`
+footnotes). Per-act resolve/fetch/parse failures are skip-and-log (non-fatal).
+🚧 Next (all additive, no schema change): amend/repeal/cite edges
 (JoLux `citationFrom/ToLegalResource`); French/Italian expressions;
 point-in-time `dateApplicability` revisions; then the MCP server + search index
 (country-agnostic, shared with UA/PL).

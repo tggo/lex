@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -224,6 +225,109 @@ func TestQuery_contextCancelDuringBackoff(t *testing.T) {
 	go func() { time.Sleep(20 * time.Millisecond); cancel() }()
 	if _, err := testClient(t, srv).query(ctx, "Q"); err == nil {
 		t.Error("expected error when context cancelled during backoff")
+	}
+}
+
+// redirectTransport routes every request to a single test-server base URL,
+// preserving the original request path. It lets us serve the data.legilux host
+// (baked into the fixtures' work URIs) from an httptest server without network.
+type redirectTransport struct {
+	base string
+	rt   http.RoundTripper
+}
+
+func (t redirectTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	u, _ := url.Parse(t.base)
+	req.URL.Scheme = u.Scheme
+	req.URL.Host = u.Host
+	return t.rt.RoundTrip(req)
+}
+
+// articlesServer serves SPARQL like fixtureServer, plus the French HTML
+// manifestation (the act.sample.html fixture) for any /fr/html request.
+func articlesServer(t *testing.T) *httptest.Server {
+	t.Helper()
+	acts := fixture(t, "acts_page.sample.json")
+	rels := fixture(t, "relations.sample.json")
+	htmlBody := fixture(t, "act.sample.html")
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/fr/html") {
+			_, _ = w.Write(htmlBody)
+			return
+		}
+		q := r.URL.Query().Get("query")
+		w.Header().Set("Content-Type", "application/sparql-results+json")
+		switch {
+		case strings.Contains(q, "?rel"):
+			if strings.Contains(q, firstWork) {
+				_, _ = w.Write(rels)
+				return
+			}
+			_, _ = w.Write([]byte(emptyResults))
+		case strings.Contains(q, "OFFSET 0"):
+			_, _ = w.Write(acts)
+		default:
+			_, _ = w.Write([]byte(emptyResults))
+		}
+	}))
+}
+
+func TestRun_withArticles(t *testing.T) {
+	srv := articlesServer(t)
+	defer srv.Close()
+
+	cfg := baseCfg(t, srv)
+	cfg.WithArticles = true
+	// Route the legilux host (in the fixture work URIs) to the test server.
+	cfg.Client = &http.Client{Transport: redirectTransport{base: srv.URL, rt: srv.Client().Transport}}
+
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	st, err := store.Open(cfg.OutDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer st.Close()
+
+	res := schema.ResourceURI("lu", "arrete", 1854, "etat/adm/a/1854/04/21/n1/jo")
+	a, err := st.GetAct(res)
+	if err != nil {
+		t.Fatalf("GetAct: %v", err)
+	}
+	if len(a.Expression.Articles) != 3 {
+		t.Fatalf("got %d articles, want 3", len(a.Expression.Articles))
+	}
+	if a.Expression.Articles[0].Number != "1er" {
+		t.Errorf("first article number = %q, want 1er", a.Expression.Articles[0].Number)
+	}
+}
+
+func TestAttachArticles_fetchErrorIsNonFatal(t *testing.T) {
+	srv := httptest.NewServer(http.NotFoundHandler())
+	defer srv.Close()
+	c := testClient(t, srv)
+	c.cfg.Client = &http.Client{Transport: redirectTransport{base: srv.URL, rt: srv.Client().Transport}}
+
+	act := &schema.Act{Expression: &schema.Expression{}}
+	c.attachArticles(context.Background(), act, "http://data.legilux.public.lu/eli/x/jo")
+	if act.Expression.Articles != nil {
+		t.Errorf("want no articles on fetch error, got %v", act.Expression.Articles)
+	}
+}
+
+func TestAttachArticles_noArticlesLeavesEmpty(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`<html><body><app-root></app-root></body></html>`))
+	}))
+	defer srv.Close()
+	c := testClient(t, srv)
+	c.cfg.Client = &http.Client{Transport: redirectTransport{base: srv.URL, rt: srv.Client().Transport}}
+
+	act := &schema.Act{Expression: &schema.Expression{}}
+	c.attachArticles(context.Background(), act, "http://data.legilux.public.lu/eli/x/jo")
+	if act.Expression.Articles != nil {
+		t.Errorf("shell page should yield no articles, got %v", act.Expression.Articles)
 	}
 }
 

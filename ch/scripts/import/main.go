@@ -25,6 +25,7 @@ func main() {
 	flag.StringVar(&srNotations, "sr", "", "comma-separated SR notations to import (empty = all)")
 	flag.IntVar(&cfg.Limit, "limit", 0, "SPARQL result limit (0 = no limit)")
 	flag.Float64Var(&cfg.RatePerSec, "rps", importer.DefaultRatePerSec, "request rate limit per second")
+	flag.BoolVar(&cfg.WithArticles, "articles", false, "also fetch each act's full text and parse article-level text")
 	flag.Parse()
 
 	cfg.OutDir = filepath.Join(*root, "graph")
