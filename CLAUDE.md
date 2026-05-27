@@ -45,8 +45,10 @@ cmd/lex/             the MCP server binary
 internal/schema/     Go types + ontology vocab (namespaces, predicates, URIs)
 internal/store/      goRDFlib + SQLite wiring, FTS5 index, queries
 internal/mcp/        MCP protocol handlers / tool definitions
-ua/                  Ukraine: README, scripts/ (scrapers), data/ (gitignored)
-pl/                  Poland: README, scripts/ (Sejm ELI API), data/ (gitignored)
+ua/ jp/ pl/ uk/ fr/ ch/ lu/ fi/ us/ es/ ie/ at/ au/ nz/
+                     per-country scrapers: each <cc>/ has README + scripts/
+                     (parser + importer + CLI) + data/ (gitignored). The set of
+                     sources and their licenses is surveyed in docs/countries.md.
 ```
 
 ## MCP tools (target surface)
