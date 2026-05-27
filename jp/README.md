@@ -65,6 +65,16 @@ it against the full law list and emits an edge when the target is in the set
 when the revision is a repeal (`repeal_status` = "Repeal"), otherwise
 `eli:amended_by`. See ADR-0013.
 
+## Revision timeline (`-revisions`)
+
+`GET /api/2/law_revisions/{law_id}` returns every revision of an act (33 for the
+Civil Code). With `-revisions`, the importer stores each as a metadata-only
+`eli:LegalExpression` (version date, in-force status, and the resolved
+amending/repealing act) — no title or text, so the current consolidated version
+stays the one `GetAct` returns. The current enforced revision is skipped (it is
+the act's main expression). Full historical *text* per revision is a later
+phase. See ADR-0014.
+
 ## Article structure (条/項/号)
 
 Japanese acts nest 条 (article) › 項 (paragraph) › 号 (item). v1 maps each **条**

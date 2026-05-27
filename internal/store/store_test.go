@@ -154,6 +154,39 @@ func TestRoundTrip_amendedAndRepealedBy(t *testing.T) {
 	}
 }
 
+func TestRoundTrip_revisions(t *testing.T) {
+	s, _ := OpenMemory()
+	defer s.Close()
+
+	amending := schema.ResourceURI("jp", "act", 2024, "506AC0000000033")
+	in := sampleAct() // current expression is 2026-01-01
+	in.Revisions = []schema.Revision{
+		// Out of order on input; must come back sorted by version date.
+		{VersionDate: time.Date(2020, 4, 1, 0, 0, 0, 0, time.UTC), Status: schema.StatusInForce, AmendedBy: []string{amending}},
+		{VersionDate: time.Date(2005, 1, 1, 0, 0, 0, 0, time.UTC), Status: schema.StatusInForce},
+	}
+	if err := s.AddAct(in); err != nil {
+		t.Fatal(err)
+	}
+	got, err := s.GetAct(in.ResourceURI())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got.Revisions) != 2 {
+		t.Fatalf("revisions = %d, want 2", len(got.Revisions))
+	}
+	if !got.Revisions[0].VersionDate.Equal(time.Date(2005, 1, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Errorf("revisions not sorted: first = %v", got.Revisions[0].VersionDate)
+	}
+	if len(got.Revisions[1].AmendedBy) != 1 || got.Revisions[1].AmendedBy[0] != amending {
+		t.Errorf("revision amendedBy = %v, want [%s]", got.Revisions[1].AmendedBy, amending)
+	}
+	// The current expression must be unaffected: still one titled version.
+	if got.Expression.Title != in.Expression.Title {
+		t.Errorf("current expression title = %q, want %q", got.Expression.Title, in.Expression.Title)
+	}
+}
+
 func TestGetAct_notFound(t *testing.T) {
 	s, _ := OpenMemory()
 	defer s.Close()

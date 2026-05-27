@@ -19,6 +19,7 @@ func main() {
 	flag.StringVar(&cfg.OutDir, "out", "jp/data/graph", "Badger store directory")
 	flag.StringVar(&cfg.UA, "ua", importer.DefaultUA, "HTTP User-Agent")
 	flag.BoolVar(&cfg.WithArticles, "articles", false, "also fetch each act's full text and parse 条")
+	flag.BoolVar(&cfg.WithRevisions, "revisions", false, "also fetch each act's full revision timeline")
 	flag.IntVar(&cfg.Limit, "limit", 0, "stop after N acts (0 = all)")
 	flag.Parse()
 

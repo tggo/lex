@@ -1,0 +1,20 @@
+[
+  {
+    "VersionDate": "2016-10-13T00:00:00Z",
+    "Status": 1,
+    "ProducedBy": "428AC1000000027",
+    "IsRepeal": false
+  },
+  {
+    "VersionDate": "2017-06-02T00:00:00Z",
+    "Status": 1,
+    "ProducedBy": "429AC0000000044",
+    "IsRepeal": false
+  },
+  {
+    "VersionDate": "2026-04-01T00:00:00Z",
+    "Status": 1,
+    "ProducedBy": "506AC0000000033",
+    "IsRepeal": false
+  }
+]

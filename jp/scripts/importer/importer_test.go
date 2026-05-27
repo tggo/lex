@@ -61,6 +61,21 @@ func fakeEgov(t *testing.T) *httptest.Server {
 	mux.HandleFunc("/law_data/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, lawData)
 	})
+	// Civil Code revision timeline: one past revision (amended by the CabinetOrder,
+	// in set) plus the current enforced one (which equals the Expression and must
+	// be skipped as a separate revision).
+	civilRevisions := `{"law_info":{"law_id":"129AC0000000089"},"revisions":[
+	  {"amendment_enforcement_date":"2005-04-01","current_revision_status":"PreviousEnforced",
+	   "amendment_law_id":"105DF0000000337"},
+	  {"amendment_enforcement_date":"2026-04-01","current_revision_status":"CurrentEnforced",
+	   "amendment_law_id":"105DF0000000337"}]}`
+	mux.HandleFunc("/law_revisions/", func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "129AC0000000089") {
+			fmt.Fprint(w, civilRevisions)
+			return
+		}
+		fmt.Fprint(w, `{"law_info":{"law_id":"x"},"revisions":[]}`)
+	})
 	return httptest.NewServer(mux)
 }
 
@@ -127,6 +142,41 @@ func TestRun_endToEnd(t *testing.T) {
 	}
 }
 
+func TestRun_withRevisions(t *testing.T) {
+	srv := fakeEgov(t)
+	defer srv.Close()
+
+	dir := filepath.Join(t.TempDir(), "graph")
+	if _, err := Run(context.Background(), Config{
+		BaseURL: srv.URL, OutDir: dir, Now: fixedTime, WithRevisions: true,
+	}); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	st, err := store.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer st.Close()
+
+	got, err := st.GetAct("https://lex.dev/eli/jp/act/1896/129AC0000000089")
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The current 2026-04-01 revision is the Expression; only the 2005 one is a
+	// separate revision, with its amending law resolved.
+	if len(got.Revisions) != 1 {
+		t.Fatalf("revisions = %d, want 1 (current is excluded)", len(got.Revisions))
+	}
+	rv := got.Revisions[0]
+	if !rv.VersionDate.Equal(time.Date(2005, 4, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Errorf("revision date = %v, want 2005-04-01", rv.VersionDate)
+	}
+	wantTarget := "https://lex.dev/eli/jp/cabinet-order/1872/105DF0000000337"
+	if len(rv.AmendedBy) != 1 || rv.AmendedBy[0] != wantTarget {
+		t.Errorf("revision amendedBy = %v, want [%s]", rv.AmendedBy, wantTarget)
+	}
+}
+
 func TestResolveAmendments(t *testing.T) {
 	rec := func(lawID, slug string, year int) egov.Record {
 		return egov.Record{
@@ -145,7 +195,7 @@ func TestResolveAmendments(t *testing.T) {
 	d.RepealedByLawID = "BBB" // repealed by B (in set) -> resolves as repealed_by
 	recs := []egov.Record{a, b, c, d}
 
-	resolveAmendments(recs)
+	resolveAmendments(recs, lawIDIndex(recs))
 
 	wantB := "https://lex.dev/eli/jp/act/1990/BBB"
 	if got := recs[0].Act.Expression.AmendedBy; len(got) != 1 || got[0] != wantB {

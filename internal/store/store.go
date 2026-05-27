@@ -147,6 +147,28 @@ func (s *Store) AddAct(a *schema.Act) error {
 	addRel(schema.PredRepealedBy, e.RepealedBy)
 	addRel(schema.PredCites, e.Cites)
 	addRel(schema.PredConsolidates, e.Consolidates)
+
+	// Other revisions: lightweight expression nodes (no title/articles), so the
+	// title-filtered GetAct query keeps selecting only the current expression.
+	for _, rv := range a.Revisions {
+		rexpr := schema.ExpressionURI(res, rv.VersionDate, e.LangTag)
+		if rexpr == expr {
+			continue // never shadow the current expression node
+		}
+		g.Add(uri(res), uri(schema.PredIsRealizedBy), uri(rexpr))
+		g.Add(uri(rexpr), uri(rdfType), uri(schema.ClassLegalExpression))
+		g.Add(uri(rexpr), uri(schema.PredRealizes), uri(res))
+		g.Add(uri(rexpr), uri(schema.PredVersionDate), dateLit(rv.VersionDate))
+		if in := rv.Status.InForceURI(); in != "" {
+			g.Add(uri(rexpr), uri(schema.PredInForce), uri(in))
+		}
+		for _, t := range rv.AmendedBy {
+			g.Add(uri(rexpr), uri(schema.PredAmendedBy), uri(t))
+		}
+		for _, t := range rv.RepealedBy {
+			g.Add(uri(rexpr), uri(schema.PredRepealedBy), uri(t))
+		}
+	}
 	return nil
 }
 
@@ -256,9 +278,15 @@ func (s *Store) GetAct(resURI string) (*schema.Act, error) {
 	e.Cites = s.relTargets(exprURI, schema.PredCites)
 	e.Consolidates = s.relTargets(exprURI, schema.PredConsolidates)
 
+	revs, err := s.revisions(resURI, exprURI)
+	if err != nil {
+		return nil, err
+	}
+
 	return &schema.Act{
 		Country: cc, TypeSlug: slug, Year: year, Number: number,
-		IDLocal: text(row["idlocal"]), Expression: e,
+		Revisions: revs,
+		IDLocal:   text(row["idlocal"]), Expression: e,
 	}, nil
 }
 
@@ -282,6 +310,41 @@ func (s *Store) articles(exprURI string) ([]schema.Article, error) {
 	}
 	sort.Slice(arts, func(i, j int) bool { return numLess(arts[i].Number, arts[j].Number) })
 	return arts, nil
+}
+
+// revisions returns the act's expressions other than the current one
+// (currentExpr), i.e. the metadata-only revision nodes — those realizing the
+// resource but carrying no title — sorted by version date.
+func (s *Store) revisions(resURI, currentExpr string) ([]schema.Revision, error) {
+	q := prefixes + fmt.Sprintf(`SELECT ?expr ?vdate ?inforce WHERE {
+  <%s> eli:is_realized_by ?expr .
+  ?expr eli:version_date ?vdate .
+  OPTIONAL { ?expr eli:in_force ?inforce }
+  FILTER NOT EXISTS { ?expr dct:title ?t }
+}`, resURI)
+	res, err := sparql.Query(s.g, q)
+	if err != nil {
+		return nil, fmt.Errorf("store: revisions query: %w", err)
+	}
+	var out []schema.Revision
+	for _, row := range res.Bindings {
+		expr := text(row["expr"])
+		if expr == currentExpr {
+			continue // defensive: the current expression is not a revision
+		}
+		vd, err := parseDate(text(row["vdate"]))
+		if err != nil {
+			return nil, fmt.Errorf("store: revision version_date: %w", err)
+		}
+		out = append(out, schema.Revision{
+			VersionDate: vd,
+			Status:      statusFromURI(text(row["inforce"])),
+			AmendedBy:   s.relTargets(expr, schema.PredAmendedBy),
+			RepealedBy:  s.relTargets(expr, schema.PredRepealedBy),
+		})
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].VersionDate.Before(out[j].VersionDate) })
+	return out, nil
 }
 
 func (s *Store) relTargets(exprURI, pred string) []string {

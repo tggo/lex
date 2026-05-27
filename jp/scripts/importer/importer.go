@@ -27,13 +27,14 @@ const (
 
 // Config controls an import run.
 type Config struct {
-	BaseURL      string       // API base, e.g. https://laws.e-gov.go.jp/api/2
-	OutDir       string       // Badger store directory
-	UA           string       // HTTP User-Agent
-	Client       *http.Client // defaults to http.DefaultClient if nil
-	Now          time.Time    // retrieval timestamp recorded on each act
-	WithArticles bool         // also fetch each act's full text and parse 条
-	Limit        int          // stop after this many acts (0 = all)
+	BaseURL       string       // API base, e.g. https://laws.e-gov.go.jp/api/2
+	OutDir        string       // Badger store directory
+	UA            string       // HTTP User-Agent
+	Client        *http.Client // defaults to http.DefaultClient if nil
+	Now           time.Time    // retrieval timestamp recorded on each act
+	WithArticles  bool         // also fetch each act's full text and parse 条
+	WithRevisions bool         // also fetch each act's full revision timeline
+	Limit         int          // stop after this many acts (0 = all)
 }
 
 // Run lists laws, builds acts (optionally with article text), and writes them
@@ -50,7 +51,8 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	resolveAmendments(recs)
+	index := lawIDIndex(recs)
+	resolveAmendments(recs, index)
 
 	st, err := store.Open(cfg.OutDir)
 	if err != nil {
@@ -66,11 +68,28 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 			}
 			r.Act.Expression.Articles = arts
 		}
+		if cfg.WithRevisions {
+			revs, err := fetchRevisions(ctx, cfg, r.Act, index)
+			if err != nil {
+				return 0, fmt.Errorf("revisions for %s: %w", r.Act.Number, err)
+			}
+			r.Act.Revisions = revs
+		}
 		if err := st.AddAct(r.Act); err != nil {
 			return 0, fmt.Errorf("add act %s: %w", r.Act.Number, err)
 		}
 	}
 	return len(recs), nil
+}
+
+// lawIDIndex maps every listed act's law_id to its resource URI, for resolving
+// amendment/repeal/revision targets against the set actually ingested.
+func lawIDIndex(recs []egov.Record) map[string]string {
+	m := make(map[string]string, len(recs))
+	for _, r := range recs {
+		m[r.Act.IDLocal] = r.Act.ResourceURI()
+	}
+	return m
 }
 
 // lawsPage is the paging envelope of GET /api/2/laws.
@@ -123,11 +142,7 @@ func listAll(ctx context.Context, cfg Config) ([]egov.Record, error) {
 // the listed set — so every edge points at a real act node in the graph.
 // Unresolvable targets (a law not in the current listing) are dropped rather
 // than asserted.
-func resolveAmendments(recs []egov.Record) {
-	byLawID := make(map[string]string, len(recs)) // law_id -> resource URI
-	for _, r := range recs {
-		byLawID[r.Act.IDLocal] = r.Act.ResourceURI()
-	}
+func resolveAmendments(recs []egov.Record, byLawID map[string]string) {
 	for _, r := range recs {
 		if target, ok := byLawID[r.AmendedByLawID]; ok && r.AmendedByLawID != "" {
 			r.Act.Expression.AmendedBy = append(r.Act.Expression.AmendedBy, target)
@@ -136,6 +151,37 @@ func resolveAmendments(recs []egov.Record) {
 			r.Act.Expression.RepealedBy = append(r.Act.Expression.RepealedBy, target)
 		}
 	}
+}
+
+// fetchRevisions pulls an act's full revision timeline and maps it to metadata
+// revisions, resolving each revision's producing law against the listed set
+// (byLawID) into amended_by / repealed_by edges. The current enforced revision
+// is skipped — it is already the act's Expression.
+func fetchRevisions(ctx context.Context, cfg Config, act *schema.Act, byLawID map[string]string) ([]schema.Revision, error) {
+	b, err := fetch(ctx, cfg, "/law_revisions/"+url.PathEscape(act.IDLocal))
+	if err != nil {
+		return nil, err
+	}
+	metas, err := egov.ParseRevisions(b)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]schema.Revision, 0, len(metas))
+	for _, m := range metas {
+		if m.VersionDate.Equal(act.Expression.VersionDate) {
+			continue // this is the current expression, not a separate revision
+		}
+		rv := schema.Revision{VersionDate: m.VersionDate, Status: m.Status}
+		if target, ok := byLawID[m.ProducedBy]; ok && m.ProducedBy != "" {
+			if m.IsRepeal {
+				rv.RepealedBy = []string{target}
+			} else {
+				rv.AmendedBy = []string{target}
+			}
+		}
+		out = append(out, rv)
+	}
+	return out, nil
 }
 
 // fetchArticles downloads an act's full text and parses its 条 into articles.

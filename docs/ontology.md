@@ -32,6 +32,14 @@ ELI inherits FRBR. We use two of the three levels in v1:
 Relationships (`eli:amends`, `eli:cites`, …) connect *expressions* where the
 source provides that precision, otherwise *resources*.
 
+**Metadata-only expressions (revision timeline).** A resource MAY also have
+extra `eli:LegalExpression` nodes for past/scheduled revisions, carrying
+`eli:version_date`, `eli:in_force`, and amend/repeal edges but **no
+`dct:title`** and no articles. The absence of `dct:title` is the marker that
+distinguishes these lightweight revision nodes from the one current
+consolidated expression — readers select the current text by requiring a title.
+See ADR-0014.
+
 ## URI scheme
 
 ELI-style, mirroring the source's stable identifiers so URIs are reconstructible:

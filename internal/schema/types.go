@@ -40,6 +40,18 @@ type Act struct {
 	Number     string      // native id, e.g. "435-15" (eli:id_local)
 	IDLocal    string      // source's native id, usually == Number
 	Expression *Expression // current consolidated version
+	Revisions  []Revision  // other (past/scheduled) versions, metadata only
+}
+
+// Revision is a metadata-only expression of an Act other than the current
+// consolidated one (FRBR: another eli:LegalExpression of the same work). It
+// carries no title or article text — just when the version took effect, its
+// in-force status, and the act that produced it. Sorted by VersionDate.
+type Revision struct {
+	VersionDate time.Time // eli:version_date — when this revision took effect
+	Status      Status    // in force / repealed / unknown at this revision
+	AmendedBy   []string  // resolved Resource URIs of the amending act(s)
+	RepealedBy  []string  // resolved Resource URIs of the repealing act(s)
 }
 
 // Expression is one consolidated version of an Act at a point in time.
