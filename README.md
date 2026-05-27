@@ -42,14 +42,24 @@ official source ──scraper (Go, per country)──▶ RDF (ELI ontology)
 
 ## Quick start
 
-> Not yet runnable — scaffolding in progress.
-
 ```bash
-go build ./cmd/lex
-# Build the Ukraine dataset (or download a prebuilt .db from Releases):
-go run ./ua/scripts/...
-# Point your MCP client at the lex binary.
+# 1. Build the Ukraine dataset (or download a prebuilt one from Releases):
+go run ./ua/scripts/import -out ua/data/graph            # metadata
+go run ./ua/scripts/import -out ua/data/graph -articles  # + article text (slower)
+
+# 2. Build and run the MCP server over that data:
+go build -o lex ./cmd/lex
+./lex -data ua/data/graph
 ```
+
+Then register `lex` as a stdio MCP server in your client (e.g. Claude Code).
+It exposes:
+
+- `search_laws(query, limit)` — full-text search; returns hits with an `act_uri`.
+- `get_act(uri)` — metadata (title, **as-of date**, in-force status, source) + articles.
+- `get_article(act_uri, number)` — a single article.
+- `list_amendments(uri)` — `amends` / `amended_by` / `repeals`.
+- `find_related(uri)` — `cites` / `consolidates`.
 
 ## Add your country
 
