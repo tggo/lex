@@ -1,0 +1,79 @@
+{
+    "status": {
+        "code": "200",
+        "text": "ok"
+    },
+    "data": [
+        {
+            "materias": [
+                {
+                    "materia": {
+                        "codigo": "5955",
+                        "texto": "Registro Civil"
+                    }
+                }
+            ],
+            "notas": {
+                "nota": "La derogaci\u00f3n con la salvedad indicada, del art. 27.1 y 2 de la Ley 38\/1988, de 28 de diciembre, se establece por la modificaci\u00f3n de la disposici\u00f3n derogatoria de la  Ley 20\/2011, de 21 de julio ."
+            },
+            "referencias": {
+                "anteriores": [
+                    {
+                        "anterior": [
+                            {
+                                "id_norma": "BOE-A-1988-29622",
+                                "relacion": {
+                                    "codigo": "210",
+                                    "texto": "DEROGA"
+                                },
+                                "texto": "con la salvedad indicada, el art. 27.1 y 2 de la Ley 38\/1988, de 28 de diciembre"
+                            },
+                            {
+                                "id_norma": "BOE-A-2011-12628",
+                                "relacion": {
+                                    "codigo": "270",
+                                    "texto": "MODIFICA"
+                                },
+                                "texto": "determinados preceptos y referencias y A\u00d1ADE la disposici\u00f3n transitoria 11 a la Ley 20\/2011, de 21 de julio"
+                            },
+                            {
+                                "id_norma": "BOE-A-2004-21831",
+                                "relacion": {
+                                    "codigo": "406",
+                                    "texto": "AMPL\u00cdA"
+                                },
+                                "texto": "el plazo indicado de la disposici\u00f3n adicional 2 de la Ley 4\/2004, de 29 de diciembre"
+                            },
+                            {
+                                "id_norma": "BOE-A-1994-28968",
+                                "relacion": {
+                                    "codigo": "406",
+                                    "texto": "AMPL\u00cdA"
+                                },
+                                "texto": "el plazo indicado de la disposici\u00f3n transitoria 1 de la Ley 42\/1994, de 30 de diciembre"
+                            },
+                            {
+                                "id_norma": "BOE-A-1985-12534",
+                                "relacion": {
+                                    "codigo": "406",
+                                    "texto": "AMPL\u00cdA"
+                                },
+                                "texto": "el plazo indicado de la disposici\u00f3n transitoria 5 de la Ley 16\/1985, de 25 de junio"
+                            }
+                        ]
+                    }
+                ],
+                "posteriores": {
+                    "posterior": {
+                        "id_norma": "BOE-A-2026-11397",
+                        "relacion": {
+                            "codigo": "406",
+                            "texto": "SE AMPL\u00cdA"
+                        },
+                        "texto": "el plazo indicado de la disposici\u00f3n adicional \u00fanica, por Real Decreto-ley 12\/2026, de 26 de mayo"
+                    }
+                }
+            }
+        }
+    ]
+}

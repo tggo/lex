@@ -1,0 +1,40 @@
+{
+    "status": {
+        "code": "200",
+        "text": "ok"
+    },
+    "data": [
+        {
+            "fecha_actualizacion": "20260527T082330Z",
+            "identificador": "BOE-A-2021-6945",
+            "ambito": {
+                "codigo": "1",
+                "texto": "Estatal"
+            },
+            "departamento": {
+                "codigo": "7723",
+                "texto": "Jefatura del Estado"
+            },
+            "rango": {
+                "codigo": "1300",
+                "texto": "Ley"
+            },
+            "fecha_disposicion": "20210428",
+            "numero_oficial": "6\/2021",
+            "titulo": "Ley 6\/2021, de 28 de abril, por la que se modifica la Ley 20\/2011, de 21 de julio, del Registro Civil.",
+            "diario": "Bolet\u00edn Oficial del Estado",
+            "fecha_publicacion": "20210429",
+            "diario_numero": "102",
+            "fecha_vigencia": "20210430",
+            "estatus_derogacion": "N",
+            "estatus_anulacion": "N",
+            "vigencia_agotada": "N",
+            "estado_consolidacion": {
+                "codigo": "3",
+                "texto": "Finalizado"
+            },
+            "url_eli": "https:\/\/www.boe.es\/eli\/es\/l\/2021\/04\/28\/6",
+            "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2021-6945"
+        }
+    ]
+}
