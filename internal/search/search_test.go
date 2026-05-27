@@ -153,6 +153,59 @@ func TestClosedIndex_errors(t *testing.T) {
 	}
 }
 
+func TestSearch_ukrainianStemming(t *testing.T) {
+	idx, err := OpenMemoryLang("uk")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer idx.Close()
+	if idx.Lang() != "uk" {
+		t.Fatalf("lang = %q, want uk", idx.Lang())
+	}
+	// An act whose title is in one inflected form…
+	act := &schema.Act{
+		Country: "ua", TypeSlug: "zakon", Year: 1998, Number: "161-14",
+		Expression: &schema.Expression{
+			Title: "Про оренду землі", LangTag: "uk",
+			VersionDate: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		},
+	}
+	if err := idx.AddAct(act); err != nil {
+		t.Fatal(err)
+	}
+	// …is found by a different inflection ("оренда землі" vs indexed "оренду землі").
+	hits, err := idx.Search("оренда землі", 5)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(hits) == 0 {
+		t.Fatal("stemming failed: 'оренда землі' did not match 'Про оренду землі'")
+	}
+	if hits[0].ActURI != act.ResourceURI() {
+		t.Errorf("hit = %q", hits[0].ActURI)
+	}
+}
+
+func TestSearch_languagePersists(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "fts.db")
+	idx, _ := OpenMemoryLang("uk") // sanity that ctor works
+	idx.Close()
+	// Write with uk, reopen with plain Open → language (and stemmer) restored.
+	w, err := OpenLang(path, "uk")
+	if err != nil {
+		t.Fatal(err)
+	}
+	w.Close()
+	r, err := Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+	if r.Lang() != "uk" {
+		t.Errorf("reopened lang = %q, want uk (persisted)", r.Lang())
+	}
+}
+
 func TestAddAct_nil(t *testing.T) {
 	idx, _ := OpenMemory()
 	defer idx.Close()

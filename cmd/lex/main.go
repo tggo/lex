@@ -70,7 +70,7 @@ func main() {
 	}
 
 	srv := mcp.NewServer(mcp.NewService(st, idx))
-	log.Printf("lex MCP server ready (data=%s)", *root)
+	log.Printf("lex MCP server ready (data=%s, search lang=%q)", *root, idx.Lang())
 	if err := srv.Run(context.Background(), &sdk.StdioTransport{}); err != nil {
 		log.Fatalf("lex: serve: %v", err)
 	}

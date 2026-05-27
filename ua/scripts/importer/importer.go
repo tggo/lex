@@ -86,7 +86,7 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	// Optional full-text index, built incrementally alongside the store.
 	var idx *search.Index
 	if cfg.IndexPath != "" {
-		idx, err = search.Open(cfg.IndexPath)
+		idx, err = search.OpenLang(cfg.IndexPath, "uk") // Ukrainian stemming
 		if err != nil {
 			return 0, err
 		}

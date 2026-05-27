@@ -1,7 +1,11 @@
 // Package search is the lex full-text index: a SQLite FTS5 table, decoupled
 // from the RDF triplestore (ADR-0010). It indexes act titles and article text
-// and returns ranked hits that point back into the graph by URI. It depends
-// only on schema, so the store/graph can be rebuilt or swapped independently.
+// and returns ranked hits that point back into the graph by URI.
+//
+// Matching is stem-based: the indexed column holds language-stemmed tokens so
+// inflected forms match (Ukrainian оренда/оренду/оренди → оренд). The index
+// records its language so serving selects the same Stemmer. Depends only on
+// schema.
 package search
 
 import (
@@ -25,43 +29,70 @@ type Hit struct {
 	URI     string // the matched node (expression for titles, article for articles)
 	ActURI  string // owning act (LegalResource) URI
 	Kind    string // KindTitle | KindArticle
-	Snippet string // matched text excerpt
+	Snippet string // matched text excerpt, original (inflected) forms highlighted
 }
 
-// Index is an FTS5 full-text index.
+// Index is a stem-based FTS5 full-text index.
 type Index struct {
-	db *sql.DB
+	db   *sql.DB
+	stem Stemmer
+	lang string
 }
 
-// Open opens (creating if needed) a file-backed index.
-func Open(path string) (*Index, error) { return open(path) }
+// Open opens (creating if needed) a file-backed index, selecting the stemmer
+// from the language stored in the index (identity if none).
+func Open(path string) (*Index, error) { return open(path, "") }
+
+// OpenLang opens an index and sets its language (and stemmer). Use this when
+// building an index for a known-language corpus; the language is persisted so
+// Open can pick the same stemmer later.
+func OpenLang(path, lang string) (*Index, error) { return open(path, lang) }
 
 // OpenMemory opens an ephemeral in-memory index, for tests and tooling.
-func OpenMemory() (*Index, error) { return open(":memory:") }
+func OpenMemory() (*Index, error) { return open(":memory:", "") }
 
-func open(dsn string) (*Index, error) {
+// OpenMemoryLang is OpenMemory with a language set.
+func OpenMemoryLang(lang string) (*Index, error) { return open(":memory:", lang) }
+
+func open(dsn, lang string) (*Index, error) {
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("search: open %q: %w", dsn, err)
 	}
 	idx := &Index{db: db}
-	if err := idx.init(); err != nil {
+	if err := idx.init(lang); err != nil {
 		db.Close()
 		return nil, err
 	}
 	return idx, nil
 }
 
-func (i *Index) init() error {
-	_, err := i.db.Exec(`CREATE VIRTUAL TABLE IF NOT EXISTS docs USING fts5(
-		uri UNINDEXED, act_uri UNINDEXED, kind UNINDEXED, text,
+func (i *Index) init(lang string) error {
+	if _, err := i.db.Exec(`CREATE VIRTUAL TABLE IF NOT EXISTS docs USING fts5(
+		uri UNINDEXED, act_uri UNINDEXED, kind UNINDEXED, text UNINDEXED, stem,
 		tokenize='unicode61'
-	)`)
-	if err != nil {
+	)`); err != nil {
 		return fmt.Errorf("search: create index: %w", err)
 	}
+	if _, err := i.db.Exec(`CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY, value TEXT)`); err != nil {
+		return fmt.Errorf("search: create meta: %w", err)
+	}
+	// Resolve language: explicit arg wins and is persisted; otherwise read it back.
+	if lang != "" {
+		if _, err := i.db.Exec(`INSERT INTO meta(key,value) VALUES('lang',?)
+			ON CONFLICT(key) DO UPDATE SET value=excluded.value`, lang); err != nil {
+			return fmt.Errorf("search: set lang: %w", err)
+		}
+		i.lang = lang
+	} else {
+		_ = i.db.QueryRow(`SELECT value FROM meta WHERE key='lang'`).Scan(&i.lang)
+	}
+	i.stem = StemmerFor(i.lang)
 	return nil
 }
+
+// Lang reports the index language ("" if unset).
+func (i *Index) Lang() string { return i.lang }
 
 // Close releases the underlying database.
 func (i *Index) Close() error { return i.db.Close() }
@@ -79,13 +110,17 @@ func (i *Index) AddAct(a *schema.Act) error {
 	}
 	defer tx.Rollback()
 
-	stmt, err := tx.Prepare(`INSERT INTO docs(uri, act_uri, kind, text) VALUES (?, ?, ?, ?)`)
+	stmt, err := tx.Prepare(`INSERT INTO docs(uri, act_uri, kind, text, stem) VALUES (?, ?, ?, ?, ?)`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(exprURI, actURI, KindTitle, a.Expression.Title); err != nil {
+	add := func(uri, kind, text string) error {
+		_, err := stmt.Exec(uri, actURI, kind, text, stemColumn(i.stem, text))
+		return err
+	}
+	if err := add(exprURI, KindTitle, a.Expression.Title); err != nil {
 		return fmt.Errorf("search: index title: %w", err)
 	}
 	for _, art := range a.Expression.Articles {
@@ -93,15 +128,14 @@ func (i *Index) AddAct(a *schema.Act) error {
 		if art.Text != "" {
 			body += "\n" + art.Text
 		}
-		if _, err := stmt.Exec(schema.ArticleURI(exprURI, art.Number), actURI, KindArticle, body); err != nil {
+		if err := add(schema.ArticleURI(exprURI, art.Number), KindArticle, body); err != nil {
 			return fmt.Errorf("search: index article %s: %w", art.Number, err)
 		}
 	}
 	return tx.Commit()
 }
 
-// RemoveAct deletes all indexed documents (title + articles) of an act, so a
-// re-import can replace them. Safe to call when the act is absent.
+// RemoveAct deletes all indexed documents of an act (idempotent).
 func (i *Index) RemoveAct(actURI string) error {
 	if _, err := i.db.Exec(`DELETE FROM docs WHERE act_uri = ?`, actURI); err != nil {
 		return fmt.Errorf("search: remove %s: %w", actURI, err)
@@ -109,8 +143,7 @@ func (i *Index) RemoveAct(actURI string) error {
 	return nil
 }
 
-// ReplaceAct re-indexes an act idempotently: removes any prior docs for it, then
-// adds the current ones. Use this for incremental (re-)imports.
+// ReplaceAct re-indexes an act idempotently (remove then add). For re-imports.
 func (i *Index) ReplaceAct(a *schema.Act) error {
 	if a == nil || a.Expression == nil {
 		return fmt.Errorf("search: nil act or expression")
@@ -130,42 +163,93 @@ func (i *Index) Count() (int, error) {
 	return n, nil
 }
 
-// Search runs a full-text query and returns ranked hits (best first).
+// Search runs a stemmed full-text query and returns ranked hits (best first).
 func (i *Index) Search(query string, limit int) ([]Hit, error) {
-	match := toMatch(query)
-	if match == "" {
+	stems := i.queryStems(query)
+	if len(stems) == 0 {
 		return nil, nil
 	}
 	if limit <= 0 {
 		limit = 20
 	}
-	rows, err := i.db.Query(`SELECT uri, act_uri, kind,
-		snippet(docs, 3, '[', ']', '…', 12) FROM docs
-		WHERE docs MATCH ? ORDER BY rank LIMIT ?`, match, limit)
+	rows, err := i.db.Query(`SELECT uri, act_uri, kind, text FROM docs
+		WHERE docs MATCH ? ORDER BY rank LIMIT ?`, toMatch(stems), limit)
 	if err != nil {
 		return nil, fmt.Errorf("search: query: %w", err)
 	}
 	defer rows.Close()
 
+	want := make(map[string]bool, len(stems))
+	for _, s := range stems {
+		want[s] = true
+	}
 	var hits []Hit
 	for rows.Next() {
 		var h Hit
-		if err := rows.Scan(&h.URI, &h.ActURI, &h.Kind, &h.Snippet); err != nil {
+		var text string
+		if err := rows.Scan(&h.URI, &h.ActURI, &h.Kind, &text); err != nil {
 			return nil, err
 		}
+		h.Snippet = i.snippet(text, want, 14)
 		hits = append(hits, h)
 	}
 	return hits, rows.Err()
 }
 
-// toMatch turns free user input into a safe FTS5 MATCH expression: each term is
-// quoted (so punctuation can't break the query) and ANDed together.
-func toMatch(query string) string {
-	fields := strings.Fields(query)
-	quoted := make([]string, 0, len(fields))
-	for _, f := range fields {
-		f = strings.ReplaceAll(f, `"`, `""`)
-		quoted = append(quoted, `"`+f+`"`)
+// queryStems tokenizes and stems the user query.
+func (i *Index) queryStems(query string) []string {
+	toks := tokenize(query)
+	out := make([]string, 0, len(toks))
+	for _, t := range toks {
+		if s := i.stem.Stem(strings.ToLower(t)); s != "" {
+			out = append(out, s)
+		}
 	}
-	return strings.Join(quoted, " ")
+	return out
+}
+
+// toMatch quotes each stem and ANDs them into a safe FTS5 MATCH expression.
+func toMatch(stems []string) string {
+	q := make([]string, len(stems))
+	for n, s := range stems {
+		q[n] = `"` + strings.ReplaceAll(s, `"`, `""`) + `"`
+	}
+	return strings.Join(q, " ")
+}
+
+// snippet builds an excerpt around the first matching word, highlighting the
+// original (inflected) forms whose stem the query matched. Done in Go because
+// the indexed column holds stems, not the original text.
+func (i *Index) snippet(text string, wantStems map[string]bool, window int) string {
+	words := strings.Fields(text)
+	hit := -1
+	for n, w := range words {
+		if wantStems[i.stem.Stem(strings.ToLower(strings.Trim(w, ".,;:()[]«»\"'")))] {
+			hit = n
+			break
+		}
+	}
+	start, end := 0, len(words)
+	if hit >= 0 {
+		start = max(0, hit-window/2)
+		end = min(len(words), hit+window/2+1)
+	} else if len(words) > window {
+		end = window
+	}
+	out := make([]string, 0, end-start)
+	for _, w := range words[start:end] {
+		if wantStems[i.stem.Stem(strings.ToLower(strings.Trim(w, ".,;:()[]«»\"'")))] {
+			out = append(out, "["+w+"]")
+		} else {
+			out = append(out, w)
+		}
+	}
+	s := strings.Join(out, " ")
+	if start > 0 {
+		s = "…" + s
+	}
+	if end < len(words) {
+		s = s + "…"
+	}
+	return s
 }
