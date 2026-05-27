@@ -1,0 +1,71 @@
+[
+  {
+    "Country": "jp",
+    "TypeSlug": "cabinet-order",
+    "Year": 1872,
+    "Number": "105DF0000000337",
+    "IDLocal": "105DF0000000337",
+    "Expression": {
+      "Title": "明治五年太政官布告第三百三十七号（改暦ノ布告）",
+      "LangTag": "ja",
+      "LangAlpha3": "JPN",
+      "VersionDate": "1872-11-09T00:00:00Z",
+      "FirstInForceDate": "0001-01-01T00:00:00Z",
+      "Status": 1,
+      "NoLongerInForce": "0001-01-01T00:00:00Z",
+      "SourceURL": "https://laws.e-gov.go.jp/law/105DF0000000337",
+      "RetrievedAt": "2026-05-27T00:00:00Z",
+      "Articles": null,
+      "Amends": null,
+      "Repeals": null,
+      "Cites": null,
+      "Consolidates": null
+    }
+  },
+  {
+    "Country": "jp",
+    "TypeSlug": "act",
+    "Year": 1896,
+    "Number": "129AC0000000089",
+    "IDLocal": "129AC0000000089",
+    "Expression": {
+      "Title": "民法",
+      "LangTag": "ja",
+      "LangAlpha3": "JPN",
+      "VersionDate": "2026-04-01T00:00:00Z",
+      "FirstInForceDate": "0001-01-01T00:00:00Z",
+      "Status": 1,
+      "NoLongerInForce": "0001-01-01T00:00:00Z",
+      "SourceURL": "https://laws.e-gov.go.jp/law/129AC0000000089",
+      "RetrievedAt": "2026-05-27T00:00:00Z",
+      "Articles": null,
+      "Amends": null,
+      "Repeals": null,
+      "Cites": null,
+      "Consolidates": null
+    }
+  },
+  {
+    "Country": "jp",
+    "TypeSlug": "act",
+    "Year": 1880,
+    "Number": "113DF0000000036",
+    "IDLocal": "113DF0000000036",
+    "Expression": {
+      "Title": "明治十三年太政官布告第三十六号（刑法）",
+      "LangTag": "ja",
+      "LangAlpha3": "JPN",
+      "VersionDate": "1908-10-01T00:00:00Z",
+      "FirstInForceDate": "0001-01-01T00:00:00Z",
+      "Status": 2,
+      "NoLongerInForce": "0001-01-01T00:00:00Z",
+      "SourceURL": "https://laws.e-gov.go.jp/law/113DF0000000036",
+      "RetrievedAt": "2026-05-27T00:00:00Z",
+      "Articles": null,
+      "Amends": null,
+      "Repeals": null,
+      "Cites": null,
+      "Consolidates": null
+    }
+  }
+]
