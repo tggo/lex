@@ -35,6 +35,11 @@ const (
 	// DefaultRatePerSec throttles requests to be a polite client.
 	DefaultRatePerSec = 2.0
 	maxRetries        = 4
+	// DefaultTimeout bounds a single fetch attempt. The OLRC per-title zips
+	// range from a few KB (title 1) to tens of MB, and the host is often slow,
+	// so this is generous; a stalled connection trips the deadline and the
+	// attempt is retried with backoff rather than hanging forever.
+	DefaultTimeout = 5 * time.Minute
 )
 
 // Config controls an import run.
@@ -64,7 +69,7 @@ func allTitles() []int {
 // the number of acts written.
 func Run(ctx context.Context, cfg Config) (int, error) {
 	if cfg.Client == nil {
-		cfg.Client = http.DefaultClient
+		cfg.Client = &http.Client{Timeout: DefaultTimeout}
 	}
 	if cfg.Now.IsZero() {
 		cfg.Now = time.Now().UTC()

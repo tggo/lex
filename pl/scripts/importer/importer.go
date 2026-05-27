@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"sort"
 	"time"
@@ -142,10 +143,15 @@ func (c *client) importYear(ctx context.Context, st *store.Store, pub string, ye
 			break
 		}
 		for _, item := range list.Items {
-			if err := c.importAct(ctx, st, item); err != nil {
+			ok, err := c.importAct(ctx, st, item)
+			if err != nil {
+				// Store/index failures are fatal: they indicate a broken sink,
+				// not a quirk of one source act.
 				return n, fmt.Errorf("import %s: %w", item.ELI, err)
 			}
-			n++
+			if ok {
+				n++
+			}
 		}
 		offset += len(list.Items)
 		if list.TotalCount > 0 && offset >= list.TotalCount {
@@ -155,56 +161,79 @@ func (c *client) importYear(ctx context.Context, st *store.Store, pub string, ye
 	return n, nil
 }
 
-// importAct fetches one act's detail (+references, +articles) and stores it.
-func (c *client) importAct(ctx context.Context, st *store.Store, item eli.ListItem) error {
+// importAct fetches one act's detail (+references, +articles) and stores it. It
+// returns (true, nil) when the act was stored, (false, nil) when the act was
+// skipped because one of its source resources is missing or unparseable (a
+// non-fatal source quirk), and (false, err) only for fatal failures: context
+// cancellation/timeout and store/index write errors.
+//
+// The Sejm ELI API occasionally lists acts whose sub-resources (struct,
+// text.html, references) 404 or fail to parse. Such a per-act fetch/parse
+// failure must not abort an otherwise-healthy run, so it is logged and skipped.
+func (c *client) importAct(ctx context.Context, st *store.Store, item eli.ListItem) (bool, error) {
 	base := c.cfg.BaseURL + "/" + item.ELI
 
 	db, err := c.fetch(ctx, base)
 	if err != nil {
-		return err
+		return c.skipFetch(ctx, item.ELI, err)
 	}
 	detail, err := eli.ParseDetail(db)
 	if err != nil {
-		return err
+		log.Printf("pl import: skipping %s: parse detail: %v", item.ELI, err)
+		return false, nil
 	}
 
 	rb, err := c.fetch(ctx, base+"/references")
 	if err != nil {
-		return err
+		return c.skipFetch(ctx, item.ELI, err)
 	}
 	refs, err := eli.ParseReferences(rb)
 	if err != nil {
-		return err
+		log.Printf("pl import: skipping %s: parse references: %v", item.ELI, err)
+		return false, nil
 	}
 
 	var arts []schema.Article
 	if c.cfg.WithArticles && detail.TextHTML {
 		sb, err := c.fetch(ctx, base+"/struct")
 		if err != nil {
-			return err
+			return c.skipFetch(ctx, item.ELI, err)
 		}
 		tb, err := c.fetch(ctx, base+"/text.html")
 		if err != nil {
-			return err
+			return c.skipFetch(ctx, item.ELI, err)
 		}
 		if arts, err = eli.ParseArticles(sb, tb); err != nil {
-			return err
+			log.Printf("pl import: skipping %s: parse articles: %v", item.ELI, err)
+			return false, nil
 		}
 	}
 
 	act, err := eli.ToAct(detail, refs, arts, c.cfg.Now)
 	if err != nil {
-		return err
+		log.Printf("pl import: skipping %s: map act: %v", item.ELI, err)
+		return false, nil
 	}
 	if err := st.AddAct(act); err != nil {
-		return err
+		return false, err
 	}
 	if c.idx != nil {
 		if err := c.idx.ReplaceAct(act); err != nil {
-			return fmt.Errorf("index act %s: %w", act.Number, err)
+			return false, fmt.Errorf("index act %s: %w", act.Number, err)
 		}
 	}
-	return nil
+	return true, nil
+}
+
+// skipFetch classifies a fetch error: context cancellation/timeout is fatal,
+// any other transport/status failure (e.g. a 404 sub-resource) is logged and
+// skipped.
+func (c *client) skipFetch(ctx context.Context, eli string, err error) (bool, error) {
+	if ctx.Err() != nil {
+		return false, err // cancellation/timeout is fatal
+	}
+	log.Printf("pl import: skipping %s: fetch: %v", eli, err)
+	return false, nil
 }
 
 // fetch GETs url with the configured User-Agent, throttled and retried on

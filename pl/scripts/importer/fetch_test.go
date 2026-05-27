@@ -34,7 +34,7 @@ func fileHandler(t *testing.T, dir, file string) http.HandlerFunc {
 }
 
 // importOne opens a temp store and imports a single act by ELI.
-func (c *client) importOne(t *testing.T, eliID string) error {
+func (c *client) importOne(t *testing.T, eliID string) (bool, error) {
 	t.Helper()
 	st, err := store.Open(filepath.Join(t.TempDir(), "g"))
 	if err != nil {
@@ -107,7 +107,9 @@ func TestFetch_contextCancelDuringBackoff(t *testing.T) {
 	}
 }
 
-func TestImportAct_referencesError(t *testing.T) {
+// A references sub-resource 404 is a non-fatal source quirk: the act is skipped
+// (false, nil), not reported as an error.
+func TestImportAct_referencesSkipped(t *testing.T) {
 	fxDir := filepath.Join("..", "eli", "testdata")
 	mux := http.NewServeMux()
 	mux.HandleFunc("/DU/2023/2777", fileHandler(t, fxDir, "act_detail.sample.json"))
@@ -115,12 +117,18 @@ func TestImportAct_referencesError(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	defer srv.Close()
 
-	if err := testClient(t, srv).importOne(t, "DU/2023/2777"); err == nil {
-		t.Error("expected references fetch error")
+	ok, err := testClient(t, srv).importOne(t, "DU/2023/2777")
+	if err != nil {
+		t.Errorf("references 404 should be skipped, not fatal: %v", err)
+	}
+	if ok {
+		t.Error("expected act to be skipped (false) when references 404")
 	}
 }
 
-func TestImportAct_structError(t *testing.T) {
+// A struct sub-resource 404 (the live failure: DU/2024/1064/struct status 404)
+// is skipped, not fatal.
+func TestImportAct_structSkipped(t *testing.T) {
 	fxDir := filepath.Join("..", "eli", "testdata")
 	mux := http.NewServeMux()
 	mux.HandleFunc("/DU/2023/2777", fileHandler(t, fxDir, "act_detail.sample.json"))
@@ -131,7 +139,11 @@ func TestImportAct_structError(t *testing.T) {
 
 	c := testClient(t, srv)
 	c.cfg.WithArticles = true
-	if err := c.importOne(t, "DU/2023/2777"); err == nil {
-		t.Error("expected struct fetch error")
+	ok, err := c.importOne(t, "DU/2023/2777")
+	if err != nil {
+		t.Errorf("struct 404 should be skipped, not fatal: %v", err)
+	}
+	if ok {
+		t.Error("expected act to be skipped (false) when struct 404")
 	}
 }

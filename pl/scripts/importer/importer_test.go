@@ -176,6 +176,49 @@ func TestRun_publisherFetchError(t *testing.T) {
 	}
 }
 
+// A 404 on an individual act's sub-resource (e.g. /struct) must be skipped, not
+// abort the whole run.
+func TestImportYear_actFetchSkipped(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/eli/acts/DU", func(w http.ResponseWriter, r *http.Request) {
+		fxDir := filepath.Join("..", "eli", "testdata")
+		b, _ := os.ReadFile(filepath.Join(fxDir, "publisher.sample.json"))
+		_, _ = w.Write(b)
+	})
+	mux.HandleFunc("/eli/acts/DU/2023", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("offset") != "0" {
+			_, _ = w.Write([]byte(`{"totalCount":1,"count":0,"offset":1,"items":[]}`))
+			return
+		}
+		_, _ = w.Write([]byte(`{"totalCount":1,"count":1,"offset":0,"items":[` +
+			`{"ELI":"DU/2023/2777","publisher":"DU","year":2023,"pos":2777,` +
+			`"type":"Ustawa","title":"Ustawa ...","status":"obowiązujący","textHTML":true}]}`))
+	})
+	serve := func(file string) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			b, _ := os.ReadFile(filepath.Join("..", "eli", "testdata", file))
+			_, _ = w.Write(b)
+		}
+	}
+	mux.HandleFunc("/eli/acts/DU/2023/2777", serve("act_detail.sample.json"))
+	mux.HandleFunc("/eli/acts/DU/2023/2777/references", serve("act_references.sample.json"))
+	// struct 404s — mirrors the live failure (DU/2024/1064/struct: status 404).
+	mux.HandleFunc("/eli/acts/DU/2023/2777/struct", http.NotFoundHandler().ServeHTTP)
+	mux.HandleFunc("/eli/acts/DU/2023/2777/text.html", serve("act_text.sample.html"))
+	srv := httptest.NewServer(mux)
+	defer srv.Close()
+
+	cfg := baseCfg(t, srv)
+	cfg.WithArticles = true
+	n, err := Run(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("Run should tolerate a 404 sub-resource, got: %v", err)
+	}
+	if n != 0 {
+		t.Errorf("imported %d acts, want 0 (the only act's struct 404s)", n)
+	}
+}
+
 func TestYearsFiltering(t *testing.T) {
 	srv := fixtureServer(t)
 	defer srv.Close()
