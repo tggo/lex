@@ -81,7 +81,7 @@ source URL).
 ✅ Article parsing — `-articles` fetches each act's HTML body
 (`text/d<dokid>.htm`) and splits `Стаття N` headings into `lex:Article`.
 
-✅ **Relations** ([ADR-0013](../docs/adr/0013-ua-relations-implemented.md)) —
+✅ **Relations** ([ADR-0027](../docs/adr/0027-ua-relations-implemented.md)) —
 `-relations` fetches the global `doc.txt` index + `vidnosh`/`typ` legends and
 resolves each act's `links` into `eli:amends`/`eli:repeals`/`eli:cites` edges.
 Verified live: 399 cites, 122 amends, 68 repeals across 2941 acts.

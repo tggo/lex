@@ -1,6 +1,6 @@
-# ADR 0012 — UA act relations: defer link resolution (needs global dokid map)
+# ADR 0026 — UA act relations: defer link resolution (needs global dokid map)
 
-- **Status**: Superseded by [ADR-0013](0013-ua-relations-implemented.md) —
+- **Status**: Superseded by [ADR-0027](0027-ua-relations-implemented.md) —
   both blockers were resolved (global `doc.txt` index + `vidnosh`/`typ` legends).
 - **Date**: 2026-05-27
 

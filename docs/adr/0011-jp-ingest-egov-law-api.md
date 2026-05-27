@@ -90,7 +90,7 @@ JP `eli:type_document` slugs are mapped from `law_type` in `jp/README.md`.
 - Legally clean (CC BY-compatible), API-sanctioned, no HTML crawling.
 - v2's revision model fits FRBR: this ADR stores only the **current enforced**
   expression. The historical revision timeline was added later as metadata-only
-  expressions — see ADR-0014 (JP historical revisions).
+  expressions — see ADR-0028 (JP historical revisions).
 - Japanese article granularity (条 article, 項 paragraph, 号 item) is richer than
   the flat UA article model; v1 maps each 条 to one `lex:Article` and keeps the
   full 条 text (incl. its 項/号) in `lex:text`. Finer structure is additive later.

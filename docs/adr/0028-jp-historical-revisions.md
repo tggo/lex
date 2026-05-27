@@ -1,4 +1,4 @@
-# ADR 0014 — Japan: historical revision timeline (metadata-only expressions)
+# ADR 0028 — Japan: historical revision timeline (metadata-only expressions)
 
 - **Status**: Accepted
 - **Date**: 2026-05-27

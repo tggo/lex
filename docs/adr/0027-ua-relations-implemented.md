@@ -1,12 +1,12 @@
-# ADR 0013 — UA relations implemented via the global doc index + code legends
+# ADR 0027 — UA relations implemented via the global doc index + code legends
 
 - **Status**: Accepted
 - **Date**: 2026-05-27
-- **Supersedes**: [ADR-0012](0012-ua-link-resolution-deferred.md) (deferral lifted)
+- **Supersedes**: [ADR-0026](0026-ua-link-resolution-deferred.md) (deferral lifted)
 
 ## Context
 
-ADR-0012 deferred relation ingestion for two reasons: (1) `links` targets mostly
+ADR-0026 deferred relation ingestion for two reasons: (1) `links` targets mostly
 fell outside the primary-acts set, and (2) the relation-type codes were
 undocumented. Both blockers are now resolved by additional OGD datasets:
 

@@ -13,7 +13,7 @@ import (
 // Relation type codes from the OGD `vidnosh` dictionary, mapped to ELI
 // predicates. The codes describe the relation from the *source* act's view
 // (its `links` field). Only the clear-cut amend/repeal codes are classified;
-// everything else is the safe generic "cites" (a reference). See ADR-0012.
+// everything else is the safe generic "cites" (a reference). See ADR-0027.
 //
 //	1  Змінює документ            -> amends
 //	4  Скасовує документ          -> repeals

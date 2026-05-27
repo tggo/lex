@@ -73,7 +73,7 @@ Civil Code). With `-revisions`, the importer stores each as a metadata-only
 amending/repealing act) — no title or text, so the current consolidated version
 stays the one `GetAct` returns. The current enforced revision is skipped (it is
 the act's main expression). Full historical *text* per revision is a later
-phase. See ADR-0014.
+phase. See ADR-0028.
 
 ## Article structure (条/項/号)
 
