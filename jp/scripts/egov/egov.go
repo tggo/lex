@@ -36,11 +36,19 @@ type lawInfo struct {
 
 // revisionInfo describes the current consolidated revision (the expression).
 type revisionInfo struct {
+	LawRevisionID         string `json:"law_revision_id"` // expression id, used to fetch law_data
 	LawTitle              string `json:"law_title"`
 	Category              string `json:"category"`
 	EnforcementDate       string `json:"amendment_enforcement_date"` // yyyy-mm-dd — the as-of date
 	RepealStatus          string `json:"repeal_status"`              // "None" or "Repeal"/...
 	CurrentRevisionStatus string `json:"current_revision_status"`    // e.g. "CurrentEnforced"
+}
+
+// Record pairs a mapped Act with its e-Gov revision id, which the importer uses
+// to fetch the act's full text (GET /api/2/law_data/{law_revision_id}).
+type Record struct {
+	Act        *schema.Act
+	RevisionID string
 }
 
 // TypeSlug maps an e-Gov law_type to an ELI type_document slug. Known types use
@@ -133,18 +141,32 @@ func toAct(e lawEntry, retrievedAt time.Time) (*schema.Act, bool) {
 	}, true
 }
 
-// BuildActs decodes a GET /api/2/laws response and maps each law's current
-// revision into a schema.Act. Entries without a version date are dropped.
-func BuildActs(lawsJSON []byte, retrievedAt time.Time) ([]*schema.Act, error) {
+// BuildRecords decodes a GET /api/2/laws response and maps each law's current
+// revision into a Record (Act + revision id). Entries without a version date
+// are dropped.
+func BuildRecords(lawsJSON []byte, retrievedAt time.Time) ([]Record, error) {
 	var resp lawsResponse
 	if err := json.Unmarshal(lawsJSON, &resp); err != nil {
 		return nil, fmt.Errorf("egov: parse laws: %w", err)
 	}
-	out := make([]*schema.Act, 0, len(resp.Laws))
+	out := make([]Record, 0, len(resp.Laws))
 	for _, e := range resp.Laws {
 		if act, ok := toAct(e, retrievedAt); ok {
-			out = append(out, act)
+			out = append(out, Record{Act: act, RevisionID: e.RevisionInfo.LawRevisionID})
 		}
 	}
 	return out, nil
+}
+
+// BuildActs is BuildRecords without the revision ids — the act values only.
+func BuildActs(lawsJSON []byte, retrievedAt time.Time) ([]*schema.Act, error) {
+	recs, err := BuildRecords(lawsJSON, retrievedAt)
+	if err != nil {
+		return nil, err
+	}
+	acts := make([]*schema.Act, len(recs))
+	for i, r := range recs {
+		acts[i] = r.Act
+	}
+	return acts, nil
 }

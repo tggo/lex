@@ -1,0 +1,153 @@
+package importer
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/tggo/lex/internal/store"
+)
+
+var fixedTime = time.Date(2026, 5, 27, 0, 0, 0, 0, time.UTC)
+
+// fakeEgov serves a minimal two-page /laws sequence plus one law_data body,
+// standing in for the live e-Gov API.
+func fakeEgov(t *testing.T) *httptest.Server {
+	t.Helper()
+	page0 := `{"count":1,"next_offset":1,"laws":[
+	  {"law_info":{"law_type":"Act","law_id":"129AC0000000089","promulgation_date":"1896-04-27"},
+	   "revision_info":{"law_revision_id":"REV1","law_title":"民法",
+	     "amendment_enforcement_date":"2026-04-01","repeal_status":"None",
+	     "current_revision_status":"CurrentEnforced"}}]}`
+	page1 := `{"count":1,"next_offset":2,"laws":[
+	  {"law_info":{"law_type":"CabinetOrder","law_id":"105DF0000000337","promulgation_date":"1872-11-09"},
+	   "revision_info":{"law_revision_id":"REV2","law_title":"改暦ノ布告",
+	     "amendment_enforcement_date":"1872-11-09","repeal_status":"None",
+	     "current_revision_status":"CurrentEnforced"}}]}`
+	pageEmpty := `{"count":0,"next_offset":2,"laws":[]}`
+	lawData := `{"law_full_text":{"tag":"Law","attr":{},"children":[
+	  {"tag":"LawBody","attr":{},"children":[
+	    {"tag":"MainProvision","attr":{},"children":[
+	      {"tag":"Article","attr":{"Num":"1"},"children":[
+	        {"tag":"ArticleTitle","attr":{},"children":["第一条"]},
+	        {"tag":"Paragraph","attr":{},"children":[
+	          {"tag":"Sentence","attr":{},"children":["本文。"]}]}]}]}]}]}}`
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/laws", func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Query().Get("offset") {
+		case "0":
+			fmt.Fprint(w, page0)
+		case "1":
+			fmt.Fprint(w, page1)
+		default:
+			fmt.Fprint(w, pageEmpty)
+		}
+	})
+	mux.HandleFunc("/law_data/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, lawData)
+	})
+	return httptest.NewServer(mux)
+}
+
+func TestRun_endToEnd(t *testing.T) {
+	srv := fakeEgov(t)
+	defer srv.Close()
+
+	dir := filepath.Join(t.TempDir(), "graph")
+	n, err := Run(context.Background(), Config{
+		BaseURL:      srv.URL,
+		OutDir:       dir,
+		UA:           "lex-test",
+		Now:          fixedTime,
+		WithArticles: true,
+	})
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if n != 2 {
+		t.Fatalf("imported %d acts, want 2", n)
+	}
+
+	// Reopen the store and confirm the Civil Code round-trips with its article.
+	st, err := store.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer st.Close()
+
+	got, err := st.GetAct("https://lex.dev/eli/jp/act/1896/129AC0000000089")
+	if err != nil {
+		t.Fatalf("GetAct: %v", err)
+	}
+	if got.Expression.Title != "民法" {
+		t.Errorf("title = %q, want 民法", got.Expression.Title)
+	}
+	if len(got.Expression.Articles) != 1 || got.Expression.Articles[0].Number != "1" {
+		t.Fatalf("articles = %+v, want one article #1", got.Expression.Articles)
+	}
+	if !strings.Contains(got.Expression.Articles[0].Text, "本文。") {
+		t.Errorf("article text = %q, want it to contain 本文。", got.Expression.Articles[0].Text)
+	}
+}
+
+func TestRun_limit(t *testing.T) {
+	srv := fakeEgov(t)
+	defer srv.Close()
+
+	n, err := Run(context.Background(), Config{
+		BaseURL: srv.URL,
+		OutDir:  filepath.Join(t.TempDir(), "graph"),
+		Now:     fixedTime,
+		Limit:   1, // stop after the first act, before paging further
+	})
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if n != 1 {
+		t.Errorf("imported %d acts, want 1 (limit)", n)
+	}
+}
+
+func TestRun_listErrorPropagates(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "boom", http.StatusInternalServerError)
+	}))
+	defer srv.Close()
+
+	_, err := Run(context.Background(), Config{
+		BaseURL: srv.URL,
+		OutDir:  filepath.Join(t.TempDir(), "graph"),
+	})
+	if err == nil {
+		t.Error("expected error when /laws returns 500")
+	}
+}
+
+func TestRun_defaultsDoNotPanic(t *testing.T) {
+	// Exercise the nil-Client / zero-Now defaulting against a one-page server.
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"count":0,"next_offset":0,"laws":[]}`)
+	}))
+	defer srv.Close()
+
+	n, err := Run(context.Background(), Config{
+		BaseURL: srv.URL,
+		OutDir:  filepath.Join(t.TempDir(), "graph"),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n != 0 {
+		t.Errorf("imported %d, want 0", n)
+	}
+	if _, err := os.Stat(filepath.Join(t.TempDir())); err != nil {
+		t.Fatal(err)
+	}
+}
