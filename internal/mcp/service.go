@@ -7,6 +7,7 @@ package mcp
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"github.com/tggo/lex/internal/schema"
 	"github.com/tggo/lex/internal/search"
@@ -35,6 +36,33 @@ type actIndexer interface {
 // BuildIndex feeds every act in the store into the search index.
 func BuildIndex(st actLister, idx actIndexer) error {
 	return st.EachAct(idx.AddAct)
+}
+
+// resourceLister lists act resource URIs (satisfied by *store.Store).
+type resourceLister interface {
+	ListResourceURIs() ([]string, error)
+}
+
+// Countries returns the distinct country codes present in a store, derived from
+// the country-namespaced resource URIs (e.g. eli/ua/…, eli/jp/…). Used to keep a
+// single lex instance to one country so answers are never mixed.
+func Countries(st resourceLister) ([]string, error) {
+	uris, err := st.ListResourceURIs()
+	if err != nil {
+		return nil, err
+	}
+	set := map[string]bool{}
+	for _, u := range uris {
+		if cc, _, _, _, err := schema.ParseResourceURI(u); err == nil {
+			set[string(cc)] = true
+		}
+	}
+	out := make([]string, 0, len(set))
+	for cc := range set {
+		out = append(out, cc)
+	}
+	sort.Strings(out)
+	return out, nil
 }
 
 // Service answers lex queries from the store and search index.

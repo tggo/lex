@@ -22,6 +22,7 @@ import (
 
 func main() {
 	root := flag.String("data", "ua/data", "dataset root directory (holds graph/ and index.fts)")
+	allowMixed := flag.Bool("allow-mixed", false, "allow a dataset containing more than one country (answers may span countries)")
 	flag.Parse()
 
 	graphDir := filepath.Join(*root, "graph")
@@ -49,6 +50,23 @@ func main() {
 		if err := mcp.BuildIndex(st, idx); err != nil {
 			log.Fatalf("lex: build index: %v", err)
 		}
+	}
+
+	// Keep one instance to one country so answers are never mixed.
+	countries, err := mcp.Countries(st)
+	if err != nil {
+		log.Fatalf("lex: detect countries: %v", err)
+	}
+	switch {
+	case len(countries) == 0:
+		log.Printf("lex: warning: dataset %s is empty", *root)
+	case len(countries) > 1 && !*allowMixed:
+		log.Fatalf("lex: dataset %s mixes %d countries %v; serve one country per instance "+
+			"(import each into its own dataset) or pass -allow-mixed", *root, len(countries), countries)
+	case len(countries) > 1:
+		log.Printf("lex: warning: serving MIXED countries %v — answers may span countries", countries)
+	default:
+		log.Printf("lex: serving country %q", countries[0])
 	}
 
 	srv := mcp.NewServer(mcp.NewService(st, idx))

@@ -69,6 +69,33 @@ func TestBuildIndex(t *testing.T) {
 	}
 }
 
+func TestCountries(t *testing.T) {
+	st, _ := store.OpenMemory()
+	defer st.Close()
+	_ = st.AddAct(sampleAct()) // ua
+
+	if ccs, err := Countries(st); err != nil || len(ccs) != 1 || ccs[0] != "ua" {
+		t.Fatalf("Countries = %v, err = %v; want [ua]", ccs, err)
+	}
+
+	// Add a second country: detection must report both (a mixed dataset).
+	jp := &schema.Act{
+		Country: "jp", TypeSlug: "act", Year: 2020, Number: "129AC0000000089",
+		Expression: &schema.Expression{
+			Title: "Civil Code", LangTag: "ja",
+			VersionDate: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		},
+	}
+	_ = st.AddAct(jp)
+	ccs, err := Countries(st)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ccs) != 2 || ccs[0] != "jp" || ccs[1] != "ua" {
+		t.Errorf("Countries = %v, want [jp ua]", ccs)
+	}
+}
+
 func TestSearchLaws(t *testing.T) {
 	svc := newTestService(t)
 	out, err := svc.SearchLaws(context.Background(), &SearchIn{Query: "кодекс"})
