@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "lex": {
+      "command": "go",
+      "args": ["run", "./cmd/lex", "-data", "ua/data"],
+      "env": {}
+    }
+  }
+}
