@@ -1,0 +1,71 @@
+[
+  {
+    "Country": "ua",
+    "TypeSlug": "zakon",
+    "Year": 2026,
+    "Number": "4870-20",
+    "IDLocal": "4870-IX",
+    "Expression": {
+      "Title": "Про ратифікацію Угоди між Урядом України та Урядом Королівства Марокко про міжнародні автомобільні перевезення",
+      "LangTag": "uk",
+      "LangAlpha3": "UKR",
+      "VersionDate": "2026-04-30T00:00:00Z",
+      "FirstInForceDate": "0001-01-01T00:00:00Z",
+      "Status": 1,
+      "NoLongerInForce": "0001-01-01T00:00:00Z",
+      "SourceURL": "https://zakon.rada.gov.ua/laws/show/4870-20",
+      "RetrievedAt": "2026-05-27T00:00:00Z",
+      "Articles": null,
+      "Amends": null,
+      "Repeals": null,
+      "Cites": null,
+      "Consolidates": null
+    }
+  },
+  {
+    "Country": "ua",
+    "TypeSlug": "zakon",
+    "Year": 2026,
+    "Number": "4868-20",
+    "IDLocal": "4868-IX",
+    "Expression": {
+      "Title": "Про ратифікацію Конвенції про створення Міжнародної компенсаційної комісії для України",
+      "LangTag": "uk",
+      "LangAlpha3": "UKR",
+      "VersionDate": "2026-04-30T00:00:00Z",
+      "FirstInForceDate": "0001-01-01T00:00:00Z",
+      "Status": 0,
+      "NoLongerInForce": "0001-01-01T00:00:00Z",
+      "SourceURL": "https://zakon.rada.gov.ua/laws/show/4868-20",
+      "RetrievedAt": "2026-05-27T00:00:00Z",
+      "Articles": null,
+      "Amends": null,
+      "Repeals": null,
+      "Cites": null,
+      "Consolidates": null
+    }
+  },
+  {
+    "Country": "ua",
+    "TypeSlug": "zakon",
+    "Year": 2026,
+    "Number": "4840-20",
+    "IDLocal": "4840-IX",
+    "Expression": {
+      "Title": "Про основні засади державного нагляду (контролю)",
+      "LangTag": "uk",
+      "LangAlpha3": "UKR",
+      "VersionDate": "2026-04-08T00:00:00Z",
+      "FirstInForceDate": "0001-01-01T00:00:00Z",
+      "Status": 1,
+      "NoLongerInForce": "0001-01-01T00:00:00Z",
+      "SourceURL": "https://zakon.rada.gov.ua/laws/show/4840-20",
+      "RetrievedAt": "2026-05-27T00:00:00Z",
+      "Articles": null,
+      "Amends": null,
+      "Repeals": null,
+      "Cites": null,
+      "Consolidates": null
+    }
+  }
+]

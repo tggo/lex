@@ -69,6 +69,9 @@ date — a legal tool that hides staleness is harmful.
 - **TDD**: write the test first, watch it fail, then implement. No production
   code without a failing test that demanded it.
 - **Coverage > 80%** for every package (`go test -cover ./...`). CI enforces it.
+  Exception: a thin `func main()` shim that only parses flags and calls a tested
+  library package is exempt — put real logic in a `package`, keep `cmd`/`main`
+  trivial (e.g. `ua/scripts/import` → `ua/scripts/importer`).
 - **Golden tests** for any parsing/serialization (OGD → RDF, RDF → Turtle, FTS
   rows): inputs and expected outputs live in `testdata/`; update goldens via an
   explicit `-update` flag, never by hand.

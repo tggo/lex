@@ -58,9 +58,27 @@ Each act `id` (e.g. `435-15`) maps to the human page
 - `data/` — built artifacts (**gitignored**). Either built locally or downloaded
   from GitHub Releases.
 
+## Importer
+
+```bash
+go run ./ua/scripts/import -out ua/data/graph
+```
+
+- `scripts/ogd/` — pure, offline parser: `cards.json` + `texts.json` +
+  `perv*.txt` → `schema.Act`. Golden-tested on committed real fixtures.
+- `scripts/importer/` — fetch (network) + build + write to the Badger store;
+  tested end-to-end via `httptest` serving the fixtures.
+- `scripts/import/` — thin CLI shim.
+
+Status individuals come from `perv1`/`perv2` (in force) and `perv0` (repealed);
+`version_date` from each act's redaction date (`datred`). Verified against the
+live portal: **2941 primary acts** imported in ~2s.
+
 ## Status
 
-🚧 Not yet implemented. P1: one act end-to-end — fetch `cards.json` + the act's
-HTML body from `texts.zip`, set status from `perv1/perv0.txt`, parse into
-articles, emit ELI RDF per [`../docs/ontology.md`](../docs/ontology.md), store,
-and confirm it is searchable via the server.
+✅ Metadata pass works end-to-end (act identity, title, version date, status,
+source URL).
+🚧 Next passes: parse article structure from each act's HTML body
+(`text/d<dokid>.htm`) into `lex:Article`; resolve the `links` field into
+`eli:amends`/`eli:cites` edges (needs a `dokid`→`nreg` map); then the MCP server
++ search index.

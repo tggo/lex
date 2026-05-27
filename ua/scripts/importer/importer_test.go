@@ -1,0 +1,109 @@
+package importer
+
+import (
+	"context"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
+
+	"github.com/tggo/lex/internal/schema"
+	"github.com/tggo/lex/internal/store"
+)
+
+// fixtureServer serves the ogd package's committed fixtures at the real OGD
+// paths, so the importer runs end-to-end without the network.
+func fixtureServer(t *testing.T) *httptest.Server {
+	t.Helper()
+	fxDir := filepath.Join("..", "ogd", "testdata")
+	routes := map[string]string{
+		"/perv/cards.json":         "cards.sample.json",
+		"/perv/texts.json":         "texts.sample.json",
+		"/laws/data/csv/perv1.txt": "perv1.sample.txt",
+		"/laws/data/csv/perv0.txt": "perv0.sample.txt",
+		"/laws/data/csv/perv2.txt": "perv2.sample.txt", // absent → empty list
+	}
+	mux := http.NewServeMux()
+	for route, file := range routes {
+		path := filepath.Join(fxDir, file)
+		mux.HandleFunc(route, func(w http.ResponseWriter, r *http.Request) {
+			b, err := os.ReadFile(path)
+			if err != nil {
+				w.WriteHeader(http.StatusOK) // missing fixture = empty body
+				return
+			}
+			_, _ = w.Write(b)
+		})
+	}
+	return httptest.NewServer(mux)
+}
+
+func TestRun_endToEnd(t *testing.T) {
+	srv := fixtureServer(t)
+	defer srv.Close()
+
+	dir := filepath.Join(t.TempDir(), "graph")
+	cfg := Config{
+		BaseURL: srv.URL,
+		OutDir:  dir,
+		UA:      "lex-test",
+		Client:  srv.Client(),
+		Now:     time.Date(2026, 5, 27, 0, 0, 0, 0, time.UTC),
+	}
+
+	n, err := Run(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if n != 3 {
+		t.Fatalf("imported %d acts, want 3", n)
+	}
+
+	st, err := store.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer st.Close()
+
+	a, err := st.GetAct(schema.ResourceURI("ua", "zakon", 2026, "4840-20"))
+	if err != nil {
+		t.Fatalf("GetAct: %v", err)
+	}
+	if a.Expression.Title != "Про основні засади державного нагляду (контролю)" {
+		t.Errorf("title = %q", a.Expression.Title)
+	}
+	if a.Expression.Status != schema.StatusInForce {
+		t.Errorf("status = %v, want InForce", a.Expression.Status)
+	}
+	if a.IDLocal != "4840-IX" {
+		t.Errorf("idLocal = %q, want 4840-IX", a.IDLocal)
+	}
+}
+
+func TestRun_fetchError(t *testing.T) {
+	srv := httptest.NewServer(http.NotFoundHandler())
+	defer srv.Close()
+	cfg := Config{BaseURL: srv.URL, OutDir: t.TempDir(), UA: "x", Client: srv.Client()}
+	if _, err := Run(context.Background(), cfg); err == nil {
+		t.Error("expected error when fetch returns 404")
+	}
+}
+
+func TestRun_defaultsClientAndNow(t *testing.T) {
+	srv := fixtureServer(t)
+	defer srv.Close()
+	// Client and Now left zero → Run fills defaults; must still succeed.
+	cfg := Config{BaseURL: srv.URL, OutDir: filepath.Join(t.TempDir(), "g"), UA: "x"}
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("Run with defaults: %v", err)
+	}
+}
+
+func TestUnion(t *testing.T) {
+	got := union(map[string]bool{"a": true}, map[string]bool{"b": true})
+	if !got["a"] || !got["b"] || len(got) != 2 {
+		t.Errorf("union = %v", got)
+	}
+}
