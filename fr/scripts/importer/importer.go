@@ -1,16 +1,25 @@
-// Package importer fetches French legislation from the DILA LEGI open-data
-// dataset and loads it into a lex Badger triplestore. Network access lives
-// here; parsing/mapping is in package legi and is tested offline. French
-// legislative texts are not objects of copyright; LEGI is published under the
-// Licence Ouverte / Open Licence (Etalab), attribution to DILA. See ADR-0016.
+// Package importer loads French legislation from the DILA LEGI open-data
+// dataset into a lex Badger triplestore. Network access (tarball download) and
+// the tar/gzip walk live here; parsing/mapping is in package legi and is tested
+// offline. French legislative texts are not objects of copyright; LEGI is
+// published under the Licence Ouverte / Open Licence (Etalab), attribution to
+// DILA. See ADR-0016.
 //
-// LEGI is a bulk XML corpus, not a query API: each object is one XML file under
-// a sharded path (e.g. LEGI/TEXT/00/00/06/07/07/LEGITEXT000006070721.xml,
-// LEGI/ARTI/00/00/06/41/92/LEGIARTI000006419280.xml). This importer fetches the
-// individual XML files for a requested set of text CIDs from an HTTP-served
-// extraction of the dataset (DILA publishes a browsable directory; a local
-// mirror can be served with any static file server). The TEXTELR "struct" of
-// each text lists its member articles, which are then fetched and parsed.
+// LEGI is NOT served as per-text URLs: DILA publishes the corpus only as bulk
+// gzip tarballs at https://echanges.dila.gouv.fr/OPENDATA/LEGI/ — one large
+// global tarball (`Freemium_legi_global_*.tar.gz`, ~1.1 GB, ~twice a year) and
+// small daily delta tarballs (`LEGI_YYYYMMDD-*.tar.gz`, hundreds of KB). This
+// importer downloads a tarball, stream-walks it with archive/tar + compress/gzip,
+// indexes the per-object XML files by the text CID (LEGITEXT…) they belong to,
+// and feeds the bytes to the pure legi.Parse* functions.
+//
+// Inside a dump the files are laid out under a JORF text directory, e.g.
+//
+//	.../JORF/TEXT/<shard>/JORFTEXTnnn/texte/version/LEGITEXTnnn.xml  (TEXTE_VERSION)
+//	.../JORF/TEXT/<shard>/JORFTEXTnnn/texte/struct/LEGITEXTnnn.xml   (TEXTELR)
+//	.../JORF/TEXT/<shard>/JORFTEXTnnn/article/LEGI/ARTI/<shard>/LEGIARTInnn.xml (ARTICLE)
+//
+// so a text's articles are co-located under that text's JORFTEXT… subtree.
 package importer
 
 import (
@@ -18,6 +27,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/tggo/lex/fr/scripts/legi"
@@ -28,32 +38,38 @@ import (
 
 // Defaults for the live DILA LEGI open data.
 const (
-	// DefaultBase is the root under which the sharded LEGI XML tree is served.
-	// DILA publishes the bulk tarballs at echanges.dila.gouv.fr/OPENDATA/LEGI/;
-	// extract one and serve its LEGI/ directory (or point at any mirror).
+	// DefaultBase is the directory under which DILA publishes the LEGI
+	// tarballs (global + daily deltas).
 	DefaultBase = "https://echanges.dila.gouv.fr/OPENDATA/LEGI"
 	DefaultUA   = "lex/0.1 (+https://github.com/tggo/lex)"
-	// DefaultRatePerSec throttles requests to be a polite client.
-	DefaultRatePerSec = 5.0
-	maxRetries        = 4
+	maxRetries  = 4
 )
 
 // Config controls an import run.
 type Config struct {
-	BaseURL      string       // root of the served LEGI XML tree
-	OutDir       string       // Badger store directory
-	IndexPath    string       // FTS index file; if empty, no index is built
-	Lang         string       // search stemming language
-	UA           string       // HTTP User-Agent
-	Client       *http.Client // defaults to http.DefaultClient if nil
-	Now          time.Time    // retrieval timestamp recorded on each act
-	TextCIDs     []string     // LEGITEXT… ids to import
-	WithArticles bool         // also fetch each text's articles and parse text
-	RatePerSec   float64      // request rate limit; <=0 disables throttling
+	OutDir    string // Badger store directory
+	IndexPath string // FTS index file; if empty, no index is built
+	Lang      string // search stemming language
+	UA        string // HTTP User-Agent
+
+	// Source of the tarball. Exactly one of DumpURL / DumpPath is used;
+	// DumpPath (a local .tar.gz) takes precedence and skips the network.
+	DumpURL  string // absolute URL of a .tar.gz to download
+	DumpPath string // local path to an already-downloaded .tar.gz
+
+	Client *http.Client // defaults to http.DefaultClient if nil
+	Now    time.Time    // retrieval timestamp recorded on each act
+
+	// TextCIDs filters the import to these LEGITEXT… ids. If empty, every
+	// text found in the tarball is imported.
+	TextCIDs []string
+
+	// WithArticles also parses each text's co-located ARTICLE files.
+	WithArticles bool
 }
 
-// Run fetches the configured texts and writes acts to the store. It returns the
-// number of acts written.
+// Run downloads/opens the configured tarball, walks it, parses the matching
+// texts and writes acts to the store. It returns the number of acts written.
 func Run(ctx context.Context, cfg Config) (int, error) {
 	if cfg.Client == nil {
 		cfg.Client = http.DefaultClient
@@ -62,7 +78,20 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 		cfg.Now = time.Now().UTC()
 	}
 
-	c := &client{cfg: cfg, limiter: newLimiter(cfg.RatePerSec)}
+	// Obtain a readable, seekable-enough source for the tar walk. We stream
+	// the gzip directly; for a URL we download to a temp file first so a
+	// transient connection drop mid-walk does not corrupt a partial import.
+	rc, cleanup, err := cfg.openDump(ctx)
+	if err != nil {
+		return 0, err
+	}
+	defer cleanup()
+
+	// Build the CID→entry index by walking the tarball once.
+	idx, err := indexTar(rc)
+	if err != nil {
+		return 0, fmt.Errorf("walk tarball: %w", err)
+	}
 
 	st, err := store.Open(cfg.OutDir)
 	if err != nil {
@@ -70,139 +99,143 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 	defer st.Close()
 
-	// Optional full-text index, built incrementally alongside the store.
+	var idxFTS *search.Index
 	if cfg.IndexPath != "" {
-		idx, err := search.OpenLang(cfg.IndexPath, cfg.Lang)
+		idxFTS, err = search.OpenLang(cfg.IndexPath, cfg.Lang)
 		if err != nil {
 			return 0, err
 		}
-		defer idx.Close()
-		c.idx = idx
+		defer idxFTS.Close()
+	}
+
+	cids := cfg.TextCIDs
+	if len(cids) == 0 {
+		cids = idx.cids()
 	}
 
 	total := 0
-	for _, cid := range cfg.TextCIDs {
-		if err := c.importText(ctx, st, cid); err != nil {
+	for _, cid := range cids {
+		te, ok := idx.byCID[cid]
+		if !ok {
+			return total, fmt.Errorf("import %s: text not found in tarball", cid)
+		}
+		act, err := buildAct(te, cfg.WithArticles, cfg.Now)
+		if err != nil {
 			return total, fmt.Errorf("import %s: %w", cid, err)
+		}
+		if err := st.AddAct(act); err != nil {
+			return total, fmt.Errorf("import %s: %w", cid, err)
+		}
+		if idxFTS != nil {
+			if err := idxFTS.ReplaceAct(act); err != nil {
+				return total, fmt.Errorf("index %s: %w", cid, err)
+			}
 		}
 		total++
 	}
 	return total, nil
 }
 
-// client bundles the run config with a rate limiter.
-type client struct {
-	cfg     Config
-	limiter *limiter
-	idx     *search.Index
-}
-
-// shardPath builds the sharded relative path for a LEGI id. LEGI stores objects
-// under <kind>/<2-digit groups of the 12-digit suffix>/<id>.xml, e.g.
-// LEGITEXT000006070721 → TEXT/00/00/06/07/07/LEGITEXT000006070721.xml.
-func shardPath(kind, id string) string {
-	// The numeric suffix is the trailing 18 chars; LEGI shards on the first
-	// 10 of the 12-significant digits as five 2-digit groups.
-	n := len(id)
-	if n < 10 {
-		return kind + "/" + id + ".xml"
+// buildAct parses one text entry's version (+ struct + articles) into an Act.
+func buildAct(te *textEntry, withArticles bool, now time.Time) (*schema.Act, error) {
+	if te.version == nil {
+		return nil, fmt.Errorf("text %s has no TEXTE_VERSION file in tarball", te.cid)
 	}
-	digits := id[n-12:] // 12 trailing digits
-	p := kind + "/" +
-		digits[0:2] + "/" + digits[2:4] + "/" + digits[4:6] + "/" +
-		digits[6:8] + "/" + digits[8:10] + "/" + id + ".xml"
-	return p
-}
-
-// importText fetches one text's version + struct (+ member articles) and stores
-// it as a schema.Act.
-func (c *client) importText(ctx context.Context, st *store.Store, cid string) error {
-	vb, err := c.fetch(ctx, c.cfg.BaseURL+"/"+shardPath("TEXT", cid))
+	tv, err := legi.ParseTexteVersion(te.version)
 	if err != nil {
-		return err
-	}
-	tv, err := legi.ParseTexteVersion(vb)
-	if err != nil {
-		return err
-	}
-
-	sb, err := c.fetch(ctx, c.cfg.BaseURL+"/"+shardPath("TEXTELR", cid))
-	if err != nil {
-		return err
-	}
-	tstruct, err := legi.ParseTexteStruct(sb)
-	if err != nil {
-		return err
+		return nil, err
 	}
 
 	var arts []schema.Article
 	var liens []legi.Lien
-	if c.cfg.WithArticles {
+	if withArticles && te.struct_ != nil {
+		tstruct, err := legi.ParseTexteStruct(te.struct_)
+		if err != nil {
+			return nil, err
+		}
 		byID := map[string]*legi.Article{}
-		for _, la := range tstruct.Liens {
-			ab, err := c.fetch(ctx, c.cfg.BaseURL+"/"+shardPath("ARTI", la.ID))
+		for id, raw := range te.articles {
+			a, err := legi.ParseArticle(raw)
 			if err != nil {
-				return err
-			}
-			a, err := legi.ParseArticle(ab)
-			if err != nil {
-				return err
+				return nil, fmt.Errorf("article %s: %w", id, err)
 			}
 			byID[a.Common.ID] = a
 		}
 		arts, liens = legi.BuildArticles(tstruct, byID)
 	}
 
-	act, err := legi.ToAct(tv, arts, liens, c.cfg.Now)
-	if err != nil {
-		return err
-	}
-	if err := st.AddAct(act); err != nil {
-		return err
-	}
-	if c.idx != nil {
-		if err := c.idx.ReplaceAct(act); err != nil {
-			return fmt.Errorf("index act %s: %w", act.Number, err)
-		}
-	}
-	return nil
+	return legi.ToAct(tv, arts, liens, now)
 }
 
-// fetch GETs url with the configured User-Agent, throttled and retried on
-// transient errors (429 / 5xx).
-func (c *client) fetch(ctx context.Context, url string) ([]byte, error) {
+// openDump returns a reader over the configured tarball plus a cleanup func.
+func (cfg Config) openDump(ctx context.Context) (io.Reader, func(), error) {
+	if cfg.DumpPath != "" {
+		f, err := os.Open(cfg.DumpPath)
+		if err != nil {
+			return nil, func() {}, err
+		}
+		return f, func() { f.Close() }, nil
+	}
+	if cfg.DumpURL == "" {
+		return nil, func() {}, fmt.Errorf("no dump source: set DumpURL or DumpPath")
+	}
+	tmp, err := download(ctx, cfg.Client, cfg.UA, cfg.DumpURL)
+	if err != nil {
+		return nil, func() {}, err
+	}
+	f, err := os.Open(tmp)
+	if err != nil {
+		os.Remove(tmp)
+		return nil, func() {}, err
+	}
+	return f, func() { f.Close(); os.Remove(tmp) }, nil
+}
+
+// download fetches url to a temp file with the configured UA, retried on
+// transient errors (429 / 5xx). It returns the temp file path.
+func download(ctx context.Context, client *http.Client, ua, url string) (string, error) {
 	var lastErr error
 	for attempt := 0; attempt <= maxRetries; attempt++ {
-		c.limiter.wait(ctx)
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
-		req.Header.Set("User-Agent", c.cfg.UA)
-		req.Header.Set("Accept", "application/xml")
-		resp, err := c.cfg.Client.Do(req)
+		req.Header.Set("User-Agent", ua)
+		resp, err := client.Do(req)
 		if err != nil {
-			lastErr = fmt.Errorf("fetch %s: %w", url, err)
+			lastErr = fmt.Errorf("download %s: %w", url, err)
 			if !sleepBackoff(ctx, attempt) {
-				return nil, lastErr
+				return "", lastErr
 			}
 			continue
 		}
-		body, _ := io.ReadAll(resp.Body)
-		resp.Body.Close()
-		switch {
-		case resp.StatusCode == http.StatusOK:
-			return body, nil
-		case resp.StatusCode == http.StatusTooManyRequests || resp.StatusCode >= 500:
-			lastErr = fmt.Errorf("fetch %s: status %d", url, resp.StatusCode)
+		if resp.StatusCode == http.StatusTooManyRequests || resp.StatusCode >= 500 {
+			resp.Body.Close()
+			lastErr = fmt.Errorf("download %s: status %d", url, resp.StatusCode)
 			if !sleepBackoff(ctx, attempt) {
-				return nil, lastErr
+				return "", lastErr
 			}
-		default:
-			return nil, fmt.Errorf("fetch %s: status %d", url, resp.StatusCode)
+			continue
 		}
+		if resp.StatusCode != http.StatusOK {
+			resp.Body.Close()
+			return "", fmt.Errorf("download %s: status %d", url, resp.StatusCode)
+		}
+		f, err := os.CreateTemp("", "legi-dump-*.tar.gz")
+		if err != nil {
+			resp.Body.Close()
+			return "", err
+		}
+		_, err = io.Copy(f, resp.Body)
+		resp.Body.Close()
+		f.Close()
+		if err != nil {
+			os.Remove(f.Name())
+			return "", fmt.Errorf("download %s: %w", url, err)
+		}
+		return f.Name(), nil
 	}
-	return nil, lastErr
+	return "", lastErr
 }
 
 // sleepBackoff waits an exponential interval before the next retry. It returns
@@ -217,33 +250,4 @@ func sleepBackoff(ctx context.Context, attempt int) bool {
 	case <-t.C:
 		return true
 	}
-}
-
-// limiter enforces a minimum interval between requests.
-type limiter struct {
-	interval time.Duration
-	next     time.Time
-}
-
-func newLimiter(ratePerSec float64) *limiter {
-	if ratePerSec <= 0 {
-		return &limiter{}
-	}
-	return &limiter{interval: time.Duration(float64(time.Second) / ratePerSec)}
-}
-
-func (l *limiter) wait(ctx context.Context) {
-	if l.interval == 0 {
-		return
-	}
-	now := time.Now()
-	if l.next.After(now) {
-		t := time.NewTimer(l.next.Sub(now))
-		defer t.Stop()
-		select {
-		case <-ctx.Done():
-		case <-t.C:
-		}
-	}
-	l.next = time.Now().Add(l.interval)
 }

@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 
@@ -89,10 +90,15 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 		if cfg.ToYear != 0 && item.Year > cfg.ToYear {
 			continue
 		}
-		if err := c.importAct(ctx, st, item); err != nil {
+		ok, err := c.importAct(ctx, st, item)
+		if err != nil {
+			// Store/index failures are fatal: they indicate a broken sink,
+			// not a quirk of one source page.
 			return total, fmt.Errorf("import %s/%d/%s: %w", item.Category, item.Year, item.Number, err)
 		}
-		total++
+		if ok {
+			total++
+		}
 	}
 	return total, nil
 }
@@ -113,36 +119,58 @@ func (c *client) actURL(item lenz.ListItem) string {
 	return fmt.Sprintf("%s/act/%s/%d/%s/latest/whole.xml", c.cfg.BaseURL, cat, item.Year, item.Number)
 }
 
-// importAct fetches one act's whole.xml and stores it.
-func (c *client) importAct(ctx context.Context, st *store.Store, item lenz.ListItem) error {
+// importAct fetches one act's whole.xml and stores it. It returns (true, nil)
+// when the act was stored, (false, nil) when the act was skipped because its
+// source page is missing or unparseable (a non-fatal source quirk), and
+// (false, err) only for fatal store/index failures.
+//
+// A single act whose whole.xml is missing (404), challenged, or malformed must
+// not abort an otherwise-healthy year range, so those are logged and skipped.
+// Context cancellation/timeout remains fatal.
+func (c *client) importAct(ctx context.Context, st *store.Store, item lenz.ListItem) (bool, error) {
 	b, err := c.fetch(ctx, c.actURL(item))
 	if err != nil {
-		return err
+		if ctx.Err() != nil {
+			return false, err // cancellation/timeout is fatal
+		}
+		log.Printf("nz import: skipping %s/%d/%s: fetch: %v", item.Category, item.Year, item.Number, err)
+		return false, nil
 	}
 	whole, err := lenz.ParseAct(b)
 	if err != nil {
-		return err
+		log.Printf("nz import: skipping %s/%d/%s: parse: %v", item.Category, item.Year, item.Number, err)
+		return false, nil
 	}
 	if !c.cfg.WithArticles {
 		whole.Body = lenz.Body{} // drop section text when not requested
 	}
 	act, err := lenz.ToAct(item, whole, c.cfg.Now)
 	if err != nil {
-		return err
+		log.Printf("nz import: skipping %s/%d/%s: map: %v", item.Category, item.Year, item.Number, err)
+		return false, nil
 	}
 	if err := st.AddAct(act); err != nil {
-		return err
+		return false, err
 	}
 	if c.idx != nil {
 		if err := c.idx.ReplaceAct(act); err != nil {
-			return fmt.Errorf("index act %s: %w", act.Number, err)
+			return false, fmt.Errorf("index act %s: %w", act.Number, err)
 		}
 	}
-	return nil
+	return true, nil
 }
 
 // fetch GETs url with the configured User-Agent, throttled and retried on
-// transient errors (429 / 5xx).
+// transient errors (202 / 429 / 5xx).
+//
+// legislation.govt.nz sits behind an AWS WAF that can answer with 202 and an
+// "x-amzn-waf-action: challenge" header instead of the requested resource. When
+// the WAF is in a soft/transient mode the challenge clears on a subsequent
+// request, so 202 is treated as retryable (bounded by maxRetries). A 202 that
+// persists past every retry is surfaced as an error and, per importAct, causes
+// that single act to be skipped rather than aborting the run. Note: a WAF
+// configured for a hard JS/CAPTCHA challenge cannot be satisfied by an honest
+// HTTP client and is out of scope here (no fingerprint spoofing / bypass).
 func (c *client) fetch(ctx context.Context, url string) ([]byte, error) {
 	var lastErr error
 	for attempt := 0; attempt <= maxRetries; attempt++ {
@@ -166,7 +194,7 @@ func (c *client) fetch(ctx context.Context, url string) ([]byte, error) {
 		switch {
 		case resp.StatusCode == http.StatusOK:
 			return body, nil
-		case resp.StatusCode == http.StatusTooManyRequests || resp.StatusCode >= 500:
+		case resp.StatusCode == http.StatusAccepted || resp.StatusCode == http.StatusTooManyRequests || resp.StatusCode >= 500:
 			lastErr = fmt.Errorf("fetch %s: status %d", url, resp.StatusCode)
 			if !sleepBackoff(ctx, attempt) {
 				return nil, lastErr

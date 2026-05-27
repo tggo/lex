@@ -1,6 +1,9 @@
 package importer
 
 import (
+	"archive/tar"
+	"bytes"
+	"compress/gzip"
 	"context"
 	"net/http"
 	"net/http/httptest"
@@ -15,46 +18,24 @@ import (
 
 const sampleCID = "LEGITEXT000006070721"
 
-// fixtureServer serves the legi package's committed XML fixtures at the sharded
-// LEGI paths, so the importer runs end-to-end without the network.
-func fixtureServer(t *testing.T) *httptest.Server {
-	t.Helper()
-	fxDir := filepath.Join("..", "legi", "testdata")
-	serve := func(file string) http.HandlerFunc {
-		return func(w http.ResponseWriter, r *http.Request) {
-			b, err := os.ReadFile(filepath.Join(fxDir, file))
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			_, _ = w.Write(b)
-		}
-	}
-	mux := http.NewServeMux()
-	mux.HandleFunc("/"+shardPath("TEXT", sampleCID), serve("texte_version.sample.xml"))
-	mux.HandleFunc("/"+shardPath("TEXTELR", sampleCID), serve("texte_struct.sample.xml"))
-	mux.HandleFunc("/"+shardPath("ARTI", "LEGIARTI000006419280"), serve("article_1.sample.xml"))
-	mux.HandleFunc("/"+shardPath("ARTI", "LEGIARTI000006419281"), serve("article_2.sample.xml"))
-	return httptest.NewServer(mux)
-}
+// fixtureTarball is the committed tiny .tar.gz: the legi package's real-shaped
+// XML fixtures arranged in the real DILA directory layout (a JORFTEXT… subtree
+// with texte/version, texte/struct and article/LEGI/ARTI files).
+const fixtureTarball = "testdata/legi_delta_sample.tar.gz"
 
-func baseCfg(t *testing.T, srv *httptest.Server) Config {
+func baseCfg(t *testing.T) Config {
+	t.Helper()
 	return Config{
-		BaseURL:    srv.URL,
-		OutDir:     filepath.Join(t.TempDir(), "graph"),
-		UA:         "lex-test",
-		Client:     srv.Client(),
-		Now:        time.Date(2026, 5, 27, 0, 0, 0, 0, time.UTC),
-		TextCIDs:   []string{sampleCID},
-		RatePerSec: 0,
+		DumpPath: fixtureTarball,
+		OutDir:   filepath.Join(t.TempDir(), "graph"),
+		UA:       "lex-test",
+		Now:      time.Date(2026, 5, 27, 0, 0, 0, 0, time.UTC),
+		TextCIDs: []string{sampleCID},
 	}
 }
 
 func TestRun_endToEnd(t *testing.T) {
-	srv := fixtureServer(t)
-	defer srv.Close()
-
-	cfg := baseCfg(t, srv)
+	cfg := baseCfg(t)
 	cfg.WithArticles = true
 
 	n, err := Run(context.Background(), cfg)
@@ -84,13 +65,13 @@ func TestRun_endToEnd(t *testing.T) {
 	if len(a.Expression.Articles) != 2 {
 		t.Errorf("articles = %d, want 2", len(a.Expression.Articles))
 	}
+	if a.Expression.Articles[0].Number != "1" {
+		t.Errorf("article[0].Number = %q, want 1 (struct order)", a.Expression.Articles[0].Number)
+	}
 }
 
 func TestRun_withoutArticles(t *testing.T) {
-	srv := fixtureServer(t)
-	defer srv.Close()
-
-	cfg := baseCfg(t, srv) // WithArticles defaults false
+	cfg := baseCfg(t) // WithArticles defaults false
 	if _, err := Run(context.Background(), cfg); err != nil {
 		t.Fatalf("Run: %v", err)
 	}
@@ -108,10 +89,22 @@ func TestRun_withoutArticles(t *testing.T) {
 	}
 }
 
+// TestRun_allTexts imports every text found in the tarball (no -cids filter).
+func TestRun_allTexts(t *testing.T) {
+	cfg := baseCfg(t)
+	cfg.TextCIDs = nil
+	cfg.WithArticles = true
+	n, err := Run(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+	if n != 1 {
+		t.Fatalf("imported %d acts, want 1 (all texts in fixture)", n)
+	}
+}
+
 func TestRun_defaultsClientAndNow(t *testing.T) {
-	srv := fixtureServer(t)
-	defer srv.Close()
-	cfg := baseCfg(t, srv)
+	cfg := baseCfg(t)
 	cfg.Client = nil
 	cfg.Now = time.Time{}
 	if _, err := Run(context.Background(), cfg); err != nil {
@@ -119,59 +112,212 @@ func TestRun_defaultsClientAndNow(t *testing.T) {
 	}
 }
 
-func TestRun_versionFetchError(t *testing.T) {
+func TestRun_cidNotInTarball(t *testing.T) {
+	cfg := baseCfg(t)
+	cfg.TextCIDs = []string{"LEGITEXT999999999999"}
+	if _, err := Run(context.Background(), cfg); err == nil {
+		t.Error("expected error for CID absent from tarball")
+	}
+}
+
+func TestRun_noSource(t *testing.T) {
+	cfg := baseCfg(t)
+	cfg.DumpPath = ""
+	if _, err := Run(context.Background(), cfg); err == nil {
+		t.Error("expected error when no dump source configured")
+	}
+}
+
+func TestRun_missingDumpFile(t *testing.T) {
+	cfg := baseCfg(t)
+	cfg.DumpPath = filepath.Join(t.TempDir(), "nope.tar.gz")
+	if _, err := Run(context.Background(), cfg); err == nil {
+		t.Error("expected error when dump file missing")
+	}
+}
+
+func TestRun_notGzip(t *testing.T) {
+	bad := filepath.Join(t.TempDir(), "bad.tar.gz")
+	if err := os.WriteFile(bad, []byte("not gzip"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	cfg := baseCfg(t)
+	cfg.DumpPath = bad
+	if _, err := Run(context.Background(), cfg); err == nil {
+		t.Error("expected error for non-gzip dump")
+	}
+}
+
+// TestRun_downloadFromURL drives the HTTP download path by serving the
+// committed fixture tarball over httptest.
+func TestRun_downloadFromURL(t *testing.T) {
+	body, err := os.ReadFile(fixtureTarball)
+	if err != nil {
+		t.Fatal(err)
+	}
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write(body)
+	}))
+	defer srv.Close()
+
+	cfg := baseCfg(t)
+	cfg.DumpPath = ""
+	cfg.DumpURL = srv.URL + "/LEGI_20240115-000000.tar.gz"
+	cfg.Client = srv.Client()
+	cfg.WithArticles = true
+
+	n, err := Run(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("Run from URL: %v", err)
+	}
+	if n != 1 {
+		t.Fatalf("imported %d acts, want 1", n)
+	}
+}
+
+func TestRun_downloadNotFound(t *testing.T) {
 	srv := httptest.NewServer(http.NotFoundHandler())
 	defer srv.Close()
-	cfg := baseCfg(t, srv)
+	cfg := baseCfg(t)
+	cfg.DumpPath = ""
+	cfg.DumpURL = srv.URL + "/missing.tar.gz"
+	cfg.Client = srv.Client()
 	if _, err := Run(context.Background(), cfg); err == nil {
-		t.Error("expected error when text fetch 404s")
+		t.Error("expected error for 404 download")
 	}
 }
 
-func TestRun_structFetchError(t *testing.T) {
-	fxDir := filepath.Join("..", "legi", "testdata")
-	mux := http.NewServeMux()
-	mux.HandleFunc("/"+shardPath("TEXT", sampleCID), func(w http.ResponseWriter, r *http.Request) {
-		b, _ := os.ReadFile(filepath.Join(fxDir, "texte_version.sample.xml"))
-		_, _ = w.Write(b)
+// TestIndexTar_orphanArticles verifies that a JORFTEXT subtree with only
+// article files (no version) is dropped from the index.
+func TestIndexTar_orphanArticles(t *testing.T) {
+	var buf bytes.Buffer
+	gz := gzip.NewWriter(&buf)
+	tw := tar.NewWriter(gz)
+	write := func(name, content string) {
+		hdr := &tar.Header{Name: name, Mode: 0o644, Size: int64(len(content)), Typeflag: tar.TypeReg}
+		if err := tw.WriteHeader(hdr); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tw.Write([]byte(content)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write("x/JORFTEXT000000000002/article/LEGI/ARTI/00/LEGIARTI000000000009.xml", "<ARTICLE/>")
+	write("README.txt", "ignored")                  // non-xml ignored
+	write("loose/LEGITEXT000000000003.xml", "<x/>") // no JORFTEXT segment → ignored
+	if err := tw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := gz.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	idx, err := indexTar(&buf)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(idx.byCID) != 0 {
+		t.Errorf("index has %d entries, want 0 (orphan articles dropped)", len(idx.byCID))
+	}
+}
+
+// makeTar builds an in-memory gzip tarball from name→content pairs.
+func makeTar(t *testing.T, files map[string]string) string {
+	t.Helper()
+	p := filepath.Join(t.TempDir(), "t.tar.gz")
+	f, err := os.Create(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	gz := gzip.NewWriter(f)
+	tw := tar.NewWriter(gz)
+	for name, content := range files {
+		hdr := &tar.Header{Name: name, Mode: 0o644, Size: int64(len(content)), Typeflag: tar.TypeReg}
+		if err := tw.WriteHeader(hdr); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tw.Write([]byte(content)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := tw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := gz.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return p
+}
+
+// TestRun_structOnlyNoVersion: a JORFTEXT with only a struct file has its CID
+// keyed from the struct, but buildAct must error (no TEXTE_VERSION).
+func TestRun_structOnlyNoVersion(t *testing.T) {
+	base := "x/JORFTEXT000000000005"
+	tar := makeTar(t, map[string]string{
+		base + "/texte/struct/LEGITEXT000000000005.xml": "<TEXTELR/>",
 	})
-	// TEXTELR not registered → 404.
-	srv := httptest.NewServer(mux)
+	cfg := baseCfg(t)
+	cfg.DumpPath = tar
+	cfg.TextCIDs = []string{"LEGITEXT000000000005"}
+	if _, err := Run(context.Background(), cfg); err == nil {
+		t.Error("expected error: struct present but no version")
+	}
+}
+
+func TestRun_malformedVersion(t *testing.T) {
+	base := "x/JORFTEXT000000000006"
+	tar := makeTar(t, map[string]string{
+		base + "/texte/version/LEGITEXT000000000006.xml": "<TEXTE_VERSION><META",
+	})
+	cfg := baseCfg(t)
+	cfg.DumpPath = tar
+	cfg.TextCIDs = []string{"LEGITEXT000000000006"}
+	if _, err := Run(context.Background(), cfg); err == nil {
+		t.Error("expected parse error for malformed version XML")
+	}
+}
+
+// TestDownload_retryThenSuccess exercises the 503-retry path in download.
+func TestDownload_retryThenSuccess(t *testing.T) {
+	body, err := os.ReadFile(fixtureTarball)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var calls int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		if calls == 1 {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		_, _ = w.Write(body)
+	}))
 	defer srv.Close()
-	cfg := baseCfg(t, srv)
-	if _, err := Run(context.Background(), cfg); err == nil {
-		t.Error("expected struct fetch error")
+
+	cfg := baseCfg(t)
+	cfg.DumpPath = ""
+	cfg.DumpURL = srv.URL + "/d.tar.gz"
+	cfg.Client = srv.Client()
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("Run after retry: %v", err)
+	}
+	if calls < 2 {
+		t.Errorf("calls = %d, want a retry", calls)
 	}
 }
 
-func TestRun_articleFetchError(t *testing.T) {
-	fxDir := filepath.Join("..", "legi", "testdata")
-	mux := http.NewServeMux()
-	mux.HandleFunc("/"+shardPath("TEXT", sampleCID), func(w http.ResponseWriter, r *http.Request) {
-		b, _ := os.ReadFile(filepath.Join(fxDir, "texte_version.sample.xml"))
-		_, _ = w.Write(b)
-	})
-	mux.HandleFunc("/"+shardPath("TEXTELR", sampleCID), func(w http.ResponseWriter, r *http.Request) {
-		b, _ := os.ReadFile(filepath.Join(fxDir, "texte_struct.sample.xml"))
-		_, _ = w.Write(b)
-	})
-	// ARTI paths not registered → 404.
-	srv := httptest.NewServer(mux)
+func TestDownload_contextCancel(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusServiceUnavailable) // always transient → forces backoff
+	}))
 	defer srv.Close()
-	cfg := baseCfg(t, srv)
-	cfg.WithArticles = true
-	if _, err := Run(context.Background(), cfg); err == nil {
-		t.Error("expected article fetch error")
-	}
-}
-
-func TestShardPath(t *testing.T) {
-	got := shardPath("TEXT", sampleCID)
-	want := "TEXT/00/00/06/07/07/LEGITEXT000006070721.xml"
-	if got != want {
-		t.Errorf("shardPath = %q, want %q", got, want)
-	}
-	if p := shardPath("ARTI", "SHORT"); p != "ARTI/SHORT.xml" {
-		t.Errorf("short id shardPath = %q", p)
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() { time.Sleep(20 * time.Millisecond); cancel() }()
+	cfg := baseCfg(t)
+	cfg.DumpPath = ""
+	cfg.DumpURL = srv.URL + "/d.tar.gz"
+	cfg.Client = srv.Client()
+	if _, err := Run(ctx, cfg); err == nil {
+		t.Error("expected error when context cancelled during backoff")
 	}
 }

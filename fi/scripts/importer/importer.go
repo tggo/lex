@@ -10,6 +10,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 
@@ -93,8 +94,10 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 			break
 		}
 		for _, d := range docs {
-			n, err := c.store(st, d)
+			n, err := c.store(ctx, st, d)
 			if err != nil {
+				// Store/index failures are fatal: they indicate a broken
+				// sink, not a quirk of one source document.
 				return total, err
 			}
 			total += n
@@ -120,13 +123,23 @@ type client struct {
 // store maps one parsed document into a schema.Act and writes it. The list
 // envelope carries only metadata (no body), so when articles are requested the
 // full expression document is fetched separately. Returns 1 on a successful
-// write, 0 when the document is skipped (e.g. no version date).
-func (c *client) store(st *store.Store, d *akn.Document) (int, error) {
+// write, 0 when the document is skipped.
+//
+// Per-act source quirks are non-fatal: the Finlex collection lists some
+// statutes whose full-expression document is missing (HTTP 404) or
+// unparseable, and these must not abort an otherwise-healthy run, so they are
+// logged and skipped. Context cancellation/timeout and store/index write
+// failures stay fatal (returned as an error).
+func (c *client) store(ctx context.Context, st *store.Store, d *akn.Document) (int, error) {
 	doc := d
 	if c.cfg.WithArticles {
-		full, err := c.fetchFull(context.Background(), d)
+		full, err := c.fetchFull(ctx, d)
 		if err != nil {
-			return 0, err
+			if ctx.Err() != nil {
+				return 0, err // cancellation/timeout is fatal
+			}
+			log.Printf("fi import: skipping act: fetch full expression: %v", err)
+			return 0, nil
 		}
 		doc = full
 	}
@@ -134,6 +147,7 @@ func (c *client) store(st *store.Store, d *akn.Document) (int, error) {
 	if err != nil {
 		// A missing version date is a contract violation: drop the record
 		// rather than guess (see docs/ontology.md invariant 1).
+		log.Printf("fi import: skipping act: map to act: %v", err)
 		return 0, nil
 	}
 	if err := st.AddAct(act); err != nil {

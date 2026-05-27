@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -75,19 +76,32 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 
 	for _, r := range recs {
+		// Per-act article/revision sub-resource failures are non-fatal: the
+		// e-Gov API sometimes 404s an act's law_data/law_revisions (e.g. a
+		// revision_id that no longer resolves). Log and store the act without
+		// that sub-resource rather than aborting the whole run. Context
+		// cancellation stays fatal; store/index writes below stay fatal.
 		if cfg.WithArticles && r.RevisionID != "" {
 			arts, err := fetchArticles(ctx, cfg, r.RevisionID)
 			if err != nil {
-				return 0, fmt.Errorf("articles for %s: %w", r.Act.Number, err)
+				if ctx.Err() != nil {
+					return 0, err // cancellation/timeout is fatal
+				}
+				log.Printf("jp import: skipping articles for %s: %v", r.Act.Number, err)
+			} else {
+				r.Act.Expression.Articles = arts
 			}
-			r.Act.Expression.Articles = arts
 		}
 		if cfg.WithRevisions {
 			revs, err := fetchRevisions(ctx, cfg, r.Act, index)
 			if err != nil {
-				return 0, fmt.Errorf("revisions for %s: %w", r.Act.Number, err)
+				if ctx.Err() != nil {
+					return 0, err // cancellation/timeout is fatal
+				}
+				log.Printf("jp import: skipping revisions for %s: %v", r.Act.Number, err)
+			} else {
+				r.Act.Revisions = revs
 			}
-			r.Act.Revisions = revs
 		}
 		if err := st.AddAct(r.Act); err != nil {
 			return 0, fmt.Errorf("add act %s: %w", r.Act.Number, err)

@@ -146,7 +146,9 @@ func TestRun_listFetchError(t *testing.T) {
 	}
 }
 
-func TestRun_fullFetchError(t *testing.T) {
+// A full-expression document that 404s is a per-act source quirk: the act is
+// logged and skipped, not fatal. Mirrors ie's TestImportYear_actFetchSkipped.
+func TestRun_fullFetchSkipped(t *testing.T) {
 	fxDir := filepath.Join("..", "akn", "testdata")
 	base := "/finlex/avoindata/v1/" + collection
 	mux := http.NewServeMux()
@@ -160,7 +162,49 @@ func TestRun_fullFetchError(t *testing.T) {
 
 	cfg := baseCfg(t, srv)
 	cfg.WithArticles = true
-	if _, err := Run(context.Background(), cfg); err == nil {
-		t.Error("expected error when full-expression fetch 404s")
+	n, err := Run(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("Run should tolerate a 404 full-expression fetch, got: %v", err)
+	}
+	if n != 0 {
+		t.Errorf("imported %d acts, want 0 (every full-expression fetch 404s)", n)
+	}
+}
+
+// A mix of one healthy act and one 404 act: the healthy act is stored and the
+// 404 act is skipped, so the run completes with a partial count.
+func TestRun_partialFullFetchSkipped(t *testing.T) {
+	fxDir := filepath.Join("..", "akn", "testdata")
+	base := "/finlex/avoindata/v1/" + collection
+	serve := func(file string) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			b, _ := os.ReadFile(filepath.Join(fxDir, file))
+			w.Header().Set("Content-Type", "application/xml")
+			_, _ = w.Write(b)
+		}
+	}
+	mux := http.NewServeMux()
+	mux.HandleFunc(base, serve("list.sample.xml"))
+	mux.HandleFunc(base+"/2019/469/fin@", serve("act.sample.xml"))
+	// /2025/51/fin@ intentionally left to 404 (NotFound default).
+	srv := httptest.NewServer(mux)
+	defer srv.Close()
+
+	cfg := baseCfg(t, srv)
+	cfg.WithArticles = true
+	n, err := Run(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("Run should skip the 404 act and continue, got: %v", err)
+	}
+	if n != 1 {
+		t.Errorf("imported %d acts, want 1 (one healthy, one 404)", n)
+	}
+	st, err := store.Open(cfg.OutDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer st.Close()
+	if _, err := st.GetAct(schema.ResourceURI("fi", "laki", 2019, "2019/469")); err != nil {
+		t.Errorf("healthy act not stored: %v", err)
 	}
 }

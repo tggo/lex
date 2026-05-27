@@ -22,11 +22,8 @@ var update = flag.Bool("update", false, "update golden files")
 // client would and assert the answers against a golden file. No binary, no
 // network.
 func TestMCPQueries_golden(t *testing.T) {
-	srv := fixtureServer(t)
-	defer srv.Close()
-
 	root := t.TempDir()
-	cfg := baseCfg(t, srv)
+	cfg := baseCfg(t)
 	cfg.OutDir = filepath.Join(root, "graph")
 	cfg.IndexPath = filepath.Join(root, "index.fts")
 	cfg.Lang = "fr"

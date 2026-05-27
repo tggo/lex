@@ -178,6 +178,49 @@ func TestRun_withRevisions(t *testing.T) {
 	}
 }
 
+// TestRun_articleFailureNonFatal asserts that a 404 on one act's law_data
+// (articles) sub-resource is logged and skipped — the act is still stored
+// without articles, and the run completes with every act imported.
+func TestRun_articleFailureNonFatal(t *testing.T) {
+	srv := fakeEgov(t)
+	// Override /law_data/ to 404 only the Civil Code's revision, like the live
+	// e-Gov bug; other acts' law_data still succeeds.
+	srv.Config.Handler.(*http.ServeMux).HandleFunc("/law_data/REV1", func(w http.ResponseWriter, r *http.Request) {
+		http.NotFound(w, r)
+	})
+	defer srv.Close()
+
+	dir := filepath.Join(t.TempDir(), "graph")
+	n, err := Run(context.Background(), Config{
+		BaseURL: srv.URL, OutDir: dir, UA: "lex-test", Now: fixedTime,
+		WithArticles: true, WithRevisions: true,
+	})
+	if err != nil {
+		t.Fatalf("Run must not be fatal on a per-act 404: %v", err)
+	}
+	if n != 3 {
+		t.Fatalf("imported %d acts, want 3 (404 act still stored)", n)
+	}
+
+	st, err := store.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer st.Close()
+
+	// The Civil Code is stored, but with no articles (its law_data 404'd).
+	got, err := st.GetAct("https://lex.dev/eli/jp/act/1896/129AC0000000089")
+	if err != nil {
+		t.Fatalf("GetAct: %v", err)
+	}
+	if got.Expression.Title != "民法" {
+		t.Errorf("title = %q, want 民法", got.Expression.Title)
+	}
+	if len(got.Expression.Articles) != 0 {
+		t.Errorf("articles = %+v, want none (law_data 404'd)", got.Expression.Articles)
+	}
+}
+
 func TestRun_buildsPersistentIndex(t *testing.T) {
 	srv := fakeEgov(t)
 	defer srv.Close()

@@ -78,14 +78,42 @@ func TestFetch_contextCancelDuringBackoff(t *testing.T) {
 	}
 }
 
+func TestFetch_202Retryable(t *testing.T) {
+	var calls int32
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if atomic.AddInt32(&calls, 1) == 1 {
+			w.Header().Set("x-amzn-waf-action", "challenge")
+			w.WriteHeader(http.StatusAccepted) // WAF soft challenge: retryable
+			return
+		}
+		_, _ = w.Write([]byte("ok"))
+	}))
+	defer srv.Close()
+	b, err := testClient(t, srv).fetch(context.Background(), srv.URL)
+	if err != nil {
+		t.Fatalf("fetch: %v", err)
+	}
+	if string(b) != "ok" {
+		t.Errorf("body = %q, want ok", b)
+	}
+	if calls < 2 {
+		t.Errorf("calls = %d, want a retry after 202", calls)
+	}
+}
+
 func TestImportAct_parseError(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("<not-valid-xml"))
 	}))
 	defer srv.Close()
 	c := testClient(t, srv)
-	if err := c.importAct(context.Background(), nil, lenz.ListItem{Category: "public", Year: 2020, Number: "0038"}); err == nil {
-		t.Error("expected parse error on malformed XML")
+	// A malformed source page is a non-fatal quirk: skipped, not an error.
+	ok, err := c.importAct(context.Background(), nil, lenz.ListItem{Category: "public", Year: 2020, Number: "0038"})
+	if err != nil {
+		t.Fatalf("importAct: unexpected error: %v", err)
+	}
+	if ok {
+		t.Error("expected act to be skipped on malformed XML")
 	}
 }
 
@@ -93,8 +121,26 @@ func TestImportAct_fetchError(t *testing.T) {
 	srv := httptest.NewServer(http.NotFoundHandler())
 	defer srv.Close()
 	c := testClient(t, srv)
-	if err := c.importAct(context.Background(), nil, lenz.ListItem{Category: "public", Year: 2020, Number: "0038"}); err == nil {
-		t.Error("expected fetch error on 404")
+	// A missing source page is a non-fatal quirk: skipped, not an error.
+	ok, err := c.importAct(context.Background(), nil, lenz.ListItem{Category: "public", Year: 2020, Number: "0038"})
+	if err != nil {
+		t.Fatalf("importAct: unexpected error: %v", err)
+	}
+	if ok {
+		t.Error("expected act to be skipped on 404")
+	}
+}
+
+func TestImportAct_contextCancelFatal(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusServiceUnavailable) // always transient → forces backoff
+	}))
+	defer srv.Close()
+	c := testClient(t, srv)
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // cancelled before the call
+	if _, err := c.importAct(ctx, nil, lenz.ListItem{Category: "public", Year: 2020, Number: "0038"}); err == nil {
+		t.Error("expected fatal error when context cancelled")
 	}
 }
 
