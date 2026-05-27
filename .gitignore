@@ -1,0 +1,24 @@
+# Built legislation databases / scraped artifacts — never committed.
+# Distributed via local build or GitHub Releases (see ADR-0006).
+*/data/
+!*/data/.gitkeep
+
+# Build output
+/lex
+/dist/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.ttl
+*.nq
+
+# Go
+/bin/
+*.test
+*.out
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
