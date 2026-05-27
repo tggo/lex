@@ -46,6 +46,7 @@ internal/schema/     Go types + ontology vocab (namespaces, predicates, URIs)
 internal/store/      goRDFlib + SQLite wiring, FTS5 index, queries
 internal/mcp/        MCP protocol handlers / tool definitions
 ua/                  Ukraine: README, scripts/ (scrapers), data/ (gitignored)
+pl/                  Poland: README, scripts/ (Sejm ELI API), data/ (gitignored)
 ```
 
 ## MCP tools (target surface)

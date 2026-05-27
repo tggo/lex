@@ -1,0 +1,41 @@
+{
+  "count": 2,
+  "items": [
+    {
+      "address": "WDU20230002777",
+      "announcementDate": "2023-12-21",
+      "changeDate": "2024-03-14T12:55:38",
+      "displayAddress": "Dz.U. 2023 poz. 2777",
+      "pos": 2777,
+      "promulgation": "2023-12-27",
+      "publisher": "DU",
+      "status": "wygaśnięcie aktu",
+      "textHTML": true,
+      "textPDF": true,
+      "title": "Ustawa z dnia 21 grudnia 2023 r. o zmianie ustawy o szczególnych rozwiązaniach służących realizacji ustawy budżetowej na rok 2023",
+      "type": "Ustawa",
+      "volume": 0,
+      "year": 2023,
+      "ELI": "DU/2023/2777"
+    },
+    {
+      "address": "WDU20230002824",
+      "announcementDate": "2023-12-22",
+      "changeDate": "2024-03-14T12:50:03",
+      "displayAddress": "Dz.U. 2023 poz. 2824",
+      "pos": 2824,
+      "promulgation": "2023-12-31",
+      "publisher": "DU",
+      "status": "obowiązujący",
+      "textHTML": true,
+      "textPDF": true,
+      "title": "Rozporządzenie Ministra Finansów z dnia 22 grudnia 2023 r. w sprawie udzielania przez Bank Gospodarstwa Krajowego pomocy publicznej w formie gwarancji spłaty kredytów w zakresie Planu Strategicznego dla Wspólnej Polityki Rolnej na lata 2023-2027",
+      "type": "Rozporządzenie",
+      "volume": 0,
+      "year": 2023,
+      "ELI": "DU/2023/2824"
+    }
+  ],
+  "offset": 0,
+  "totalCount": 2
+}

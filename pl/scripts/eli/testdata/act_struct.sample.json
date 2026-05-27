@@ -1,0 +1,12 @@
+[
+
+            { 
+                "id" : "part_1",
+                "title" : "Treść ustawy",
+                "type": "part",
+                "symbol" : "part_1",
+                "children" : [
+                    {"id": "arti_1","symbol": "arti_1","type": "arti","name": "1","title": "Art. 1."},{"id": "arti_2","symbol": "arti_2","type": "arti","name": "2","title": "Art. 2."}
+                ]
+            }
+        ]
