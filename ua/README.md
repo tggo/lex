@@ -81,10 +81,9 @@ source URL).
 ✅ Article parsing — `-articles` fetches each act's HTML body
 (`text/d<dokid>.htm`) and splits `Стаття N` headings into `lex:Article`.
 
-🚧 **Relations deferred** ([ADR-0012](../docs/adr/0012-ua-link-resolution-deferred.md)):
-the `links` field resolves to only 3/2941 targets within the primary set (the
-rest point outside it) and its type codes are undocumented — needs a global
-`dokid→nreg` map + the code legend before `eli:amends`/`eli:cites` edges can be
-emitted honestly.
+✅ **Relations** ([ADR-0013](../docs/adr/0013-ua-relations-implemented.md)) —
+`-relations` fetches the global `doc.txt` index + `vidnosh`/`typ` legends and
+resolves each act's `links` into `eli:amends`/`eli:repeals`/`eli:cites` edges.
+Verified live: 399 cites, 122 amends, 68 repeals across 2941 acts.
 
-🚧 Next: the MCP server (`cmd/lex`) + search index.
+✅ **MCP server** (`cmd/lex`) + persistent FTS index — see root README.

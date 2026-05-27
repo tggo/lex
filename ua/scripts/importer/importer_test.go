@@ -26,6 +26,7 @@ func fixtureServer(t *testing.T) *httptest.Server {
 		"/laws/data/csv/perv1.txt": "perv1.sample.txt",
 		"/laws/data/csv/perv0.txt": "perv0.sample.txt",
 		"/laws/data/csv/perv2.txt": "perv2.sample.txt", // absent → empty list
+		"/laws/data/csv/doc.txt":   "doc.sample.txt",   // global dokid→nreg index
 	}
 	mux := http.NewServeMux()
 	for route, file := range routes {
@@ -167,6 +168,55 @@ func TestRun_buildsPersistentIndex(t *testing.T) {
 	n2, _ := idx2.Count()
 	if n1 != n2 {
 		t.Errorf("index doc count changed on re-import: %d -> %d", n1, n2)
+	}
+}
+
+func TestRun_withRelations(t *testing.T) {
+	srv := fixtureServer(t)
+	defer srv.Close()
+
+	dir := filepath.Join(t.TempDir(), "graph")
+	cfg := Config{
+		BaseURL:       srv.URL,
+		OutDir:        dir,
+		UA:            "lex-test",
+		Client:        srv.Client(),
+		Now:           time.Date(2026, 5, 27, 0, 0, 0, 0, time.UTC),
+		WithRelations: true,
+	}
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+
+	st, err := store.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer st.Close()
+
+	// 4840-20 amends/refers/partially-repeals target dokid 1468 (Civil Code).
+	a, err := st.GetAct(schema.ResourceURI("ua", "zakon", 2026, "4840-20"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	kodeks := schema.ResourceURI("ua", "kodeks", 2003, "435-15")
+	if len(a.Expression.Amends) != 1 || a.Expression.Amends[0] != kodeks {
+		t.Errorf("amends = %v, want [%s]", a.Expression.Amends, kodeks)
+	}
+	if len(a.Expression.Repeals) != 1 {
+		t.Errorf("repeals = %v, want one", a.Expression.Repeals)
+	}
+
+	// 4868-20 ratifies target 597 → a generic citation, no amend.
+	b, err := st.GetAct(schema.ResourceURI("ua", "zakon", 2026, "4868-20"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(b.Expression.Amends) != 0 {
+		t.Errorf("4868 amends = %v, want none", b.Expression.Amends)
+	}
+	if len(b.Expression.Cites) != 1 {
+		t.Errorf("4868 cites = %v, want one", b.Expression.Cites)
 	}
 }
 

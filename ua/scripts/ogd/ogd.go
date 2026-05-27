@@ -156,6 +156,7 @@ type Record struct {
 	Act      *schema.Act
 	Dokid    int    // source document id
 	TextFile string // HTML body filename, e.g. "d553665.htm" ("" if none)
+	Links    string // raw card `links` field, for relation resolution
 }
 
 // BuildRecords parses the cards and texts datasets, joins them by document id,
@@ -185,7 +186,7 @@ func BuildRecords(cardsJSON, textsJSON []byte, si StatusIndex, retrievedAt time.
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, Record{Act: act, Dokid: c.Dokid, TextFile: file})
+		out = append(out, Record{Act: act, Dokid: c.Dokid, TextFile: file, Links: c.Links})
 	}
 	return out, nil
 }

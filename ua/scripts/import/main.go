@@ -19,6 +19,7 @@ func main() {
 	flag.StringVar(&cfg.BaseURL, "base", importer.DefaultBase, "OGD base URL (…/ogd/zak)")
 	flag.StringVar(&cfg.UA, "ua", importer.DefaultUA, "HTTP User-Agent")
 	flag.BoolVar(&cfg.WithArticles, "articles", false, "also fetch each act's HTML body and parse articles (one request per act)")
+	flag.BoolVar(&cfg.WithRelations, "relations", false, "fetch the global doc index (~48MB) and resolve amend/repeal/cite edges")
 	flag.Parse()
 
 	cfg.OutDir = filepath.Join(*root, "graph")

@@ -5,11 +5,14 @@
 package importer
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
+
+	"golang.org/x/text/encoding/charmap"
 
 	"github.com/tggo/lex/internal/schema"
 	"github.com/tggo/lex/internal/search"
@@ -25,13 +28,14 @@ const (
 
 // Config controls an import run.
 type Config struct {
-	BaseURL      string       // OGD base, e.g. https://data.rada.gov.ua/ogd/zak
-	OutDir       string       // Badger store directory
-	IndexPath    string       // FTS index file; if empty, no index is built
-	UA           string       // HTTP User-Agent
-	Client       *http.Client // defaults to http.DefaultClient if nil
-	Now          time.Time    // retrieval timestamp recorded on each act
-	WithArticles bool         // also fetch each act's HTML body and parse articles
+	BaseURL       string       // OGD base, e.g. https://data.rada.gov.ua/ogd/zak
+	OutDir        string       // Badger store directory
+	IndexPath     string       // FTS index file; if empty, no index is built
+	UA            string       // HTTP User-Agent
+	Client        *http.Client // defaults to http.DefaultClient if nil
+	Now           time.Time    // retrieval timestamp recorded on each act
+	WithArticles  bool         // also fetch each act's HTML body and parse articles
+	WithRelations bool         // fetch the global doc index and resolve amend/cite edges
 }
 
 // Run fetches the datasets, builds acts, and writes them to the store. It
@@ -89,6 +93,15 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 		defer idx.Close()
 	}
 
+	// Optional relation resolution: fetch the global document index once and
+	// turn each act's `links` into amend/repeal/cite edges.
+	var docIdx map[int]ogd.DocRef
+	if cfg.WithRelations {
+		if docIdx, err = fetchDocIndex(ctx, cfg); err != nil {
+			return 0, err
+		}
+	}
+
 	for _, r := range recs {
 		if cfg.WithArticles && r.TextFile != "" {
 			arts, err := fetchArticles(ctx, cfg, r.TextFile)
@@ -96,6 +109,10 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 				return 0, fmt.Errorf("articles for %s: %w", r.Act.Number, err)
 			}
 			r.Act.Expression.Articles = arts
+		}
+		if docIdx != nil {
+			r.Act.Expression.Amends, r.Act.Expression.Repeals, r.Act.Expression.Cites =
+				ogd.ResolveRelations(r.Links, docIdx)
 		}
 		if err := st.AddAct(r.Act); err != nil {
 			return 0, fmt.Errorf("add act %s: %w", r.Act.Number, err)
@@ -116,6 +133,20 @@ func fetchArticles(ctx context.Context, cfg Config, file string) ([]schema.Artic
 		return nil, err
 	}
 	return ogd.ParseArticles(b)
+}
+
+// fetchDocIndex downloads the global document-cards file (CP1251-encoded) and
+// parses it into a dokid → DocRef map used for relation resolution.
+func fetchDocIndex(ctx context.Context, cfg Config) (map[int]ogd.DocRef, error) {
+	b, err := fetch(ctx, cfg, "/laws/data/csv/doc.txt")
+	if err != nil {
+		return nil, err
+	}
+	utf8, err := io.ReadAll(charmap.Windows1251.NewDecoder().Reader(bytes.NewReader(b)))
+	if err != nil {
+		return nil, fmt.Errorf("decode doc index: %w", err)
+	}
+	return ogd.ParseDocIndex(bytes.NewReader(utf8))
 }
 
 // fetch GETs baseURL+path with the configured User-Agent.

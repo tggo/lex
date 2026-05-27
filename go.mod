@@ -6,6 +6,7 @@ require (
 	github.com/modelcontextprotocol/go-sdk v1.6.1
 	github.com/tggo/goRDFlib v0.1.9
 	golang.org/x/net v0.50.0
+	golang.org/x/text v0.34.0
 	modernc.org/sqlite v1.46.1
 )
 
@@ -33,7 +34,6 @@ require (
 	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
 	golang.org/x/mod v0.33.0 // indirect
 	golang.org/x/oauth2 v0.35.0 // indirect
-	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
 	google.golang.org/protobuf v1.36.7 // indirect
 	modernc.org/libc v1.67.6 // indirect
