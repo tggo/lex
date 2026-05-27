@@ -56,6 +56,14 @@ as `lex:sourceURL`.
 | `MinisterialOrdinance` | `furei` | 〜施行規則 |
 | `Rule` | `kisoku` | agency 規則 |
 
+## Amendment relations
+
+Each revision's `amendment_law_id` is the `law_id` of the law that produced it.
+Since it lives in the same id space as the acts we ingest, the importer resolves
+it against the full law list and emits an `eli:amended_by` edge when the target
+is in the set (unresolvable targets are dropped, not asserted). See ADR-0013.
+Repeals are recorded as in-force status only for now.
+
 ## Article structure (条/項/号)
 
 Japanese acts nest 条 (article) › 項 (paragraph) › 号 (item). v1 maps each **条**

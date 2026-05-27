@@ -11,7 +11,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/tggo/lex/internal/schema"
 	"github.com/tggo/lex/internal/store"
+	"github.com/tggo/lex/jp/scripts/egov"
 )
 
 var fixedTime = time.Date(2026, 5, 27, 0, 0, 0, 0, time.UTC)
@@ -24,6 +26,7 @@ func fakeEgov(t *testing.T) *httptest.Server {
 	  {"law_info":{"law_type":"Act","law_id":"129AC0000000089","promulgation_date":"1896-04-27"},
 	   "revision_info":{"law_revision_id":"REV1","law_title":"民法",
 	     "amendment_enforcement_date":"2026-04-01","repeal_status":"None",
+	     "amendment_law_id":"105DF0000000337",
 	     "current_revision_status":"CurrentEnforced"}}]}`
 	page1 := `{"count":1,"next_offset":2,"laws":[
 	  {"law_info":{"law_type":"CabinetOrder","law_id":"105DF0000000337","promulgation_date":"1872-11-09"},
@@ -94,6 +97,38 @@ func TestRun_endToEnd(t *testing.T) {
 	}
 	if !strings.Contains(got.Expression.Articles[0].Text, "本文。") {
 		t.Errorf("article text = %q, want it to contain 本文。", got.Expression.Articles[0].Text)
+	}
+	// The Civil Code's amendment_law_id points at the CabinetOrder, which is in
+	// the listed set, so it must resolve to an eli:amended_by edge.
+	wantTarget := "https://lex.dev/eli/jp/cabinet-order/1872/105DF0000000337"
+	if len(got.Expression.AmendedBy) != 1 || got.Expression.AmendedBy[0] != wantTarget {
+		t.Errorf("amendedBy = %v, want [%s]", got.Expression.AmendedBy, wantTarget)
+	}
+}
+
+func TestResolveAmendments(t *testing.T) {
+	mk := func(lawID, slug string, year int, amendedBy string) egov.Record {
+		return egov.Record{
+			Act: &schema.Act{
+				Country: "jp", TypeSlug: slug, Year: year, Number: lawID, IDLocal: lawID,
+				Expression: &schema.Expression{},
+			},
+			AmendedByLawID: amendedBy,
+		}
+	}
+	a := mk("AAA", "act", 2000, "BBB") // amended by B (in set) -> resolves
+	b := mk("BBB", "act", 1990, "")    // the amending law
+	c := mk("CCC", "act", 2010, "ZZZ") // amended by Z (not in set) -> dropped
+	recs := []egov.Record{a, b, c}
+
+	resolveAmendments(recs)
+
+	want := "https://lex.dev/eli/jp/act/1990/BBB"
+	if len(recs[0].Act.Expression.AmendedBy) != 1 || recs[0].Act.Expression.AmendedBy[0] != want {
+		t.Errorf("A.AmendedBy = %v, want [%s]", recs[0].Act.Expression.AmendedBy, want)
+	}
+	if len(recs[2].Act.Expression.AmendedBy) != 0 {
+		t.Errorf("C.AmendedBy = %v, want empty (target not in set)", recs[2].Act.Expression.AmendedBy)
 	}
 }
 

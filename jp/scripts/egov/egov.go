@@ -42,13 +42,17 @@ type revisionInfo struct {
 	EnforcementDate       string `json:"amendment_enforcement_date"` // yyyy-mm-dd — the as-of date
 	RepealStatus          string `json:"repeal_status"`              // "None" or "Repeal"/...
 	CurrentRevisionStatus string `json:"current_revision_status"`    // e.g. "CurrentEnforced"
+	AmendmentLawID        string `json:"amendment_law_id"`           // law_id that produced this revision
 }
 
-// Record pairs a mapped Act with its e-Gov revision id, which the importer uses
-// to fetch the act's full text (GET /api/2/law_data/{law_revision_id}).
+// Record pairs a mapped Act with the e-Gov ids the importer needs for follow-up
+// passes: RevisionID to fetch the act's full text (GET /api/2/law_data/{id}),
+// and AmendedByLawID — the law_id that produced this revision — which the
+// importer resolves into an eli:amended_by edge once the full law list is known.
 type Record struct {
-	Act        *schema.Act
-	RevisionID string
+	Act            *schema.Act
+	RevisionID     string
+	AmendedByLawID string
 }
 
 // TypeSlug maps an e-Gov law_type to an ELI type_document slug. Known types use
@@ -152,7 +156,15 @@ func BuildRecords(lawsJSON []byte, retrievedAt time.Time) ([]Record, error) {
 	out := make([]Record, 0, len(resp.Laws))
 	for _, e := range resp.Laws {
 		if act, ok := toAct(e, retrievedAt); ok {
-			out = append(out, Record{Act: act, RevisionID: e.RevisionInfo.LawRevisionID})
+			amendedBy := e.RevisionInfo.AmendmentLawID
+			if amendedBy == e.LawInfo.LawID {
+				amendedBy = "" // a self-reference (initial enactment) is not an amendment
+			}
+			out = append(out, Record{
+				Act:            act,
+				RevisionID:     e.RevisionInfo.LawRevisionID,
+				AmendedByLawID: amendedBy,
+			})
 		}
 	}
 	return out, nil
