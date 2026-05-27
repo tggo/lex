@@ -1,0 +1,39 @@
+{
+ "head": {
+  "counts": {
+   "resultCount": 67
+  }
+ },
+ "results": [
+  {
+   "bill": {
+    "act": {
+     "actYear": "2015",
+     "actNo": "60",
+     "shortTitleEn": "Bankruptcy (Amendment) Act  2015",
+     "statutebookURI": "http://www.irishstatutebook.ie/eli/2015/act/60"
+    }
+   }
+  },
+  {
+   "bill": {
+    "act": {
+     "actYear": "2015",
+     "actNo": "48",
+     "shortTitleEn": "Appropriation Act  2015",
+     "statutebookURI": "http://www.irishstatutebook.ie/eli/2015/act/48"
+    }
+   }
+  },
+  {
+   "bill": {
+    "act": {
+     "actYear": "2015",
+     "actNo": "53",
+     "shortTitleEn": "Houses of the Oireachtas Commission (Amendment) Act  2015",
+     "statutebookURI": "http://www.irishstatutebook.ie/eli/2015/act/53"
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,427 @@
+<Legislation xmlns="http://www.legislation.gov.uk/namespaces/legislation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57" NumberOfProvisions="10" xsi:schemaLocation="http://www.legislation.gov.uk/namespaces/legislation http://www.legislation.gov.uk/schema/legislation.xsd" SchemaVersion="2.0" RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><ukm:Metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://purl.org/dc/terms/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:ukm="http://www.legislation.gov.uk/namespaces/metadata">
+					<dc:identifier>http://www.legislation.gov.uk/ukpga/2023/57</dc:identifier><dc:title>National Insurance Contributions (Reduction in Rates) Act 2023</dc:title><dc:publisher>Statute Law Database</dc:publisher><dc:modified>2024-03-28</dc:modified><dc:contributor>Expert Participation</dc:contributor><dct:valid>2023-12-18</dct:valid>
+					
+					<atom:link rel="self" href="http://www.legislation.gov.uk/ukpga/2023/57/data.xml" type="application/xml"/><atom:link rel="http://www.legislation.gov.uk/def/navigation/resources" href="http://www.legislation.gov.uk/ukpga/2023/57/resources" title="More Resources"/>
+					
+					<atom:link rel="http://www.legislation.gov.uk/def/navigation/notes" href="http://www.legislation.gov.uk/ukpga/2023/57/notes" title="Explanatory Notes"/><atom:link rel="http://www.legislation.gov.uk/def/navigation/notes/toc" href="http://www.legislation.gov.uk/ukpga/2023/57/notes/contents" title="Explanatory Notes Table of Contents"/>
+					
+					<atom:link rel="http://www.legislation.gov.uk/def/navigation/act" href="http://www.legislation.gov.uk/ukpga/2023/57" title="whole act"/><atom:link rel="http://www.legislation.gov.uk/def/navigation/introduction" href="http://www.legislation.gov.uk/ukpga/2023/57/introduction" title="introduction"/>
+					<atom:link rel="http://www.legislation.gov.uk/def/navigation/body" href="http://www.legislation.gov.uk/ukpga/2023/57/body" title="body"/>
+					<atom:link rel="http://www.legislation.gov.uk/def/navigation/schedules" href="http://www.legislation.gov.uk/ukpga/2023/57/schedules" title="schedules"/>
+					
+										
+					
+					
+					
+					<atom:link rel="alternate" type="application/rdf+xml" href="http://www.legislation.gov.uk/ukpga/2023/57/data.rdf" title="RDF/XML"/><atom:link rel="alternate" type="application/akn+xml" href="http://www.legislation.gov.uk/ukpga/2023/57/data.akn" title="AKN"/><atom:link rel="alternate" type="application/xhtml+xml" href="http://www.legislation.gov.uk/ukpga/2023/57/data.xht" title="HTML snippet"/><atom:link rel="alternate" type="text/html" href="http://www.legislation.gov.uk/ukpga/2023/57/data.htm" title="Website (XHTML) Default View"/><atom:link rel="alternate" type="text/csv" href="http://www.legislation.gov.uk/ukpga/2023/57/data.csv" title="CSV"/><atom:link rel="alternate" type="application/pdf" href="http://www.legislation.gov.uk/ukpga/2023/57/data.pdf" title="PDF"/>
+					<atom:link rel="alternate" type="application/akn+xhtml" href="http://www.legislation.gov.uk/ukpga/2023/57/data.html" title="HTML5 snippet"/>
+
+					<atom:link rel="alternate" href="http://www.legislation.gov.uk/ukpga/2023/57/pdfs/ukpga_20230057_en.pdf" type="application/pdf" title="Original PDF"/>
+					<atom:link rel="http://purl.org/dc/terms/tableOfContents" hreflang="en" href="http://www.legislation.gov.uk/ukpga/2023/57/contents" title="Table of Contents"/>
+					
+					<atom:link rel="http://purl.org/dc/terms/hasVersion" href="http://www.legislation.gov.uk/ukpga/2023/57/enacted" title="enacted"/><atom:link rel="http://purl.org/dc/terms/hasVersion" href="http://www.legislation.gov.uk/ukpga/2023/57/2023-12-18" title="2023-12-18"/>
+					
+					
+					<ukm:PrimaryMetadata><ukm:DocumentClassification><ukm:DocumentCategory Value="primary"/><ukm:DocumentMainType Value="UnitedKingdomPublicGeneralAct"/><ukm:DocumentStatus Value="revised"/></ukm:DocumentClassification><ukm:Year Value="2023"/><ukm:Number Value="57"/><ukm:EnactmentDate Date="2023-12-18"/><ukm:ISBN Value="9780105702436"/></ukm:PrimaryMetadata>
+					
+
+                    
+									<ukm:Notes><ukm:Note IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/notes"/><ukm:Alternatives><ukm:Alternative URI="http://www.legislation.gov.uk/ukpga/2023/57/pdfs/ukpgaen_20230057_en.pdf" Date="2024-07-29" Title="Explanatory Note" Size="520216"/></ukm:Alternatives>       
+								</ukm:Notes> 
+					<ukm:Alternatives><ukm:Alternative URI="http://www.legislation.gov.uk/ukpga/2023/57/pdfs/ukpga_20230057_en.pdf" Date="2023-12-19" Size="369595" Print="true"/></ukm:Alternatives>
+					
+					<ukm:Statistics>
+									<ukm:TotalParagraphs Value="10"/>
+									<ukm:BodyParagraphs Value="5"/>
+									<ukm:ScheduleParagraphs Value="5"/>
+									<ukm:AttachmentParagraphs Value="0"/>
+									<ukm:TotalImages Value="0"/>
+								</ukm:Statistics>
+				</ukm:Metadata><Primary><PrimaryPrelims DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/introduction" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/introduction" RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Title>National Insurance Contributions (Reduction in Rates) Act 2023</Title><Number>2023 Chapter 57</Number><LongTitle>An Act to make provision for and in connection with reducing the main rates of primary Class 1 national insurance contributions and Class 4 national insurance contributions, and removing the requirement to pay Class 2 national insurance contributions.</LongTitle><DateOfEnactment>
+<DateText>[18th December 2023]</DateText>
+</DateOfEnactment><PrimaryPreamble>
+<EnactingText>
+<Para>
+<Text><Uppercase>B</Uppercase><SmallCaps>e it enacted</SmallCaps> by the King’s most Excellent Majesty, by and with the advice and consent of the Lords Spiritual and Temporal, and Commons, in this present Parliament assembled, and by the authority of the same, as follows:—</Text>
+</Para>
+</EnactingText>
+</PrimaryPreamble></PrimaryPrelims><Body DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/body" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/body" NumberOfProvisions="5" RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><P1group RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Title>Reduction of Class 1 main primary percentage</Title><P1 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/1" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/1" id="section-1">
+<Pnumber><CommentaryRef Ref="key-df11f9918bf0e1fe22be2d72393b745a"/>1</Pnumber>
+<P1para>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/1/1" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/1/1" id="section-1-1">
+<Pnumber>1</Pnumber>
+<P2para>
+<Text>In the Social Security Contributions and Benefits Act 1992, in section 8(2)(a) (main primary percentage), for “12 per cent” substitute <InlineAmendment>“10%”</InlineAmendment>.</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/1/2" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/1/2" id="section-1-2">
+<Pnumber>2</Pnumber>
+<P2para>
+<Text>In the Social Security Contributions and Benefits (Northern Ireland) Act 1992, in section 8(2)(a) (main primary percentage), for “12 per cent” substitute <InlineAmendment>“10%”</InlineAmendment>.</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/1/3" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/1/3" id="section-1-3">
+<Pnumber>3</Pnumber>
+<P2para>
+<Text>In regulation 131 of the Social Security (Contributions) Regulations 2001—</Text>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/1/3/a" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/1/3/a" id="section-1-3-a">
+<Pnumber>a</Pnumber>
+<P3para>
+<Text>omit “On and after 6th April 2011”, and</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/1/3/b" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/1/3/b" id="section-1-3-b">
+<Pnumber>b</Pnumber>
+<P3para>
+<Text>for “5.85 per cent” substitute <InlineAmendment>“3.85%”</InlineAmendment>.</Text>
+</P3para>
+</P3>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/1/4" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/1/4" id="section-1-4">
+<Pnumber>4</Pnumber>
+<P2para>
+<Text>The amendments made by <InternalLink Ref="section-1" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/1" DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/1">this section</InternalLink> come into force on 6 January 2024.</Text>
+</P2para>
+</P2>
+</P1para>
+</P1></P1group><P1group RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Title>Reduction of main Class 4 percentage</Title><P1 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/2" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/2" id="section-2"><Pnumber><CommentaryRef Ref="M_F_a59975b8-3308-4f7e-8d88-8e58f362b982"/>2</Pnumber><P1para><Text>. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</Text></P1para></P1></P1group><P1group RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Title>Removal of requirement to pay Class 2 contributions</Title><P1 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3" id="section-3">
+<Pnumber><CommentaryRef Ref="key-3b01fb84afdbb257ccbd75cf26708c72"/>3</Pnumber>
+<P1para>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/1" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/1" id="section-3-1">
+<Pnumber>1</Pnumber>
+<P2para>
+<Text>In section 11 of the Social Security Contributions and Benefits Act 1992 (Class 2 contributions)—</Text>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/1/a" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/1/a" id="section-3-1-a">
+<Pnumber>a</Pnumber>
+<P3para>
+<Text>omit subsection (2),</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/1/b" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/1/b" id="section-3-1-b">
+<Pnumber>b</Pnumber>
+<P3para>
+<Text>in subsection (4), omit paragraph (a),</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/1/c" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/1/c" id="section-3-1-c">
+<Pnumber>c</Pnumber>
+<P3para>
+<Text>omit subsection (5),</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/1/d" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/1/d" id="section-3-1-d">
+<Pnumber>d</Pnumber>
+<P3para>
+<Text>in subsection (5A), omit the words from “but” to the end,</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/1/e" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/1/e" id="section-3-1-e">
+<Pnumber>e</Pnumber>
+<P3para>
+<Text>in subsection (5B), omit “under subsection (2)”, and</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/1/f" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/1/f" id="section-3-1-f">
+<Pnumber>f</Pnumber>
+<P3para>
+<Text>in subsection (8), for “subsections (2) and” substitute <InlineAmendment>“subsection”</InlineAmendment>.</Text>
+</P3para>
+</P3>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/2" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/2" id="section-3-2">
+<Pnumber>2</Pnumber>
+<P2para>
+<Text>In section 11 of the Social Security Contributions and Benefits (Northern Ireland) Act 1992 (Class 2 contributions)—</Text>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/2/a" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/2/a" id="section-3-2-a">
+<Pnumber>a</Pnumber>
+<P3para>
+<Text>omit subsection (2),</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/2/b" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/2/b" id="section-3-2-b">
+<Pnumber>b</Pnumber>
+<P3para>
+<Text>in subsection (4), omit paragraph (a),</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/2/c" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/2/c" id="section-3-2-c">
+<Pnumber>c</Pnumber>
+<P3para>
+<Text>omit subsection (5),</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/2/d" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/2/d" id="section-3-2-d">
+<Pnumber>d</Pnumber>
+<P3para>
+<Text>in subsection (5A), omit the words from “but” to the end,</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/2/e" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/2/e" id="section-3-2-e">
+<Pnumber>e</Pnumber>
+<P3para>
+<Text>in subsection (5B), omit “under subsection (2)”, and</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/2/f" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/2/f" id="section-3-2-f">
+<Pnumber>f</Pnumber>
+<P3para>
+<Text>in subsection (8), for “subsections (2) and” substitute <InlineAmendment>“subsection”</InlineAmendment>.</Text>
+</P3para>
+</P3>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3/3" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3/3" id="section-3-3">
+<Pnumber>3</Pnumber>
+<P2para>
+<Text>The amendments made by <InternalLink Ref="section-3" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/3" DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/3">this section</InternalLink> come into force on 6 April 2024.</Text>
+</P2para>
+</P2>
+</P1para>
+</P1></P1group><P1group RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Title>Transitional and consequential provision</Title><P1 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/4" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/4" id="section-4">
+<Pnumber><CommentaryRef Ref="key-290dc6774e1bb66737bf5e3514b7a9c7"/>4</Pnumber>
+<P1para>
+<Text><InternalLink Ref="schedule" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule" DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule">The Schedule</InternalLink> contains transitional and consequential provision.</Text>
+</P1para>
+</P1></P1group><P1group RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Title>Short title</Title><P1 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/5" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/5" id="section-5">
+<Pnumber><CommentaryRef Ref="key-a917d6b700385a37d64920c3f1e65412"/>5</Pnumber>
+<P1para>
+<Text>This Act may be cited as the National Insurance Contributions (Reduction in Rates) Act 2023.</Text>
+</P1para>
+</P1></P1group></Body><Schedules RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Schedule DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule" NumberOfProvisions="5" id="schedule" RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Number>Schedule</Number><TitleBlock>
+<Title>Transitional and consequential provision</Title>
+</TitleBlock><Reference><InternalLink Ref="section-4" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/section/4" DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/section/4">Section 4</InternalLink></Reference><ScheduleBody>
+<P1group RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Title>Rates for directors in the tax year 2023-24</Title><P1 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/1" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/1" id="schedule-paragraph-1">
+<Pnumber><CommentaryRef Ref="key-5105fb19ac168a7083be1b85aa825211"/>1</Pnumber>
+<P1para>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/1/1" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/1/1" id="schedule-paragraph-1-1">
+<Pnumber>1</Pnumber>
+<P2para>
+<Text><InternalLink Ref="schedule-paragraph-1" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/1" DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/1">This paragraph</InternalLink> applies to an assessment of the amount of earnings-related contributions payable where that amount is assessed on the amount of earnings paid in an earnings period specified in regulation 8(2) to (5) of the Social Security (Contributions) Regulations 2001 (earnings periods for directors).</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/1/2" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/1/2" id="schedule-paragraph-1-2">
+<Pnumber>2</Pnumber>
+<P2para>
+<Text>For the purposes of such an assessment the following apply, for the tax year 2023-24, with the modifications specified.</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/1/3" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/1/3" id="schedule-paragraph-1-3">
+<Pnumber>3</Pnumber>
+<P2para>
+<Text>Part 1 of the Social Security Contributions and Benefits Act 1992 has effect as if in section 8(2)(a) (main primary percentage), for the percentage specified there were substituted <InlineAmendment>“11.5%”</InlineAmendment>.</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/1/4" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/1/4" id="schedule-paragraph-1-4">
+<Pnumber>4</Pnumber>
+<P2para>
+<Text>Part 1 of the Social Security Contributions and Benefits (Northern Ireland) Act 1992 has effect as if in section 8(2)(a) (main primary percentage), for the percentage specified there were substituted <InlineAmendment>“11.5%”</InlineAmendment>.</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/1/5" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/1/5" id="schedule-paragraph-1-5">
+<Pnumber>5</Pnumber>
+<P2para>
+<Text>Regulation 131 of the Social Security (Contributions) Regulations 2001 has effect as if for the percentage specified there were substituted <InlineAmendment>“5.35%”</InlineAmendment>.</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/1/6" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/1/6" id="schedule-paragraph-1-6">
+<Pnumber>6</Pnumber>
+<P2para>
+<Text>In <InternalLink Ref="schedule-paragraph-1" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/1" DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/1">this paragraph</InternalLink> “<Term id="term-earnings-related-contributions">earnings-related contributions</Term>” has the meaning it has in the Social Security (Contributions) Regulations 2001 (see regulation 1(2)).</Text>
+</P2para>
+</P2>
+</P1para>
+</P1></P1group>
+<P1group RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Title>Annual maximum contributions for the tax year 2023-24</Title><P1 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/2" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/2" id="schedule-paragraph-2">
+<Pnumber><CommentaryRef Ref="key-1216d9e64a3c47f1a2b47dc4de97dcb9"/>2</Pnumber>
+<P1para>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/2/1" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/2/1" id="schedule-paragraph-2-1">
+<Pnumber>1</Pnumber>
+<P2para>
+<Text>The Social Security (Contributions) Regulations 2001 are amended as follows.</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/2/2" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/2/2" id="schedule-paragraph-2-2">
+<Pnumber>2</Pnumber>
+<P2para>
+<Text>In regulation 21 (annual maxima for those with more than one employment)—</Text>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/2/2/a" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/2/2/a" id="schedule-paragraph-2-2-a">
+<Pnumber>a</Pnumber>
+<P3para>
+<Text>in paragraph (2), in Step Two, for “12 per cent” substitute <InlineAmendment>“11.5%”</InlineAmendment>, and</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/2/2/b" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/2/2/b" id="schedule-paragraph-2-2-b">
+<Pnumber>b</Pnumber>
+<P3para>
+<Text>in paragraph (3), for “12 per cent” substitute <InlineAmendment>“the rate specified as the main primary percentage”</InlineAmendment>.</Text>
+</P3para>
+</P3>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/2/3" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/2/3" id="schedule-paragraph-2-3">
+<Pnumber>3</Pnumber>
+<P2para>
+<Text>In regulation 100 (annual maximum of Class 4 contributions), in paragraph (4), for “12 per cent” substitute <InlineAmendment>“the rate specified as the main primary percentage”</InlineAmendment>.</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/2/4" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/2/4" id="schedule-paragraph-2-4">
+<Pnumber>4</Pnumber>
+<P2para>
+<Text>The amendments made by <InternalLink Ref="schedule-paragraph-2" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/2" DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/2">this paragraph</InternalLink> are treated as having come into force on 6 April 2023.</Text>
+</P2para>
+</P2>
+</P1para>
+</P1></P1group>
+<P1group RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Title>Annual maximum contributions for subsequent tax years</Title><P1 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/3" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/3" id="schedule-paragraph-3"><Pnumber><CommentaryRef Ref="M_F_b7ac42d5-dbeb-4bfa-e3aa-a88f532f17e6"/>3</Pnumber><P1para><Text>. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</Text></P1para></P1></P1group>
+<P1group RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Title>Class 2 contributions</Title><P1 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4" id="schedule-paragraph-4">
+<Pnumber><CommentaryRef Ref="key-43e465f4f5c713bd5e48761f84f7f177"/>4</Pnumber>
+<P1para>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/1" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/1" id="schedule-paragraph-4-1">
+<Pnumber>1</Pnumber>
+<P2para>
+<Text>In the Social Security Contributions and Benefits Act 1992, omit section 11A (application of certain provisions of the Income Tax Acts in relation to Class 2 contributions under section 11(2)).</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/2" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/2" id="schedule-paragraph-4-2">
+<Pnumber>2</Pnumber>
+<P2para>
+<Text>In the Social Security Contributions and Benefits (Northern Ireland) Act 1992, omit section 11A (application of certain provisions of the Income Tax Acts in relation to Class 2 contributions under section 11(2)).</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/3" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/3" id="schedule-paragraph-4-3">
+<Pnumber>3</Pnumber>
+<P2para>
+<Text>The Social Security Administration Act 1992 is amended as follows.</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/4" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/4" id="schedule-paragraph-4-4">
+<Pnumber>4</Pnumber>
+<P2para>
+<Text>In section 141 (annual review of contributions), in subsection (4)—</Text>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/4/a" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/4/a" id="schedule-paragraph-4-4-a">
+<Pnumber>a</Pnumber>
+<P3para>
+<Text>in paragraph (a), for “11(2) and (6)” substitute <InlineAmendment>“11(6)”</InlineAmendment>, and</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/4/b" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/4/b" id="schedule-paragraph-4-4-b">
+<Pnumber>b</Pnumber>
+<P3para>
+<Text>in paragraph (b)—</Text>
+<P4 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/4/b/i" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/4/b/i" id="schedule-paragraph-4-4-b-i">
+<Pnumber>i</Pnumber>
+<P4para>
+<Text>for “figures” substitute <InlineAmendment>“figure”</InlineAmendment>, and</Text>
+</P4para>
+</P4>
+<P4 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/4/b/ii" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/4/b/ii" id="schedule-paragraph-4-4-b-ii">
+<Pnumber>ii</Pnumber>
+<P4para>
+<Text>omit “the lower profits threshold and as”.</Text>
+</P4para>
+</P4>
+</P3para>
+</P3>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/5" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/5" id="schedule-paragraph-4-5">
+<Pnumber>5</Pnumber>
+<P2para>
+<Text>In section 143 (power to alter contributions with a view to adjusting level of National Insurance Fund)—</Text>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/5/a" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/5/a" id="schedule-paragraph-4-5-a">
+<Pnumber>a</Pnumber>
+<P3para>
+<Text>in subsection (1)(c) for “11(2) and (6)” substitute <InlineAmendment>“11(6)”</InlineAmendment>, and</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/5/b" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/5/b" id="schedule-paragraph-4-5-b">
+<Pnumber>b</Pnumber>
+<P3para>
+<Text>in subsection (3)—</Text>
+<P4 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/5/b/i" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/5/b/i" id="schedule-paragraph-4-5-b-i">
+<Pnumber>i</Pnumber>
+<P4para>
+<Text>for “11(2) and (6)” substitute <InlineAmendment>“11(6)”</InlineAmendment>, and</Text>
+</P4para>
+</P4>
+<P4 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/5/b/ii" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/5/b/ii" id="schedule-paragraph-4-5-b-ii">
+<Pnumber>ii</Pnumber>
+<P4para>
+<Text>for “lower profits threshold” substitute <InlineAmendment>“small profits threshold”</InlineAmendment>.</Text>
+</P4para>
+</P4>
+</P3para>
+</P3>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/6" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/6" id="schedule-paragraph-4-6">
+<Pnumber>6</Pnumber>
+<P2para>
+<Text>In section 145 (power to alter primary and secondary contributions), in subsection (4)(a), for “11(2) and (6)” substitute <InlineAmendment>“11(6)”</InlineAmendment>.</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4/7" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4/7" id="schedule-paragraph-4-7">
+<Pnumber>7</Pnumber>
+<P2para>
+<Text>The amendments made by <InternalLink Ref="schedule-paragraph-4" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/4" DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/4">this paragraph</InternalLink> come into force on 6 April 2024.</Text>
+</P2para>
+</P2>
+</P1para>
+</P1></P1group>
+<P1group ConfersPower="true" RestrictExtent="E+W+S+N.I." RestrictStartDate="2023-12-18"><Title>Power to make further consequential provision</Title><P1 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/5" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/5" id="schedule-paragraph-5">
+<Pnumber><CommentaryRef Ref="key-90668b626eb98caabbe21cd6f16a8101"/>5</Pnumber>
+<P1para>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/5/1" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/5/1" id="schedule-paragraph-5-1">
+<Pnumber>1</Pnumber>
+<P2para>
+<Text>The Treasury may by regulations made by statutory instrument—</Text>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/5/1/a" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/5/1/a" id="schedule-paragraph-5-1-a">
+<Pnumber>a</Pnumber>
+<P3para>
+<Text>make such provision as they consider appropriate in consequence of this Act, and</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/5/1/b" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/5/1/b" id="schedule-paragraph-5-1-b">
+<Pnumber>b</Pnumber>
+<P3para>
+<Text>make such transitional or saving provision as they consider appropriate in connection with the coming into force of any provision of this Act.</Text>
+</P3para>
+</P3>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/5/2" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/5/2" id="schedule-paragraph-5-2">
+<Pnumber>2</Pnumber>
+<P2para>
+<Text>Regulations under <InternalLink Ref="schedule-paragraph-5" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/5" DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/5">this paragraph</InternalLink> may (among other things)—</Text>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/5/2/a" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/5/2/a" id="schedule-paragraph-5-2-a">
+<Pnumber>a</Pnumber>
+<P3para>
+<Text>amend, repeal or revoke provision made by or under any enactment;</Text>
+</P3para>
+</P3>
+<P3 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/5/2/b" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/5/2/b" id="schedule-paragraph-5-2-b">
+<Pnumber>b</Pnumber>
+<P3para>
+<Text>make provision having retrospective effect from no earlier than 6 April 2023.</Text>
+</P3para>
+</P3>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/5/3" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/5/3" id="schedule-paragraph-5-3">
+<Pnumber>3</Pnumber>
+<P2para>
+<Text>Subsections (3) and (4) of section 175 of the Social Security Contributions and Benefits Act 1992 (provision which may be made by regulations) apply to regulations under <InternalLink Ref="schedule-paragraph-5" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/5" DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/5">this paragraph</InternalLink> as they apply to regulations under that Act.</Text>
+</P2para>
+</P2>
+<P2 DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/5/4" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/5/4" id="schedule-paragraph-5-4">
+<Pnumber>4</Pnumber>
+<P2para>
+<Text>A statutory instrument containing regulations under <InternalLink Ref="schedule-paragraph-5" IdURI="http://www.legislation.gov.uk/id/ukpga/2023/57/schedule/paragraph/5" DocumentURI="http://www.legislation.gov.uk/ukpga/2023/57/schedule/paragraph/5">this paragraph</InternalLink> is subject to annulment in pursuance of a resolution of either House of Parliament.</Text>
+</P2para>
+</P2>
+</P1para>
+</P1></P1group>
+</ScheduleBody></Schedule></Schedules></Primary><Commentaries><Commentary Type="I" id="key-1216d9e64a3c47f1a2b47dc4de97dcb9"><Para><Text>Sch. para. 2  in force at Royal Assent</Text></Para></Commentary><Commentary Type="I" id="key-290dc6774e1bb66737bf5e3514b7a9c7"><Para><Text>S. 4  in force at Royal Assent</Text></Para></Commentary><Commentary Type="I" id="key-3b01fb84afdbb257ccbd75cf26708c72"><Para><Text>S. 3  in force at Royal Assent</Text></Para></Commentary><Commentary Type="I" id="key-43e465f4f5c713bd5e48761f84f7f177"><Para><Text>Sch. para. 4  in force at Royal Assent</Text></Para></Commentary><Commentary Type="I" id="key-5105fb19ac168a7083be1b85aa825211"><Para><Text>Sch. para. 1  in force at Royal Assent</Text></Para></Commentary><Commentary Type="I" id="key-90668b626eb98caabbe21cd6f16a8101"><Para><Text>Sch. para. 5  in force at Royal Assent</Text></Para></Commentary><Commentary Type="I" id="key-a917d6b700385a37d64920c3f1e65412"><Para><Text>S. 5  in force at Royal Assent</Text></Para></Commentary><Commentary Type="I" id="key-df11f9918bf0e1fe22be2d72393b745a"><Para><Text>S. 1  in force at Royal Assent</Text></Para></Commentary><Commentary id="M_F_a59975b8-3308-4f7e-8d88-8e58f362b982" Type="F"><Para><Text>S. 2 superseded and ceases to have effect (retrospectively) by virtue of <Citation URI="http://www.legislation.gov.uk/id/ukpga/2024/5" id="d23e4" Year="2024" Class="UnitedKingdomPublicGeneralAct" Number="5" Title="National Insurance Contributions (Reduction in Rates) Act 2024">National Insurance Contributions (Reduction in Rates) Act 2024 (c. 5)</Citation>, <CitationSubRef CitationRef="d23e4" id="ccd11e4320240328110817355Z" URI="http://www.legislation.gov.uk/id/ukpga/2024/5/section/1/4" Operative="true" SectionRef="section-1-4">ss. 1(4)</CitationSubRef>, <CitationSubRef CitationRef="d23e4" id="ccd11e4620240328110817355Z" URI="http://www.legislation.gov.uk/id/ukpga/2024/5/section/3/1" SectionRef="section-3-1">3(1)</CitationSubRef></Text></Para></Commentary><Commentary id="M_F_b7ac42d5-dbeb-4bfa-e3aa-a88f532f17e6" Type="F"><Para><Text>Sch. para. 3 superseded and ceases to have effect (retrospectively) by virtue of <Citation URI="http://www.legislation.gov.uk/id/ukpga/2024/5" id="d24e4" Year="2024" Class="UnitedKingdomPublicGeneralAct" Number="5" Title="National Insurance Contributions (Reduction in Rates) Act 2024">National Insurance Contributions (Reduction in Rates) Act 2024 (c. 5)</Citation>, <CitationSubRef CitationRef="d24e4" id="ccd11e4320240328111050613Z" URI="http://www.legislation.gov.uk/id/ukpga/2024/5/section/2/4" Operative="true" SectionRef="section-2-4">ss. 2(4)</CitationSubRef>, <CitationSubRef CitationRef="d24e4" id="ccd11e4620240328111050613Z" URI="http://www.legislation.gov.uk/id/ukpga/2024/5/section/3/1" SectionRef="section-3-1">3(1)</CitationSubRef>
+</Text></Para></Commentary></Commentaries></Legislation>

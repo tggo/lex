@@ -1,0 +1,339 @@
+<akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0" xmlns:finlex="http://data.finlex.fi/schema/finlex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <act contains="multipleVersions" name="main">
+        <meta>
+            <identification source="#organization_fi.finlex">
+                <FRBRWork>
+                    <FRBRthis value="/akn/fi/act/statute-consolidated/2019/469/!main"/>
+                    <FRBRuri value="/akn/fi/act/statute-consolidated/2019/469"/>
+                    <FRBRalias name="eli" value="http://data.finlex.fi/eli/sd/2019/469/ajantasa"/>
+                    <FRBRdate date="2019-03-29" name="dateIssued"/>
+                    <FRBRdate date="2019-04-10" name="datePublished"/>
+                    <FRBRauthor as="#role_author" href="#organization_fi.finlex"/>
+                    <FRBRcountry value="fi"/>
+                    <FRBRsubtype value="statute-consolidated"/>
+                    <FRBRnumber value="469"/>
+                    <FRBRprescriptive value="false"/>
+                    <FRBRauthoritative value="false"/>
+                </FRBRWork>
+                <FRBRExpression>
+                    <FRBRthis value="/akn/fi/act/statute-consolidated/2019/469/fin@/!main"/>
+                    <FRBRuri value="/akn/fi/act/statute-consolidated/2019/469/fin@"/>
+                    <FRBRdate date="2019-03-29" name="dateIssued"/>
+                    <FRBRdate date="2022-12-20" name="dateConsolidated"/>
+                    <FRBRauthor as="#role_author" href="#organization_fi.finlex"/>
+                    <FRBRversionNumber value="20190469"/>
+                    <FRBRlanguage language="fin"/>
+                </FRBRExpression>
+                <FRBRManifestation>
+                    <FRBRthis value="/akn/fi/act/statute-consolidated/2019/469/fin@/!main.xml"/>
+                    <FRBRuri value="/akn/fi/act/statute-consolidated/2019/469/fin@.akn"/>
+                    <FRBRdate date="2026-05-20" name="dateProduced"/>
+                    <FRBRdate date="2019-04-10" name="datePublished"/>
+                    <FRBRauthor as="#role_editor" href="#organization_fi.finlex"/>
+                    <FRBRformat value="xml"/>
+                </FRBRManifestation>
+            </identification>
+            <classification source="#organization_fi.finlex">
+                <keyword dictionary="/akn/ontology/concept/statute-keyword" showAs="Etuosto-oikeus" value="/akn/ontology/concept/statute-keyword.1412"/>
+                <keyword dictionary="/akn/ontology/concept/statute-keyword" showAs="Kiinteistö" value="/akn/ontology/concept/statute-keyword.2009"/>
+            </classification>
+            <references source="#organization_fi.finlex">
+                <TLCOrganization eId="organization_fi.finlex" href="/akn/ontology/organization/fi.finlex" showAs="Finlex"/>
+                <TLCRole eId="role_author" href="/akn/ontology/role/author" showAs="Tekijä"/>
+                <TLCRole eId="role_editor" href="/akn/ontology/role/editor" showAs="Toimittaja"/>
+                <TLCOrganization eId="fi.ministry-of-defence" href="/akn/ontology/organization/fi.ministry-of-defence" showAs="Puolustusministeriö"/>
+                <TLCConcept eId="act" href="/akn/ontology/concept/statute/type-statute.act" showAs="Laki"/>
+            </references>
+            <proprietary source="#organization_fi.finlex">
+                <finlex:documentYear>2019</finlex:documentYear>
+                <finlex:administrativeBranch refersTo="#fi.ministry-of-defence"/>
+                <finlex:typeStatute refersTo="#act"/>
+                <finlex:isInForce value="true"/>
+                <finlex:inForce>
+                    <finlex:dateEntryIntoForce date="2020-01-01"/>
+                </finlex:inForce>
+                <finlex:amendedBy>
+                    <finlex:statuteReference>
+                        <finlex:ref href="/akn/fi/act/statute/2022/1099">1099/2022</finlex:ref>
+                        <finlex:inForce>
+                            <finlex:dateEntryIntoForce date="2023-01-01">1.1.2023</finlex:dateEntryIntoForce>
+                        </finlex:inForce>
+                        <finlex:noteEditorial>muutt. 1, 2, 4 ja 5 §:ää sekä 13 ja 14 §</finlex:noteEditorial>
+                    </finlex:statuteReference>
+                </finlex:amendedBy>
+            </proprietary>
+        </meta>
+        <preface>
+            <p>
+                <docNumber>469/2019</docNumber>
+                <docTitle>Laki valtion etuosto-oikeudesta eräillä alueilla</docTitle>
+            </p>
+        </preface>
+        <preamble>
+            <formula name="enactingClause">
+                <p>Eduskunnan päätöksen mukaisesti säädetään:</p>
+            </formula>
+        </preamble>
+        <body>
+            <hcontainer finlex:outline="Säädöksen teksti" name="statuteProvisionsWrapper">
+                <section eId="sec_1">
+                    <num>1 §</num>
+                    <heading eId="sec_1__heading">Valtion etuosto-oikeus</heading>
+                    <subsection eId="sec_1__subsec_1">
+                        <content>
+                            <p>Valtiolla on etuosto-oikeus kiinteistön kaupassa, jos kiinteistön hankkiminen on tarpeen maanpuolustuksen, rajavalvonnan tai rajaturvallisuuden varmistamiseksi taikka alueellisen koskemattomuuden valvonnan ja turvaamisen takia.</p>
+                        </content>
+                    </subsection>
+                    <subsection eId="sec_1__subsec_2">
+                        <content>
+                            <p>Mitä tässä laissa säädetään kiinteistöstä, koskee myös määräosaa kiinteistöstä sekä kiinteistöstä luovutettua määräalaa. Kiinteistön kauppana pidetään sellaista vastikkeellista kiinteistön luovutusta, jossa vastikkeen arvosta muu kuin kiinteä omaisuus muodostaa pääosan. Etuosto käsittää samalla kauppakirjalla myydyn kiinteän ja irtaimen omaisuuden kokonaisuudessaan.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_2">
+                    <num>2 §</num>
+                    <heading eId="sec_2__heading">Etuosto-oikeuden alueellinen soveltamisala</heading>
+                    <subsection eId="sec_2__subsec_1">
+                        <intro eId="sec_2__subsec_1__intro">
+                            <p>Valtiolla on etuosto-oikeus kiinteistöihin, jotka sijaitsevat tai joiden osa sijaitsee:</p>
+                        </intro>
+                        <paragraph eId="sec_2__subsec_1__para_1">
+                            <num>1)</num>
+                            <content>
+                                <p>maakuntakaavassa, yleiskaavassa tai asemakaavassa Puolustusvoimien tai Rajavartiolaitoksen tarpeisiin osoitetuilla alueilla tai enintään 500 metrin etäisyydellä niistä;</p>
+                            </content>
+                        </paragraph>
+                        <paragraph eId="sec_2__subsec_1__para_2">
+                            <num>2)</num>
+                            <content>
+                                <p>enintään 1 000 metrin etäisyydellä viestiasemista, tutka-asemista, lentopaikoista tai satamista tai näitä vähäisemmistä kohteista, jotka palvelevat Puolustusvoimien tai Rajavartiolaitoksen vesiliikennettä tai ilmailua normaalioloissa, normaaliolojen häiriötilanteissa tai poikkeusoloissa; </p>
+                            </content>
+                        </paragraph>
+                        <paragraph eId="sec_2__subsec_1__para_3">
+                            <num>3)</num>
+                            <content>
+                                <p>enintään 500 metrin etäisyydellä Puolustusvoimien tai Rajavartiolaitoksen käytössä olevista muista kuin 1 ja 2 kohdassa tarkoitetuista kiinteistöistä, joilla harjoitettavan toiminnan turvaaminen edellyttää suoja-aluetta.</p>
+                            </content>
+                        </paragraph>
+                    </subsection>
+                    <subsection eId="sec_2__subsec_2">
+                        <content>
+                            <p>Alueista, jotka kuuluvat valtion etuosto-oikeuden soveltamisalaan, voidaan säätää tarkemmin valtioneuvoston asetuksella.</p>
+                        </content>
+                    </subsection>
+                    <subsection eId="sec_2__subsec_3">
+                        <content>
+                            <p>Tätä lakia ei sovelleta Ahvenanmaan maakunnan alueella.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_3">
+                    <num>3 §</num>
+                    <heading eId="sec_3__heading">Etuosto-oikeuden rajoitukset</heading>
+                    <subsection eId="sec_3__subsec_1">
+                        <intro eId="sec_3__subsec_1__intro">
+                            <p>Tässä laissa tarkoitettua etuosto-oikeutta ei ole, jos:</p>
+                        </intro>
+                        <paragraph eId="sec_3__subsec_1__para_1">
+                            <num>1)</num>
+                            <content>
+                                <p>
+                                    ostajana on myyjän avio- tai avopuoliso, rekisteröidyn parisuhteen osapuoli tai henkilö, joka perintökaaren 
+                                    <ref href="/akn/fi/act/statute-consolidated/1965/40#chp_2">(40/1965) 2 luvun</ref>
+                                     säännösten mukaan voisi periä myyjän, tai tällaisen henkilön avio- tai avopuoliso tai rekisteröidyn parisuhteen osapuoli;
+                                </p>
+                            </content>
+                        </paragraph>
+                        <paragraph eId="sec_3__subsec_1__para_2">
+                            <num>2)</num>
+                            <content>
+                                <p>ostajana on kunta tai seurakunta;</p>
+                            </content>
+                        </paragraph>
+                        <paragraph eId="sec_3__subsec_1__para_3">
+                            <num>3)</num>
+                            <content>
+                                <p>etuosto-oikeuden käyttämistä olisi pidettävä ostajan ja myyjän välinen suhde, luovutuksen ehdot tai muut olosuhteet huomioon ottaen ilmeisen kohtuuttomana.</p>
+                            </content>
+                        </paragraph>
+                    </subsection>
+                </section>
+                <section eId="sec_4">
+                    <num>4 §</num>
+                    <heading eId="sec_4__heading">Ennakkotieto etuosto-oikeuden käyttämisestä</heading>
+                    <subsection eId="sec_4__subsec_1">
+                        <content>
+                            <p>Kiinteistönomistaja voi ennen kiinteistön luovutusta pyytää puolustusministeriöltä ennakkotiedon siitä, aikooko valtio käyttää etuosto-oikeutta. Hakemuksessa on ilmoitettava tiedot luovutuksen kohteesta ja ehdoista, ostajasta sekä muut etuosto-oikeuden käyttämisen arvioimiseksi tarpeelliset tiedot.</p>
+                        </content>
+                    </subsection>
+                    <subsection eId="sec_4__subsec_2">
+                        <content>
+                            <p>Puolustusministeriö voi ilmoittaa, ettei valtio käytä etuosto-oikeutta, jos kiinteistö luovutetaan ennakkotietohakemuksen mukaisesti. Ennakkotieto sitoo valtiota siinä määrätyn ajan, kuitenkin enintään kahden vuoden ajan ennakkotiedon antamisesta.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_5">
+                    <num>5 §</num>
+                    <heading eId="sec_5__heading">Päätös etuosto-oikeuden käyttämisestä</heading>
+                    <subsection eId="sec_5__subsec_1">
+                        <content>
+                            <p>Etuosto-oikeuden käyttämistä koskevan asian ratkaisee valtiovarainministeriö sen ministeriön esityksestä, jonka hallinnonalan tehtävien hoitamiseen etuosto-oikeuden kohteena oleva kiinteistö liittyy.</p>
+                        </content>
+                    </subsection>
+                    <subsection eId="sec_5__subsec_2">
+                        <content>
+                            <p>
+                                Valtiovarainministeriön on annettava päätös viipymättä tiedoksi ostajalle ja myyjälle todisteellisena tiedoksiantona siten kuin hallintolaissa 
+                                <ref href="/akn/fi/act/statute-consolidated/2003/434">(434/2003)</ref>
+                                 säädetään sekä ilmoitettava asiasta Maanmittauslaitokselle.
+                            </p>
+                        </content>
+                    </subsection>
+                    <subsection eId="sec_5__subsec_3">
+                        <content>
+                            <p>
+                                Päätös etuosto-oikeuden käyttämisestä on tehtävä ja siitä ilmoitettava Maanmittauslaitokselle kolmen kuukauden kuluessa luovutuksen vahvistamisesta tai siitä, kun kauppa on syntynyt maakaaren 
+                                <ref href="/akn/fi/act/statute-consolidated/1995/540#chp_9a">(540/1995) 9 a luvussa</ref>
+                                 tarkoitetussa sähköisessä kaupankäyntijärjestelmässä.
+                            </p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_6">
+                    <num>6 §</num>
+                    <heading eId="sec_6__heading">Kiinteistön edelleenluovutus</heading>
+                    <subsection eId="sec_6__subsec_1">
+                        <content>
+                            <p>Kiinteistön edelleenluovutus, joka on tapahtunut ennen 5 §:ssä säädetyn määräajan päättymistä tai etuosto-oikeutta koskevan päätöksen lainvoimaiseksi tulemista, ei estä valtiota käyttämästä etuosto-oikeuttaan.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_7">
+                    <num>7 §</num>
+                    <heading eId="sec_7__heading">Ostajan velvollisuudet</heading>
+                    <subsection eId="sec_7__subsec_1">
+                        <content>
+                            <p>Ostaja vastaa luovutukseen liittyvien velvoitteiden täyttämisestä myyjälle siihen asti, kun etuosto on saatettu päätökseen.</p>
+                        </content>
+                    </subsection>
+                    <subsection eId="sec_7__subsec_2">
+                        <content>
+                            <p>Kun etuosto-oikeuden käyttämistä koskeva päätös on saanut lainvoiman, ostajan on viipymättä toimitettava valtiolle luovutuskirja ja haltuun saamansa kiinteistöä koskevat asiakirjat, joilla on merkitystä valtiolle kiinteistön omistajana.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_8">
+                    <num>8 §</num>
+                    <heading eId="sec_8__heading">Lainvoimaisen etuoston oikeusvaikutukset ja valtion suoritusvelvollisuus myyjälle</heading>
+                    <subsection eId="sec_8__subsec_1">
+                        <content>
+                            <p>Kun etuostoa koskeva päätös on saanut lainvoiman, valtion katsotaan tulleen kaupantekohetkellä ostajan sijaan kaupassa sovituilla ehdoilla. Myyjä ei voi vedota sellaiseen kaupan ehtoon, jota hän ei ole ilmoittanut valtiolle ja josta valtio ei päättäessään etuosto-oikeuden käyttämisestä muutoinkaan tiennyt. Valtion asema kolmanteen nähden on sama kuin ostajan.</p>
+                        </content>
+                    </subsection>
+                    <subsection eId="sec_8__subsec_2">
+                        <content>
+                            <p>Mikäli ostaja on ennen etuoston loppuunsaattamista täyttänyt kauppaan perustuvia velvoitteita, valtio saa lukea nämä hyväkseen suhteessa myyjään.</p>
+                        </content>
+                    </subsection>
+                    <subsection eId="sec_8__subsec_3">
+                        <content>
+                            <p>Mikäli kauppaan sisältyy ehto, jota valtio ei ehdon luonteen vuoksi voi kohtuudella täyttää, velvoite on muunnettava sen täyttä arvoa vastaavaksi rahasuoritukseksi.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_9">
+                    <num>9 §</num>
+                    <heading eId="sec_9__heading">Lainhuuto- ja kiinnitysrekisteriin tehtävät merkinnät</heading>
+                    <subsection eId="sec_9__subsec_1">
+                        <content>
+                            <p>Maanmittauslaitoksen on tehtävä 5 §:ssä tarkoitetun ilmoituksen perusteella tarpeelliset merkinnät lainhuuto- ja kiinnitysrekisteriin. Merkinnät on poistettava, kun etuosto on saatettu loppuun.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_10">
+                    <num>10 §</num>
+                    <heading eId="sec_10__heading">Ostajan oikeus saada korvaus suorituksista ja kustannuksista</heading>
+                    <subsection eId="sec_10__subsec_1">
+                        <content>
+                            <p>
+                                Kun etuosto on saatettu loppuun, valtion on viipymättä korvattava ostajalle 8 §:ssä tarkoitetut suoritukset tämän mahdollisesta laiminlyönnistä aiheutuneita suorituksia lukuun ottamatta. Lisäksi valtion on korvattava ostajalle kaupan johdosta syntyneet rahoitus- ja muut tarpeelliset kustannukset sekä kiinteistön hallinnasta, hoidosta ja kunnossapidosta syntyneet tarpeelliset kustannukset. Korvauksille on maksettava kunkin ostajan suorituksen maksupäivästä lukien korkolain 
+                                <ref href="/akn/fi/act/statute-consolidated/1982/633#sec_3">(633/1982) 3 §:n</ref>
+                                 2 momentin mukaista korkoa.
+                            </p>
+                        </content>
+                    </subsection>
+                    <subsection eId="sec_10__subsec_2">
+                        <content>
+                            <p>Edellä 1 momentissa tarkoitetusta korvauksesta ja korosta vähennetään ostajan kiinteistöstä saama tuotto ja muu taloudellinen hyöty.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_11">
+                    <num>11 §</num>
+                    <heading eId="sec_11__heading">Korvaus kiinteistön arvon alenemisesta</heading>
+                    <subsection eId="sec_11__subsec_1">
+                        <content>
+                            <p>Jos myydyn omaisuuden arvo on ostajan toimenpiteiden tai laiminlyöntien johdosta alentunut, valtiolla on oikeus saada ostajalta kohtuullinen korvaus.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_12">
+                    <num>12 §</num>
+                    <heading eId="sec_12__heading">Etuostomenettelyn vaikutus lainhuudatusmenettelyyn</heading>
+                    <subsection eId="sec_12__subsec_1">
+                        <content>
+                            <p>Tämän lain soveltamisalaan kuuluvan kiinteistön saannolle ei saa myöntää lainhuutoa ennen kuin 5 §:ssä säädetty määräaika on päättynyt, etuosto-oikeutta koskeva asia on saanut lainvoiman tai valtio on 4 §:n mukaisesti ilmoittanut, ettei se käytä etuosto-oikeuttaan.</p>
+                        </content>
+                    </subsection>
+                    <subsection eId="sec_12__subsec_2">
+                        <content>
+                            <p>Aika, jonka kuluessa valtion on lainhuudatettava etuostolla hankittu kiinteistö, luetaan siitä, kun etuostoa koskeva päätös on saanut lainvoiman.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_13">
+                    <num>13 §</num>
+                    <heading eId="sec_13__heading">Tiedonsaantioikeus</heading>
+                    <subsection eId="sec_13__subsec_1">
+                        <content>
+                            <p>Puolustusministeriöllä, sisäministeriöllä ja valtiovarainministeriöllä on oikeus saada tässä laissa säädettyjen tehtävien hoitamiseksi välttämättömät tiedot Maanmittauslaitokselta maksutta ja salassapitosäännösten estämättä.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_14">
+                    <num>14 §</num>
+                    <heading eId="sec_14__heading">Muutoksenhaku</heading>
+                    <subsection eId="sec_14__subsec_1">
+                        <content>
+                            <p>
+                                Valtiovarainministeriön 5 §:ssä tarkoitettuun päätökseen saa hakea muutosta valittamalla hallinto-oikeuteen siten kuin hallintolainkäyttölaissa 
+                                <ref href="/akn/fi/act/statute-consolidated/1996/586">(586/1996)</ref>
+                                 säädetään. Hallinto-oikeuden päätökseen saa hakea muutosta valittamalla vain, jos korkein hallinto-oikeus myöntää valitusluvan.
+                            </p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_15" finlex:entryIntoForce="true" finlex:vsId="469/2019">
+                    <num>15 §</num>
+                    <heading eId="sec_15__heading">Voimaantulo</heading>
+                    <subsection eId="sec_15__subsec_1">
+                        <content>
+                            <p>Tämä laki tulee voimaan 1 päivänä tammikuuta 2020.</p>
+                        </content>
+                    </subsection>
+                </section>
+            </hcontainer>
+            <hcontainer finlex:outline="Esityöt ja allekirjoitukset" name="conclusions">
+                <hcontainer finlex:outline="Esityöt" name="preliminaryWork">
+                    <content>
+                        <p>
+                            <ref href="/akn/fi/doc/government-proposal/2018/253">HE 253/2018</ref>
+                        </p>
+                        <p>PuVM 6/2018</p>
+                        <p>EV 268/2018</p>
+                    </content>
+                </hcontainer>
+            </hcontainer>
+        </body>
+    </act>
+</akomaNtoso>

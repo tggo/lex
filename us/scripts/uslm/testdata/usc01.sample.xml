@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uslm xmlns="http://schemas.gpo.gov/xml/uslm" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/">
+  <meta>
+    <docNumber>1</docNumber>
+    <docPublicationName>United States Code</docPublicationName>
+    <dc:title>Title 1 - General Provisions</dc:title>
+    <dcterms:created>2024-01-08</dcterms:created>
+    <dcterms:modified>2024-01-08T00:00:00Z</dcterms:modified>
+  </meta>
+  <main>
+    <title identifier="/us/usc/t1">
+      <num value="1">Title 1—</num>
+      <heading>GENERAL PROVISIONS</heading>
+      <chapter identifier="/us/usc/t1/ch1">
+        <num value="1">CHAPTER 1—</num>
+        <heading>RULES OF CONSTRUCTION</heading>
+        <section identifier="/us/usc/t1/s1" startPeriod="2024-01-08">
+          <num value="1">§ 1.</num>
+          <heading>Words denoting number, gender, and so forth</heading>
+          <content>
+            <p>In determining the meaning of any Act of Congress, unless the context indicates otherwise—</p>
+            <p>words importing the singular include and apply to several persons, parties, or things;</p>
+          </content>
+        </section>
+        <section identifier="/us/usc/t1/s2" startPeriod="2024-01-08">
+          <num value="2">§ 2.</num>
+          <heading>&quot;County&quot; as including &quot;parish&quot;, and so forth</heading>
+          <content>
+            <p>The word &quot;county&quot; includes a parish, or any other equivalent subdivision of a State or Territory of the United States.</p>
+          </content>
+        </section>
+        <section identifier="/us/usc/t1/s5" status="repealed" startPeriod="2024-01-08">
+          <num value="5">§ 5.</num>
+          <heading>Repealed</heading>
+          <content>
+            <p>Repealed. Pub. L. 99-514, title XVIII, &#167;1899A(1), Oct. 22, 1986, 100 Stat. 2958.</p>
+          </content>
+        </section>
+      </chapter>
+    </title>
+  </main>
+</uslm>

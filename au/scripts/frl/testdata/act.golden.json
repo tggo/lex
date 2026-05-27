@@ -1,0 +1,28 @@
+{
+  "Country": "au",
+  "TypeSlug": "act",
+  "Year": 1901,
+  "Number": "C1901A00002",
+  "IDLocal": "C1901A00002",
+  "Expression": {
+    "Title": "Acts Interpretation Act 1901",
+    "LangTag": "en",
+    "LangAlpha3": "ENG",
+    "VersionDate": "2026-03-28T00:00:00Z",
+    "FirstInForceDate": "1901-07-12T00:00:00Z",
+    "Status": 1,
+    "NoLongerInForce": "0001-01-01T00:00:00Z",
+    "SourceURL": "https://www.legislation.gov.au/C1901A00002",
+    "RetrievedAt": "2026-05-27T00:00:00Z",
+    "Articles": null,
+    "Amends": null,
+    "AmendedBy": [
+      "https://lex.dev/eli/au/act/2026/C2026A00004"
+    ],
+    "Repeals": null,
+    "RepealedBy": null,
+    "Cites": null,
+    "Consolidates": null
+  },
+  "Revisions": null
+}

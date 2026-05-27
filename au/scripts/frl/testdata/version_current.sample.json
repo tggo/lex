@@ -1,0 +1,34 @@
+{
+    "@odata.context": "https://api.prod.legislation.gov.au/v1/$metadata#Versions/$entity",
+    "titleId": "C1901A00002",
+    "start": "2026-03-28T00:00:00",
+    "retrospectiveStart": "2026-03-28T00:00:00",
+    "end": null,
+    "retrospectiveEnd": null,
+    "isCurrent": true,
+    "isLatest": true,
+    "name": "Acts Interpretation Act 1901",
+    "status": "InForce",
+    "registerId": "C2026C00117",
+    "registeredAt": "2026-04-01T15:00:04.7906432",
+    "compilationNumber": "39",
+    "publishComments": null,
+    "hasUnincorporatedAmendments": false,
+    "reasons": [
+        {
+            "affect": "Amend",
+            "markdown": "sch 1 (items 1, 2) of the [Law and Justice Legislation Amendment (New South Wales Local Court) Act 2026](/C2026A00004)",
+            "affectedByTitle": {
+                "titleId": "C2026A00004",
+                "name": "Law and Justice Legislation Amendment (New South Wales Local Court) Act 2026",
+                "provisions": "sch 1 (items 1, 2)",
+                "optionalSeriesNumber": null,
+                "year": 2026,
+                "number": 4,
+                "seriesType": "Act"
+            },
+            "amendedByTitle": null,
+            "dateChanged": null
+        }
+    ]
+}

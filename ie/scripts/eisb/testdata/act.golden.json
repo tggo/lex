@@ -1,0 +1,43 @@
+{
+  "Country": "ie",
+  "TypeSlug": "act",
+  "Year": 2015,
+  "Number": "60",
+  "IDLocal": "2015/act/60",
+  "Expression": {
+    "Title": "Bankruptcy (Amendment) Act 2015",
+    "LangTag": "en",
+    "LangAlpha3": "ENG",
+    "VersionDate": "2015-12-25T00:00:00Z",
+    "FirstInForceDate": "2015-12-25T00:00:00Z",
+    "Status": 1,
+    "NoLongerInForce": "0001-01-01T00:00:00Z",
+    "SourceURL": "http://www.irishstatutebook.ie/eli/2015/act/60",
+    "RetrievedAt": "2026-05-27T00:00:00Z",
+    "Articles": [
+      {
+        "Number": "1",
+        "Label": "Section 1",
+        "Text": "Definitions 1. In this Act— “Act of 1988” means the Bankruptcy Act 1988 ; “Act of 2012” means the Personal Insolvency Act 2012 ."
+      },
+      {
+        "Number": "2",
+        "Label": "Section 2",
+        "Text": "Amendment of section 3 of Act of 1988 2. Section 3 of the Act of 1988 is amended in subsection (1) by the insertion of the following definition: “ ‘principal private residence’ has the same meaning as it has in section 2 of the Personal Insolvency Act 2012 subject to the modification that a reference to the debtor shall be taken to be a reference to the bankrupt;”."
+      },
+      {
+        "Number": "3",
+        "Label": "Section 3",
+        "Text": "Amendment of section 12 of Act of 1988 3. Section 12 (amended by section 146 of the Act of 2012) of the Act of 1988 is amended by the substitution of the following subsection for subsection (1): “(1) The petitioning creditor shall at his own cost present his petition and prosecute it and, subject to subsection (2), the Court shall, at or after the hearing of the creditors’ petition under section 14, make an order for the payment of such costs out of the estate of the bankrupt in course of priority to be settled by rules of court.”."
+      }
+    ],
+    "Amends": [
+      "https://lex.dev/eli/ie/act/1988/27"
+    ],
+    "AmendedBy": null,
+    "Repeals": null,
+    "RepealedBy": null,
+    "Cites": null,
+    "Consolidates": null
+  }
+}

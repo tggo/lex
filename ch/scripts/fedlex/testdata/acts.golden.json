@@ -1,0 +1,80 @@
+[
+  {
+    "Country": "ch",
+    "TypeSlug": "gesetzbuch",
+    "Year": 1912,
+    "Number": "210",
+    "IDLocal": "SR 210",
+    "Expression": {
+      "Title": "Schweizerisches Zivilgesetzbuch vom 10. Dezember 1907",
+      "LangTag": "de",
+      "LangAlpha3": "DEU",
+      "VersionDate": "1912-01-01T00:00:00Z",
+      "FirstInForceDate": "1912-01-01T00:00:00Z",
+      "Status": 1,
+      "NoLongerInForce": "0001-01-01T00:00:00Z",
+      "SourceURL": "https://fedlex.data.admin.ch/eli/cc/24/233_245_233",
+      "RetrievedAt": "2026-05-27T00:00:00Z",
+      "Articles": null,
+      "Amends": null,
+      "AmendedBy": null,
+      "Repeals": null,
+      "RepealedBy": null,
+      "Cites": null,
+      "Consolidates": null
+    },
+    "Revisions": null
+  },
+  {
+    "Country": "ch",
+    "TypeSlug": "gesetzbuch",
+    "Year": 1912,
+    "Number": "220",
+    "IDLocal": "SR 220",
+    "Expression": {
+      "Title": "Bundesgesetz vom 30. März 1911 betreffend die Ergänzung des Schweizerischen Zivilgesetzbuches (Fünfter Teil: Obligationenrecht)",
+      "LangTag": "de",
+      "LangAlpha3": "DEU",
+      "VersionDate": "1912-01-01T00:00:00Z",
+      "FirstInForceDate": "1912-01-01T00:00:00Z",
+      "Status": 1,
+      "NoLongerInForce": "0001-01-01T00:00:00Z",
+      "SourceURL": "https://fedlex.data.admin.ch/eli/cc/27/317_321_377",
+      "RetrievedAt": "2026-05-27T00:00:00Z",
+      "Articles": null,
+      "Amends": null,
+      "AmendedBy": null,
+      "Repeals": null,
+      "RepealedBy": null,
+      "Cites": null,
+      "Consolidates": null
+    },
+    "Revisions": null
+  },
+  {
+    "Country": "ch",
+    "TypeSlug": "gesetzbuch",
+    "Year": 1942,
+    "Number": "311.0",
+    "IDLocal": "SR 311.0",
+    "Expression": {
+      "Title": "Schweizerisches Strafgesetzbuch vom 21. Dezember 1937",
+      "LangTag": "de",
+      "LangAlpha3": "DEU",
+      "VersionDate": "1942-01-01T00:00:00Z",
+      "FirstInForceDate": "1942-01-01T00:00:00Z",
+      "Status": 1,
+      "NoLongerInForce": "0001-01-01T00:00:00Z",
+      "SourceURL": "https://fedlex.data.admin.ch/eli/cc/54/757_781_799",
+      "RetrievedAt": "2026-05-27T00:00:00Z",
+      "Articles": null,
+      "Amends": null,
+      "AmendedBy": null,
+      "Repeals": null,
+      "RepealedBy": null,
+      "Cites": null,
+      "Consolidates": null
+    },
+    "Revisions": null
+  }
+]

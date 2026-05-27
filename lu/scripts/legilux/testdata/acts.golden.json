@@ -1,0 +1,82 @@
+[
+  {
+    "Country": "lu",
+    "TypeSlug": "arrete",
+    "Year": 1854,
+    "Number": "etat/adm/a/1854/04/21/n1/jo",
+    "IDLocal": "etat/adm/a/1854/04/21/n1/jo",
+    "Expression": {
+      "Title": "Publication du 21 avril 1854 de la liste générale des personnes autorisées d'exercer une branche quelconque de l'art de guérir ou une profession qui s'y rattache.",
+      "LangTag": "fr",
+      "LangAlpha3": "FRA",
+      "VersionDate": "1854-04-21T00:00:00Z",
+      "FirstInForceDate": "1854-05-13T00:00:00Z",
+      "Status": 1,
+      "NoLongerInForce": "0001-01-01T00:00:00Z",
+      "SourceURL": "http://data.legilux.public.lu/eli/etat/adm/a/1854/04/21/n1/jo",
+      "RetrievedAt": "2026-05-27T00:00:00Z",
+      "Articles": null,
+      "Amends": [
+        "https://lex.dev/eli/lu//1988/etat%2Fleg%2Floi%2F1988%2F12%2F13%2Fn1%2Fjo"
+      ],
+      "AmendedBy": null,
+      "Repeals": null,
+      "RepealedBy": null,
+      "Cites": [
+        "https://lex.dev/eli/lu//1933/etat%2Fleg%2Floi%2F1933%2F11%2F27%2Fn1%2Fjo",
+        "https://lex.dev/eli/lu//2003/dir_ue%2F2003%2F109%2Fjo"
+      ],
+      "Consolidates": null
+    }
+  },
+  {
+    "Country": "lu",
+    "TypeSlug": "arrete",
+    "Year": 1854,
+    "Number": "etat/adm/a/1854/04/24/n1/jo",
+    "IDLocal": "etat/adm/a/1854/04/24/n1/jo",
+    "Expression": {
+      "Title": "Arrêté du 24 avril 1854 fixant les jour, heure et lieu de la remise et de l'incorporation des hommes de la levée de la milice de 1854.",
+      "LangTag": "fr",
+      "LangAlpha3": "FRA",
+      "VersionDate": "1854-04-24T00:00:00Z",
+      "FirstInForceDate": "1854-05-02T00:00:00Z",
+      "Status": 2,
+      "NoLongerInForce": "1881-02-21T00:00:00Z",
+      "SourceURL": "http://data.legilux.public.lu/eli/etat/adm/a/1854/04/24/n1/jo",
+      "RetrievedAt": "2026-05-27T00:00:00Z",
+      "Articles": null,
+      "Amends": null,
+      "AmendedBy": null,
+      "Repeals": null,
+      "RepealedBy": null,
+      "Cites": null,
+      "Consolidates": null
+    }
+  },
+  {
+    "Country": "lu",
+    "TypeSlug": "arrete",
+    "Year": 1854,
+    "Number": "etat/adm/a/1854/07/02/n1/jo",
+    "IDLocal": "etat/adm/a/1854/07/02/n1/jo",
+    "Expression": {
+      "Title": "Arrêté du 2 juillet 1854 portant convocation du collège électoral du canton de Luxembourg.",
+      "LangTag": "fr",
+      "LangAlpha3": "FRA",
+      "VersionDate": "1854-07-02T00:00:00Z",
+      "FirstInForceDate": "1854-07-05T00:00:00Z",
+      "Status": 1,
+      "NoLongerInForce": "0001-01-01T00:00:00Z",
+      "SourceURL": "http://data.legilux.public.lu/eli/etat/adm/a/1854/07/02/n1/jo",
+      "RetrievedAt": "2026-05-27T00:00:00Z",
+      "Articles": null,
+      "Amends": null,
+      "AmendedBy": null,
+      "Repeals": null,
+      "RepealedBy": null,
+      "Cites": null,
+      "Consolidates": null
+    }
+  }
+]

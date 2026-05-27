@@ -1,0 +1,6 @@
+
+{ "head": { "link": [], "vars": ["rel", "target"] },
+  "results": { "distinct": false, "ordered": true, "bindings": [
+    { "rel": { "type": "uri", "value": "http://data.legilux.public.lu/resource/ontology/jolux#cites" }	, "target": { "type": "uri", "value": "http://data.legilux.public.lu/eli/dir_ue/2003/109/jo" }},
+    { "rel": { "type": "uri", "value": "http://data.legilux.public.lu/resource/ontology/jolux#cites" }	, "target": { "type": "uri", "value": "http://data.legilux.public.lu/eli/etat/leg/loi/1933/11/27/n1/jo" }},
+    { "rel": { "type": "uri", "value": "http://data.legilux.public.lu/resource/ontology/jolux#modifies" }	, "target": { "type": "uri", "value": "http://data.legilux.public.lu/eli/etat/leg/loi/1988/12/13/n1/jo" }} ] } }

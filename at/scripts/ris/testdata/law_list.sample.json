@@ -1,0 +1,223 @@
+{
+ "OgdSearchResult": {
+  "OgdDocumentResults": {
+   "Hits": {
+    "@pageNumber": "1",
+    "@pageSize": "100",
+    "#text": "3"
+   },
+   "OgdDocumentReference": [
+    {
+     "Data": {
+      "Metadaten": {
+       "Technisch": {
+        "ID": "NOR11007174",
+        "Applikation": "BrKons",
+        "Organ": "BKA (Bundeskanzleramt)",
+        "ImportTimestamp": {
+         "@xsi:nil": "true",
+         "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance"
+        }
+       },
+       "Allgemein": {
+        "DokumentUrl": "https://www.ris.bka.gv.at/eli/bgbl/1990/727/P0/NOR11007174"
+       },
+       "Bundesrecht": {
+        "Kurztitel": "Höhe der Pflichtnotstandsreserven an Erdöl und Erdölprodukten",
+        "Titel": "Verordnung des Bundesministers für wirtschaftliche Angelegenheiten betreffend die Höhe der Pflichtnotstandsreserven an Erdöl und Erdölprodukten<br/>StF: BGBl. Nr. 727/1990",
+        "Eli": "https://www.ris.bka.gv.at/eli/bgbl/1990/727/P0/NOR11007174",
+        "BrKons": {
+         "Kundmachungsorgan": "BGBl. Nr. 727/1990 aufgehoben durch BGBl. Nr. 782/1994 ",
+         "Typ": "V",
+         "Dokumenttyp": "Norm",
+         "ArtikelParagraphAnlage": "§ 0",
+         "Paragraphnummer": "0",
+         "StammnormPublikationsorgan": "BGBl. Nr.",
+         "StammnormBgblnummer": "727/1990",
+         "NovellenPublikationsorgan": "BGBl. Nr.",
+         "NovellenBgblnummer": "782/1994",
+         "NovellenBeziehung": "aufgehoben durch",
+         "Inkrafttretensdatum": "1990-12-16",
+         "Ausserkrafttretensdatum": "1994-09-30",
+         "Indizes": {
+          "item": "58/03 Sicherung der Energieversorgung"
+         },
+         "Aenderung": "idF:\r\nBGBl. Nr. 782/1994",
+         "Schlagworte": "BGBl. Nr. 546/1982",
+         "Gesetzesnummer": "10007061",
+         "AlteDokumentnummer": "N5199012015H",
+         "GesamteRechtsvorschriftUrl": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10007061"
+        }
+       }
+      },
+      "Dokumentliste": {
+       "ContentReference": {
+        "ContentType": "MainDocument",
+        "Name": "Hauptdokument",
+        "Urls": {
+         "ContentUrl": [
+          {
+           "DataType": "Xml",
+           "Url": "https://www.ris.bka.gv.at/Dokumente/Bundesnormen/NOR11007174/NOR11007174.xml"
+          },
+          {
+           "DataType": "Html",
+           "Url": "https://www.ris.bka.gv.at/Dokumente/Bundesnormen/NOR11007174/NOR11007174.html"
+          },
+          {
+           "DataType": "Rtf",
+           "Url": "https://www.ris.bka.gv.at/Dokumente/Bundesnormen/NOR11007174/NOR11007174.rtf"
+          },
+          {
+           "DataType": "Pdf",
+           "Url": "https://www.ris.bka.gv.at/Dokumente/Bundesnormen/NOR11007174/NOR11007174.pdf"
+          }
+         ]
+        }
+       }
+      }
+     }
+    },
+    {
+     "Data": {
+      "Metadaten": {
+       "Technisch": {
+        "ID": "NOR12076986",
+        "Applikation": "BrKons",
+        "Organ": "BKA (Bundeskanzleramt)",
+        "ImportTimestamp": {
+         "@xsi:nil": "true",
+         "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance"
+        }
+       },
+       "Allgemein": {
+        "DokumentUrl": "https://www.ris.bka.gv.at/eli/bgbl/1990/727/P1/NOR12076986"
+       },
+       "Bundesrecht": {
+        "Kurztitel": "Höhe der Pflichtnotstandsreserven an Erdöl und Erdölprodukten",
+        "Eli": "https://www.ris.bka.gv.at/eli/bgbl/1990/727/P1/NOR12076986",
+        "BrKons": {
+         "Kundmachungsorgan": "BGBl. Nr. 727/1990 aufgehoben durch BGBl. Nr. 782/1994 ",
+         "Typ": "V",
+         "Dokumenttyp": "Paragraph",
+         "ArtikelParagraphAnlage": "§ 1",
+         "Paragraphnummer": "1",
+         "StammnormPublikationsorgan": "BGBl. Nr.",
+         "StammnormBgblnummer": "727/1990",
+         "NovellenPublikationsorgan": "BGBl. Nr.",
+         "NovellenBgblnummer": "782/1994",
+         "NovellenBeziehung": "aufgehoben durch",
+         "Inkrafttretensdatum": "1990-12-16",
+         "Ausserkrafttretensdatum": "1994-09-30",
+         "Indizes": {
+          "item": "58/03 Sicherung der Energieversorgung"
+         },
+         "Aenderung": "",
+         "Schlagworte": "Erdöl-Bevorratungsgesetz 1982",
+         "Gesetzesnummer": "10007061",
+         "AlteDokumentnummer": "N5199012016H",
+         "GesamteRechtsvorschriftUrl": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10007061"
+        }
+       }
+      },
+      "Dokumentliste": {
+       "ContentReference": {
+        "ContentType": "MainDocument",
+        "Name": "Hauptdokument",
+        "Urls": {
+         "ContentUrl": [
+          {
+           "DataType": "Xml",
+           "Url": "https://www.ris.bka.gv.at/Dokumente/Bundesnormen/NOR12076986/NOR12076986.xml"
+          },
+          {
+           "DataType": "Html",
+           "Url": "https://www.ris.bka.gv.at/Dokumente/Bundesnormen/NOR12076986/NOR12076986.html"
+          },
+          {
+           "DataType": "Rtf",
+           "Url": "https://www.ris.bka.gv.at/Dokumente/Bundesnormen/NOR12076986/NOR12076986.rtf"
+          },
+          {
+           "DataType": "Pdf",
+           "Url": "https://www.ris.bka.gv.at/Dokumente/Bundesnormen/NOR12076986/NOR12076986.pdf"
+          }
+         ]
+        }
+       }
+      }
+     }
+    },
+    {
+     "Data": {
+      "Metadaten": {
+       "Technisch": {
+        "ID": "NOR12076987",
+        "Applikation": "BrKons",
+        "Organ": "BKA (Bundeskanzleramt)",
+        "ImportTimestamp": {
+         "@xsi:nil": "true",
+         "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance"
+        }
+       },
+       "Allgemein": {
+        "DokumentUrl": "https://www.ris.bka.gv.at/eli/bgbl/1990/727/P2/NOR12076987"
+       },
+       "Bundesrecht": {
+        "Kurztitel": "Höhe der Pflichtnotstandsreserven an Erdöl und Erdölprodukten",
+        "Eli": "https://www.ris.bka.gv.at/eli/bgbl/1990/727/P2/NOR12076987",
+        "BrKons": {
+         "Kundmachungsorgan": "BGBl. Nr. 727/1990 aufgehoben durch BGBl. Nr. 782/1994 ",
+         "Typ": "V",
+         "Dokumenttyp": "Paragraph",
+         "ArtikelParagraphAnlage": "§ 2",
+         "Paragraphnummer": "2",
+         "StammnormPublikationsorgan": "BGBl. Nr.",
+         "StammnormBgblnummer": "727/1990",
+         "NovellenPublikationsorgan": "BGBl. Nr.",
+         "NovellenBgblnummer": "782/1994",
+         "NovellenBeziehung": "aufgehoben durch",
+         "Inkrafttretensdatum": "1990-12-16",
+         "Ausserkrafttretensdatum": "1994-09-30",
+         "Indizes": {
+          "item": "58/03 Sicherung der Energieversorgung"
+         },
+         "Aenderung": "",
+         "Gesetzesnummer": "10007061",
+         "AlteDokumentnummer": "N5199012017H",
+         "GesamteRechtsvorschriftUrl": "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10007061"
+        }
+       }
+      },
+      "Dokumentliste": {
+       "ContentReference": {
+        "ContentType": "MainDocument",
+        "Name": "Hauptdokument",
+        "Urls": {
+         "ContentUrl": [
+          {
+           "DataType": "Xml",
+           "Url": "https://www.ris.bka.gv.at/Dokumente/Bundesnormen/NOR12076987/NOR12076987.xml"
+          },
+          {
+           "DataType": "Html",
+           "Url": "https://www.ris.bka.gv.at/Dokumente/Bundesnormen/NOR12076987/NOR12076987.html"
+          },
+          {
+           "DataType": "Rtf",
+           "Url": "https://www.ris.bka.gv.at/Dokumente/Bundesnormen/NOR12076987/NOR12076987.rtf"
+          },
+          {
+           "DataType": "Pdf",
+           "Url": "https://www.ris.bka.gv.at/Dokumente/Bundesnormen/NOR12076987/NOR12076987.pdf"
+          }
+         ]
+        }
+       }
+      }
+     }
+    }
+   ]
+  }
+ }
+}

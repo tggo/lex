@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<act year="2020" act.no="0038" id="DLM-sample-2020-0038">
+  <cover>
+    <title>Sample Reform Act 2020</title>
+    <year>2020</year>
+    <act.no>0038</act.no>
+    <document-type>Act</document-type>
+    <assent-date>2020-07-01</assent-date>
+    <commencement>2020-08-01</commencement>
+    <version-date>2023-04-12</version-date>
+  </cover>
+  <body>
+    <prov>
+      <label>1</label>
+      <heading>Title</heading>
+      <body><para>This Act is the <emph>Sample Reform Act 2020</emph>.</para></body>
+    </prov>
+    <prov>
+      <label>2</label>
+      <heading>Commencement</heading>
+      <body><para>This Act comes into force on 1 August 2020.</para></body>
+    </prov>
+    <part>
+      <prov>
+        <label>3</label>
+        <heading>Interpretation</heading>
+        <body><para>In this Act, <def-term>regulator</def-term> means the responsible authority.</para></body>
+      </prov>
+    </part>
+  </body>
+</act>

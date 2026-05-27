@@ -1,0 +1,97 @@
+{
+    "@odata.context": "https://api.prod.legislation.gov.au/v1/$metadata#Titles",
+    "@odata.count": 17,
+    "value": [
+        {
+            "id": "C1901A00001",
+            "name": "Consolidated Revenue",
+            "makingDate": "1901-06-25T00:00:00",
+            "collection": "Act",
+            "subCollection": null,
+            "isPrincipal": true,
+            "isInForce": false,
+            "publishComments": null,
+            "status": "Repealed",
+            "hasCommencedUnincorporatedAmendments": false,
+            "originatingBillUri": "https://parlinfo.aph.gov.au/parlInfo/search/display/display.w3p;query=Id%3A\"legislation%2Fbillshistorical%2FHBILL19010200011\"",
+            "asMadeRegisteredAt": "2013-01-22T23:32:48.7600000",
+            "optionalSeriesNumber": null,
+            "year": 1901,
+            "number": 1,
+            "seriesType": "Act",
+            "nameHistory": [
+                {
+                    "name": "Consolidated Revenue",
+                    "start": "1901-06-25T00:00:00",
+                    "affecterTitleId": null,
+                    "affecterName": null
+                }
+            ],
+            "namePossibleFuture": [],
+            "statusHistory": [
+                {
+                    "status": "InForce",
+                    "start": "1901-06-25T00:00:00",
+                    "reasons": []
+                },
+                {
+                    "status": "Repealed",
+                    "start": "1934-08-06T00:00:00",
+                    "reasons": [
+                        {
+                            "affect": "Repeal",
+                            "markdown": "second sch of the [Statute Law Revision Act 1934](/C1934A00045)",
+                            "affectedByTitle": {
+                                "titleId": "C1934A00045",
+                                "name": "Statute Law Revision Act 1934",
+                                "provisions": "second sch",
+                                "optionalSeriesNumber": null,
+                                "year": 1934,
+                                "number": 45,
+                                "seriesType": "Act"
+                            },
+                            "amendedByTitle": null,
+                            "dateChanged": null
+                        }
+                    ]
+                }
+            ],
+            "statusPossibleFuture": []
+        },
+        {
+            "id": "C1901A00002",
+            "name": "Acts Interpretation Act 1901",
+            "makingDate": "1901-07-12T00:00:00",
+            "collection": "Act",
+            "subCollection": null,
+            "isPrincipal": true,
+            "isInForce": true,
+            "publishComments": null,
+            "status": "InForce",
+            "hasCommencedUnincorporatedAmendments": false,
+            "originatingBillUri": "https://parlinfo.aph.gov.au/parlInfo/search/display/display.w3p;query=Id%3A\"legislation%2Fbillshistorical%2FHBILL19010200003\"",
+            "asMadeRegisteredAt": "2013-01-22T20:21:37.1570000",
+            "optionalSeriesNumber": null,
+            "year": 1901,
+            "number": 2,
+            "seriesType": "Act",
+            "nameHistory": [
+                {
+                    "name": "Acts Interpretation Act 1901",
+                    "start": "1901-07-12T00:00:00",
+                    "affecterTitleId": null,
+                    "affecterName": null
+                }
+            ],
+            "namePossibleFuture": [],
+            "statusHistory": [
+                {
+                    "status": "InForce",
+                    "start": "1901-07-12T00:00:00",
+                    "reasons": []
+                }
+            ],
+            "statusPossibleFuture": []
+        }
+    ]
+}

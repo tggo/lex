@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ARTICLE>
+  <META>
+    <META_COMMUN>
+      <ID>LEGIARTI000006419280</ID>
+      <ANCIEN_ID></ANCIEN_ID>
+      <ORIGINE>LEGI</ORIGINE>
+      <URL>/LEGI/ARTI/00/00/06/41/92/LEGIARTI000006419280.xml</URL>
+      <NATURE>Article</NATURE>
+    </META_COMMUN>
+    <META_SPEC>
+      <META_ARTICLE>
+        <NUM>1</NUM>
+        <ETAT>VIGUEUR</ETAT>
+        <DATE_DEBUT>1804-03-15</DATE_DEBUT>
+        <DATE_FIN>2999-01-01</DATE_FIN>
+        <TYPE>AUTONOME</TYPE>
+      </META_ARTICLE>
+    </META_SPEC>
+  </META>
+  <CONTEXTE>
+    <TEXTE autorite="" cid="LEGITEXT000006070721" date_publi="1804-03-15" ministere="" nature="CODE" num="">
+      <TITRE_TXT c_titre_court="Code civil" debut="2024-07-01" fin="2999-01-01" id="LEGITEXT000006070721">Code civil</TITRE_TXT>
+    </TEXTE>
+  </CONTEXTE>
+  <VERSIONS>
+    <VERSION etat="VIGUEUR">
+      <LIEN_ART debut="1804-03-15" etat="VIGUEUR" fin="2999-01-01" id="LEGIARTI000006419280" origine="LEGI"/>
+    </VERSION>
+  </VERSIONS>
+  <LIENS>
+    <LIEN cidtexte="LEGITEXT000006070721" datesignatexte="" id="LEGIARTI000006419282" naturetexte="" nortexte="" num="2" sens="cite" typelien="CITATION">Article 2</LIEN>
+  </LIENS>
+  <BLOC_TEXTUEL>
+    <CONTENU>Les lois et, lorsqu'ils sont publiés au Journal officiel de la République française, les actes administratifs entrent en vigueur à la date qu'ils fixent ou, à défaut, le lendemain de leur publication.</CONTENU>
+  </BLOC_TEXTUEL>
+  <NOTA>
+    <CONTENU></CONTENU>
+  </NOTA>
+</ARTICLE>

@@ -1,0 +1,36 @@
+{
+    "@odata.context": "https://api.prod.legislation.gov.au/v1/$metadata#Titles/$entity",
+    "id": "C1901A00002",
+    "name": "Acts Interpretation Act 1901",
+    "makingDate": "1901-07-12T00:00:00",
+    "collection": "Act",
+    "subCollection": null,
+    "isPrincipal": true,
+    "isInForce": true,
+    "publishComments": null,
+    "status": "InForce",
+    "hasCommencedUnincorporatedAmendments": false,
+    "originatingBillUri": "https://parlinfo.aph.gov.au/parlInfo/search/display/display.w3p;query=Id%3A\"legislation%2Fbillshistorical%2FHBILL19010200003\"",
+    "asMadeRegisteredAt": "2013-01-22T20:21:37.1570000",
+    "optionalSeriesNumber": null,
+    "year": 1901,
+    "number": 2,
+    "seriesType": "Act",
+    "nameHistory": [
+        {
+            "name": "Acts Interpretation Act 1901",
+            "start": "1901-07-12T00:00:00",
+            "affecterTitleId": null,
+            "affecterName": null
+        }
+    ],
+    "namePossibleFuture": [],
+    "statusHistory": [
+        {
+            "status": "InForce",
+            "start": "1901-07-12T00:00:00",
+            "reasons": []
+        }
+    ],
+    "statusPossibleFuture": []
+}

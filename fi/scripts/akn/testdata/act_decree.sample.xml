@@ -1,0 +1,208 @@
+<akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0" xmlns:finlex="http://data.finlex.fi/schema/finlex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <act contains="multipleVersions" name="main">
+        <meta>
+            <identification source="#organization_fi.finlex">
+                <FRBRWork>
+                    <FRBRthis value="/akn/fi/act/statute-consolidated/2025/51/!main"/>
+                    <FRBRuri value="/akn/fi/act/statute-consolidated/2025/51"/>
+                    <FRBRalias name="eli" value="http://data.finlex.fi/eli/sd/2025/51/ajantasa"/>
+                    <FRBRdate date="2025-02-13" name="dateIssued"/>
+                    <FRBRdate date="2025-02-14" name="datePublished"/>
+                    <FRBRauthor as="#role_author" href="#organization_fi.finlex"/>
+                    <FRBRcountry value="fi"/>
+                    <FRBRsubtype value="statute-consolidated"/>
+                    <FRBRnumber value="51"/>
+                    <FRBRprescriptive value="false"/>
+                    <FRBRauthoritative value="false"/>
+                </FRBRWork>
+                <FRBRExpression>
+                    <FRBRthis value="/akn/fi/act/statute-consolidated/2025/51/fin@/!main"/>
+                    <FRBRuri value="/akn/fi/act/statute-consolidated/2025/51/fin@"/>
+                    <FRBRalias name="eli" value="http://data.finlex.fi/eli/sd/2025/51/ajantasa/2025-02-13/fin"/>
+                    <FRBRdate date="2025-02-13" name="dateIssued"/>
+                    <FRBRdate date="2025-02-13" name="dateConsolidated"/>
+                    <FRBRauthor as="#role_author" href="#organization_fi.finlex"/>
+                    <FRBRversionNumber value="20250051"/>
+                    <FRBRlanguage language="fin"/>
+                </FRBRExpression>
+                <FRBRManifestation>
+                    <FRBRthis value="/akn/fi/act/statute-consolidated/2025/51/fin@/!main.xml"/>
+                    <FRBRuri value="/akn/fi/act/statute-consolidated/2025/51/fin@.akn"/>
+                    <FRBRalias name="eli" value="http://data.finlex.fi/eli/sd/2025/51/ajantasa/2025-02-13/fin/xml"/>
+                    <FRBRdate date="2026-05-20" name="dateProduced"/>
+                    <FRBRdate date="2025-02-14" name="datePublished"/>
+                    <FRBRauthor as="#role_editor" href="#organization_fi.finlex"/>
+                    <FRBRformat value="xml"/>
+                </FRBRManifestation>
+            </identification>
+            <references source="#organization_fi.finlex">
+                <TLCOrganization eId="organization_fi.finlex" href="/akn/ontology/organization/fi.finlex" showAs="Finlex"/>
+                <TLCRole eId="role_author" href="/akn/ontology/role/author" showAs="Tekijä"/>
+                <TLCRole eId="role_editor" href="/akn/ontology/role/editor" showAs="Toimittaja"/>
+                <TLCOrganization eId="fi.ministry-of-agriculture-and-forestry" href="/akn/ontology/organization/fi.ministry-of-agriculture-and-forestry" showAs="Maa- ja metsätalousministeriö"/>
+                <TLCConcept eId="decree" href="/akn/ontology/concept/statute/type-statute.decree" showAs="Asetus"/>
+            </references>
+            <proprietary source="#organization_fi.finlex">
+                <finlex:documentYear>2025</finlex:documentYear>
+                <finlex:administrativeBranch refersTo="#fi.ministry-of-agriculture-and-forestry"/>
+                <finlex:typeStatute refersTo="#decree"/>
+                <finlex:isInForce value="true"/>
+                <finlex:inForce>
+                    <finlex:dateEntryIntoForce date="2025-02-17"/>
+                </finlex:inForce>
+                <finlex:noteEditorial>sis. liite</finlex:noteEditorial>
+                <finlex:issuedUnderActs>
+                    <finlex:statuteReference>
+                        <finlex:ref href="/akn/fi/act/statute-consolidated/2001/1559">1559/2001</finlex:ref>
+                    </finlex:statuteReference>
+                </finlex:issuedUnderActs>
+            </proprietary>
+        </meta>
+        <preface>
+            <p>
+                <docNumber>51/2025</docNumber>
+                <docTitle>Valtioneuvoston asetus vuodelta 2024 maksettavasta sokerijuurikkaan kuljetustuesta</docTitle>
+            </p>
+        </preface>
+        <preamble>
+            <formula name="enactingClause">
+                <p>
+                    Valtioneuvoston päätöksen mukaisesti säädetään maa- ja puutarhatalouden kansallisista tuista annetun lain 
+                    <ref href="/akn/fi/act/statute-consolidated/2001/1559#sec_7">(1559/2001) 7 §:n</ref>
+                     1 momentin ja 15 §:n 3 momentin nojalla:
+                </p>
+            </formula>
+        </preamble>
+        <body>
+            <hcontainer finlex:outline="Säädöksen teksti" name="statuteProvisionsWrapper">
+                <section eId="sec_1">
+                    <num>1 §</num>
+                    <heading eId="sec_1__heading">Soveltamisala</heading>
+                    <subsection eId="sec_1__subsec_1">
+                        <content>
+                            <p>
+                                Maa- ja puutarhatalouden kansallisista tuista annetun lain 
+                                <ref href="/akn/fi/act/statute-consolidated/2001/1559#sec_6">(1559/2001) 6 §:n</ref>
+                                 3 kohdassa tarkoitettuna muuna kansallisena tukena voidaan maksaa sokerijuurikkaan viljelijöille sokerijuurikkaan kuljetustukea vuodelta 2024 siten kuin tässä asetuksessa säädetään.
+                            </p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_2">
+                    <num>2 §</num>
+                    <heading eId="sec_2__heading">Tuen määräytyminen</heading>
+                    <subsection eId="sec_2__subsec_1">
+                        <content>
+                            <p>Tuki myönnetään tuen hakijalle, joka on viljellyt sokerijuurikasta kasvukaudella 2024. Tuki määräytyy markkinointivuotta 2024/2025 koskevan toimitussopimuksen mukaisen polsokerimäärän ja kuljetusmatkan perusteella liitteen mukaisesti. Polsokerimäärä lasketaan kertomalla puhtaiden juurikkaiden määrä tonneina juurikkaiden sokeripitoisuudella. Sokeripitoisuus on mitattava polarimetrisellä menetelmällä. Kuljetusmatka on sokerijuurikkaan eri toimituspaikkojen keskimääräinen kuljetusetäisyys tehtaalle lyhintä liikennöitävissä olevaa tiereittiä pitkin.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_3">
+                    <num>3 §</num>
+                    <heading eId="sec_3__heading">Tuen myöntäminen ja maksaminen</heading>
+                    <subsection eId="sec_3__subsec_1">
+                        <content>
+                            <p>Tuki myönnetään Euroopan unionin toiminnasta tehdyn sopimuksen 107 ja 108 artiklan soveltamisesta vähämerkityksiseen tukeen maatalousalalla annetun komission asetuksen (EU) N:o 1408/2013 3 artiklassa tarkoitettuna vähämerkityksisenä tukena. Tuen myöntämisen edellytyksenä on, että hakijalle vähämerkityksisenä tukena maatalousalalla myönnettyjen tukien yhteismäärä ei ylitä sen vuoden, jolloin vähämerkityksinen tuki myönnetään, ja sitä edeltäneen kahden vuoden ajanjaksolla (viitekausi) mainitun artiklan 2 kohdan mukaista enimmäismäärää. Edellytyksenä on lisäksi, että kaikkien hakijalle viitekaudella myönnettyjen vähämerkityksisten tukien yhteismäärä ei ylitä Euroopan unionin toiminnasta tehdyn sopimuksen 107 ja 108 artiklan soveltamisesta vähämerkityksiseen tukeen annetun komission asetuksen (EU) N:o 2023/2381 3 artiklan 2 kohdan mukaista enimmäismäärää.</p>
+                        </content>
+                    </subsection>
+                    <subsection eId="sec_3__subsec_2">
+                        <content>
+                            <p>Sokerijuurikkaan kuljetustuki katsotaan myönnetyksi 1 momentissa ensiksi mainitun asetuksen 3 artiklan 4 kohdassa säädetyllä tavalla, kun tuen maksamisesta on annettu maksulupa.</p>
+                        </content>
+                    </subsection>
+                </section>
+                <section eId="sec_4" finlex:entryIntoForce="true" finlex:vsId="51/2025">
+                    <num>4 §</num>
+                    <heading eId="sec_4__heading">Voimaantulo</heading>
+                    <subsection eId="sec_4__subsec_1">
+                        <content>
+                            <p>Tämä asetus tulee voimaan 17 päivänä helmikuuta 2025.</p>
+                        </content>
+                    </subsection>
+                </section>
+            </hcontainer>
+            <hcontainer name="attachments">
+                <hcontainer name="attachment">
+                    <heading>Liite</heading>
+                    <content>
+                        <p>SOKERIJUURIKKAAN KULJETUSTUEN MÄÄRÄ</p>
+                        <table>
+                            <tr>
+                                <td class="align-left colsep-1 rowsep-1 valign-top width-50">
+                                    <p>Kuljetusmatka, kilometriä</p>
+                                </td>
+                                <td class="align-left colsep-0 rowsep-1 valign-top width-50">
+                                    <p>Tuki, euroa/tonni</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-left colsep-1 rowsep-1 valign-top width-50">
+                                    <p>enintään 40</p>
+                                </td>
+                                <td class="align-left colsep-0 rowsep-1 valign-top width-50">
+                                    <p>17,46</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-left colsep-1 rowsep-1 valign-top width-50">
+                                    <p>yli 40 ja enintään 80</p>
+                                </td>
+                                <td class="align-left colsep-0 rowsep-1 valign-top width-50">
+                                    <p>20,95</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-left colsep-1 rowsep-1 valign-top width-50">
+                                    <p>yli 80 ja enintään 120</p>
+                                </td>
+                                <td class="align-left colsep-0 rowsep-1 valign-top width-50">
+                                    <p>25,14</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-left colsep-1 rowsep-1 valign-top width-50">
+                                    <p>yli 120 ja enintään 160</p>
+                                </td>
+                                <td class="align-left colsep-0 rowsep-1 valign-top width-50">
+                                    <p>30,17</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-left colsep-1 rowsep-1 valign-top width-50">
+                                    <p>yli 160 ja enintään 200</p>
+                                </td>
+                                <td class="align-left colsep-0 rowsep-1 valign-top width-50">
+                                    <p>36,21</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-left colsep-1 rowsep-1 valign-top width-50">
+                                    <p>yli 200 ja enintään 240</p>
+                                </td>
+                                <td class="align-left colsep-0 rowsep-1 valign-top width-50">
+                                    <p>39,83</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-left colsep-1 rowsep-1 valign-top width-50">
+                                    <p>yli 240 ja enintään 280</p>
+                                </td>
+                                <td class="align-left colsep-0 rowsep-1 valign-top width-50">
+                                    <p>43,82</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-left colsep-1 rowsep-0 valign-top width-50">
+                                    <p>yli 280</p>
+                                </td>
+                                <td class="align-left colsep-0 rowsep-0 valign-top width-50">
+                                    <p>48,20</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </content>
+                </hcontainer>
+            </hcontainer>
+        </body>
+    </act>
+</akomaNtoso>

@@ -1,0 +1,34 @@
+{
+    "@odata.context": "https://api.prod.legislation.gov.au/v1/$metadata#Versions/$entity",
+    "titleId": "C1901A00001",
+    "start": "1934-08-06T00:00:00",
+    "retrospectiveStart": "1934-08-06T00:00:00",
+    "end": null,
+    "retrospectiveEnd": null,
+    "isCurrent": true,
+    "isLatest": false,
+    "name": "Consolidated Revenue",
+    "status": "Repealed",
+    "registerId": null,
+    "registeredAt": null,
+    "compilationNumber": null,
+    "publishComments": null,
+    "hasUnincorporatedAmendments": false,
+    "reasons": [
+        {
+            "affect": "Repeal",
+            "markdown": "second sch of the [Statute Law Revision Act 1934](/C1934A00045)",
+            "affectedByTitle": {
+                "titleId": "C1934A00045",
+                "name": "Statute Law Revision Act 1934",
+                "provisions": "second sch",
+                "optionalSeriesNumber": null,
+                "year": 1934,
+                "number": 45,
+                "seriesType": "Act"
+            },
+            "amendedByTitle": null,
+            "dateChanged": null
+        }
+    ]
+}

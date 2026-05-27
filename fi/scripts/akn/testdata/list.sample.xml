@@ -1,0 +1,142 @@
+<AknXmlList><Results><akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0" xmlns:finlex="http://data.finlex.fi/schema/finlex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <act contains="multipleVersions" name="main">
+        <meta>
+            <identification source="#organization_fi.finlex">
+                <FRBRWork>
+                    <FRBRthis value="/akn/fi/act/statute-consolidated/2019/469/!main"/>
+                    <FRBRuri value="/akn/fi/act/statute-consolidated/2019/469"/>
+                    <FRBRalias name="eli" value="http://data.finlex.fi/eli/sd/2019/469/ajantasa"/>
+                    <FRBRdate date="2019-03-29" name="dateIssued"/>
+                    <FRBRdate date="2019-04-10" name="datePublished"/>
+                    <FRBRauthor as="#role_author" href="#organization_fi.finlex"/>
+                    <FRBRcountry value="fi"/>
+                    <FRBRsubtype value="statute-consolidated"/>
+                    <FRBRnumber value="469"/>
+                    <FRBRprescriptive value="false"/>
+                    <FRBRauthoritative value="false"/>
+                </FRBRWork>
+                <FRBRExpression>
+                    <FRBRthis value="/akn/fi/act/statute-consolidated/2019/469/fin@/!main"/>
+                    <FRBRuri value="/akn/fi/act/statute-consolidated/2019/469/fin@"/>
+                    <FRBRdate date="2019-03-29" name="dateIssued"/>
+                    <FRBRdate date="2022-12-20" name="dateConsolidated"/>
+                    <FRBRauthor as="#role_author" href="#organization_fi.finlex"/>
+                    <FRBRversionNumber value="20190469"/>
+                    <FRBRlanguage language="fin"/>
+                </FRBRExpression>
+                <FRBRManifestation>
+                    <FRBRthis value="/akn/fi/act/statute-consolidated/2019/469/fin@/!main.xml"/>
+                    <FRBRuri value="/akn/fi/act/statute-consolidated/2019/469/fin@.akn"/>
+                    <FRBRdate date="2026-05-20" name="dateProduced"/>
+                    <FRBRdate date="2019-04-10" name="datePublished"/>
+                    <FRBRauthor as="#role_editor" href="#organization_fi.finlex"/>
+                    <FRBRformat value="xml"/>
+                </FRBRManifestation>
+            </identification>
+            <classification source="#organization_fi.finlex">
+                <keyword dictionary="/akn/ontology/concept/statute-keyword" showAs="Etuosto-oikeus" value="/akn/ontology/concept/statute-keyword.1412"/>
+                <keyword dictionary="/akn/ontology/concept/statute-keyword" showAs="Kiinteistö" value="/akn/ontology/concept/statute-keyword.2009"/>
+            </classification>
+            <references source="#organization_fi.finlex">
+                <TLCOrganization eId="organization_fi.finlex" href="/akn/ontology/organization/fi.finlex" showAs="Finlex"/>
+                <TLCRole eId="role_author" href="/akn/ontology/role/author" showAs="Tekijä"/>
+                <TLCRole eId="role_editor" href="/akn/ontology/role/editor" showAs="Toimittaja"/>
+                <TLCOrganization eId="fi.ministry-of-defence" href="/akn/ontology/organization/fi.ministry-of-defence" showAs="Puolustusministeriö"/>
+                <TLCConcept eId="act" href="/akn/ontology/concept/statute/type-statute.act" showAs="Laki"/>
+            </references>
+            <proprietary source="#organization_fi.finlex">
+                <finlex:documentYear>2019</finlex:documentYear>
+                <finlex:administrativeBranch refersTo="#fi.ministry-of-defence"/>
+                <finlex:typeStatute refersTo="#act"/>
+                <finlex:isInForce value="true"/>
+                <finlex:inForce>
+                    <finlex:dateEntryIntoForce date="2020-01-01"/>
+                </finlex:inForce>
+                <finlex:amendedBy>
+                    <finlex:statuteReference>
+                        <finlex:ref href="/akn/fi/act/statute/2022/1099">1099/2022</finlex:ref>
+                        <finlex:inForce>
+                            <finlex:dateEntryIntoForce date="2023-01-01">1.1.2023</finlex:dateEntryIntoForce>
+                        </finlex:inForce>
+                        <finlex:noteEditorial>muutt. 1, 2, 4 ja 5 §:ää sekä 13 ja 14 §</finlex:noteEditorial>
+                    </finlex:statuteReference>
+                </finlex:amendedBy>
+            </proprietary>
+        </meta>
+        <preface>
+            <p>
+                <docNumber>469/2019</docNumber>
+                <docTitle>Laki valtion etuosto-oikeudesta eräillä alueilla</docTitle>
+            </p>
+        </preface>
+
+    </act>
+</akomaNtoso><akomaNtoso xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0" xmlns:finlex="http://data.finlex.fi/schema/finlex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <act contains="multipleVersions" name="main">
+        <meta>
+            <identification source="#organization_fi.finlex">
+                <FRBRWork>
+                    <FRBRthis value="/akn/fi/act/statute-consolidated/2025/51/!main"/>
+                    <FRBRuri value="/akn/fi/act/statute-consolidated/2025/51"/>
+                    <FRBRalias name="eli" value="http://data.finlex.fi/eli/sd/2025/51/ajantasa"/>
+                    <FRBRdate date="2025-02-13" name="dateIssued"/>
+                    <FRBRdate date="2025-02-14" name="datePublished"/>
+                    <FRBRauthor as="#role_author" href="#organization_fi.finlex"/>
+                    <FRBRcountry value="fi"/>
+                    <FRBRsubtype value="statute-consolidated"/>
+                    <FRBRnumber value="51"/>
+                    <FRBRprescriptive value="false"/>
+                    <FRBRauthoritative value="false"/>
+                </FRBRWork>
+                <FRBRExpression>
+                    <FRBRthis value="/akn/fi/act/statute-consolidated/2025/51/fin@/!main"/>
+                    <FRBRuri value="/akn/fi/act/statute-consolidated/2025/51/fin@"/>
+                    <FRBRalias name="eli" value="http://data.finlex.fi/eli/sd/2025/51/ajantasa/2025-02-13/fin"/>
+                    <FRBRdate date="2025-02-13" name="dateIssued"/>
+                    <FRBRdate date="2025-02-13" name="dateConsolidated"/>
+                    <FRBRauthor as="#role_author" href="#organization_fi.finlex"/>
+                    <FRBRversionNumber value="20250051"/>
+                    <FRBRlanguage language="fin"/>
+                </FRBRExpression>
+                <FRBRManifestation>
+                    <FRBRthis value="/akn/fi/act/statute-consolidated/2025/51/fin@/!main.xml"/>
+                    <FRBRuri value="/akn/fi/act/statute-consolidated/2025/51/fin@.akn"/>
+                    <FRBRalias name="eli" value="http://data.finlex.fi/eli/sd/2025/51/ajantasa/2025-02-13/fin/xml"/>
+                    <FRBRdate date="2026-05-20" name="dateProduced"/>
+                    <FRBRdate date="2025-02-14" name="datePublished"/>
+                    <FRBRauthor as="#role_editor" href="#organization_fi.finlex"/>
+                    <FRBRformat value="xml"/>
+                </FRBRManifestation>
+            </identification>
+            <references source="#organization_fi.finlex">
+                <TLCOrganization eId="organization_fi.finlex" href="/akn/ontology/organization/fi.finlex" showAs="Finlex"/>
+                <TLCRole eId="role_author" href="/akn/ontology/role/author" showAs="Tekijä"/>
+                <TLCRole eId="role_editor" href="/akn/ontology/role/editor" showAs="Toimittaja"/>
+                <TLCOrganization eId="fi.ministry-of-agriculture-and-forestry" href="/akn/ontology/organization/fi.ministry-of-agriculture-and-forestry" showAs="Maa- ja metsätalousministeriö"/>
+                <TLCConcept eId="decree" href="/akn/ontology/concept/statute/type-statute.decree" showAs="Asetus"/>
+            </references>
+            <proprietary source="#organization_fi.finlex">
+                <finlex:documentYear>2025</finlex:documentYear>
+                <finlex:administrativeBranch refersTo="#fi.ministry-of-agriculture-and-forestry"/>
+                <finlex:typeStatute refersTo="#decree"/>
+                <finlex:isInForce value="true"/>
+                <finlex:inForce>
+                    <finlex:dateEntryIntoForce date="2025-02-17"/>
+                </finlex:inForce>
+                <finlex:noteEditorial>sis. liite</finlex:noteEditorial>
+                <finlex:issuedUnderActs>
+                    <finlex:statuteReference>
+                        <finlex:ref href="/akn/fi/act/statute-consolidated/2001/1559">1559/2001</finlex:ref>
+                    </finlex:statuteReference>
+                </finlex:issuedUnderActs>
+            </proprietary>
+        </meta>
+        <preface>
+            <p>
+                <docNumber>51/2025</docNumber>
+                <docTitle>Valtioneuvoston asetus vuodelta 2024 maksettavasta sokerijuurikkaan kuljetustuesta</docTitle>
+            </p>
+        </preface>
+
+    </act>
+</akomaNtoso></Results></AknXmlList>

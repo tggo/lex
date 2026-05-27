@@ -1,0 +1,42 @@
+{
+  "Country": "us",
+  "TypeSlug": "usc-title",
+  "Year": 2024,
+  "Number": "title-1",
+  "IDLocal": "usc/title-1",
+  "Expression": {
+    "Title": "Title 1 - General Provisions",
+    "LangTag": "en",
+    "LangAlpha3": "ENG",
+    "VersionDate": "2024-01-08T00:00:00Z",
+    "FirstInForceDate": "0001-01-01T00:00:00Z",
+    "Status": 1,
+    "NoLongerInForce": "0001-01-01T00:00:00Z",
+    "SourceURL": "https://uscode.house.gov/download/releasepoints/us/pl/118/78/usc01@118-78.htm",
+    "RetrievedAt": "2026-05-27T00:00:00Z",
+    "Articles": [
+      {
+        "Number": "1",
+        "Label": "§ 1. Words denoting number, gender, and so forth",
+        "Text": "In determining the meaning of any Act of Congress, unless the context indicates otherwise— words importing the singular include and apply to several persons, parties, or things;"
+      },
+      {
+        "Number": "2",
+        "Label": "§ 2. \"County\" as including \"parish\", and so forth",
+        "Text": "The word \"county\" includes a parish, or any other equivalent subdivision of a State or Territory of the United States."
+      },
+      {
+        "Number": "5",
+        "Label": "§ 5. Repealed",
+        "Text": "Repealed. Pub. L. 99-514, title XVIII, §1899A(1), Oct. 22, 1986, 100 Stat. 2958."
+      }
+    ],
+    "Amends": null,
+    "AmendedBy": null,
+    "Repeals": null,
+    "RepealedBy": null,
+    "Cites": null,
+    "Consolidates": null
+  },
+  "Revisions": null
+}
