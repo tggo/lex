@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lex — open legislation as an MCP knowledge graph</title>
+<meta name="description" content="lex is an open-source MCP server that puts a country's laws and subordinate legislation at the fingertips of AI assistants — searchable, retrievable, and linked as a graph. Ukraine first; country-agnostic.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Spectral:ital,wght@0,300;0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0c0d11;
+    --ink-2:#13151b;
+    --panel:#171922;
+    --line:#2a2d3a;
+    --paper:#ece6d8;
+    --paper-dim:#a7a293;
+    --gold:#cda349;
+    --gold-soft:#e7c878;
+    --blue:#6f8fd6;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--ink);color:var(--paper);
+    font-family:"Spectral",Georgia,serif;font-weight:400;font-size:18px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  canvas#graph{position:fixed;inset:0;width:100%;height:100%;z-index:0;opacity:.5}
+  .wrap{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  a{color:var(--gold-soft);text-decoration:none}
+  a:hover{color:var(--gold)}
+  ::selection{background:var(--gold);color:var(--ink)}
+
+  /* top bar */
+  header.bar{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;
+    max-width:var(--maxw);margin:0 auto;padding:22px 28px}
+  .brand{font-family:"Fraunces",serif;font-weight:900;font-size:24px;letter-spacing:.02em}
+  .brand .dot{color:var(--gold)}
+  .bar nav a{font-family:"JetBrains Mono",monospace;font-size:12.5px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--paper-dim);margin-left:24px}
+  .bar nav a:hover{color:var(--paper)}
+
+  /* hero */
+  .hero{padding:9vh 0 7vh;position:relative}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.32em;
+    text-transform:uppercase;color:var(--gold);margin:0 0 26px;
+    opacity:0;animation:rise .9s .05s forwards}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(48px,9vw,116px);
+    line-height:.94;letter-spacing:-.02em;margin:0;color:var(--paper)}
+  h1 .l{display:inline-block;opacity:0;transform:translateY(28px);animation:rise .9s forwards}
+  h1 .em{font-style:italic;font-weight:400;color:var(--gold-soft)}
+  .lede{max-width:620px;margin:34px 0 0;font-size:clamp(19px,2.2vw,23px);color:var(--paper);
+    opacity:0;animation:rise 1s .55s forwards}
+  .lede b{color:var(--gold-soft);font-weight:500}
+  .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:40px;opacity:0;animation:rise 1s .75s forwards}
+  .btn{font-family:"JetBrains Mono",monospace;font-size:13.5px;letter-spacing:.04em;
+    padding:13px 22px;border:1px solid var(--line);border-radius:2px;color:var(--paper);
+    transition:.25s;background:transparent}
+  .btn:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
+  .btn.solid{background:var(--gold);color:var(--ink);border-color:var(--gold);font-weight:700}
+  .btn.solid:hover{background:var(--gold-soft);color:var(--ink)}
+
+  /* section scaffolding */
+  section{padding:68px 0;border-top:1px solid var(--line)}
+  .kicker{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--gold);margin:0 0 14px}
+  h2{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(28px,4.5vw,46px);
+    line-height:1.05;letter-spacing:-.015em;margin:0 0 22px;color:var(--paper)}
+  p.body{max-width:680px;color:var(--paper);font-size:19px}
+  .dim{color:var(--paper-dim)}
+
+  /* flow diagram */
+  .flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin-top:34px;
+    font-family:"JetBrains Mono",monospace;font-size:13px}
+  .node{flex:1;min-width:150px;background:var(--panel);border:1px solid var(--line);
+    padding:18px 16px;border-radius:3px}
+  .node .t{color:var(--gold-soft);font-weight:700;display:block;margin-bottom:6px;letter-spacing:.04em}
+  .node .s{color:var(--paper-dim);font-size:12px;line-height:1.5}
+  .arrow{display:flex;align-items:center;justify-content:center;color:var(--gold);
+    font-size:22px;padding:0 8px}
+
+  /* tools grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-top:30px}
+  .tool{background:var(--ink-2);padding:26px 24px;transition:.25s}
+  .tool:hover{background:var(--panel)}
+  .tool code{font-family:"JetBrains Mono",monospace;font-size:15px;color:var(--gold-soft);font-weight:500}
+  .tool p{margin:10px 0 0;font-size:16px;color:var(--paper-dim);line-height:1.55}
+
+  /* code block */
+  pre{background:#070809;border:1px solid var(--line);border-left:3px solid var(--gold);
+    border-radius:4px;padding:24px 26px;overflow-x:auto;margin:28px 0 0;
+    font-family:"JetBrains Mono",monospace;font-size:14px;line-height:1.85;color:#cfd3da}
+  pre .c{color:#6b7180;font-style:italic}
+  pre .k{color:var(--gold-soft)}
+  pre .f{color:var(--blue)}
+
+  /* countries */
+  .countries{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+  .ct{display:flex;align-items:center;gap:13px;background:var(--panel);border:1px solid var(--line);
+    border-radius:3px;padding:15px 20px;min-width:230px}
+  .ct .flag{font-size:22px}
+  .ct .nm{font-family:"Fraunces",serif;font-weight:600;font-size:19px}
+  .ct .st{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--paper-dim);display:block;margin-top:2px}
+  .badge{margin-left:auto;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.06em;
+    padding:4px 9px;border-radius:999px;text-transform:uppercase}
+  .badge.live{background:rgba(205,163,73,.16);color:var(--gold-soft);border:1px solid rgba(205,163,73,.4)}
+  .badge.wip{background:rgba(111,143,214,.12);color:var(--blue);border:1px solid rgba(111,143,214,.35)}
+
+  /* principles */
+  .ps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:34px;margin-top:34px}
+  .ps h3{font-family:"Fraunces",serif;font-weight:600;font-size:21px;margin:0 0 8px;color:var(--gold-soft)}
+  .ps p{margin:0;font-size:16px;color:var(--paper-dim);line-height:1.6}
+  .ps .num{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--gold);letter-spacing:.1em}
+
+  footer{border-top:1px solid var(--line);padding:46px 0 60px;text-align:center}
+  footer .brand{font-size:30px;margin-bottom:10px}
+  footer p{color:var(--paper-dim);font-size:14.5px;max-width:540px;margin:8px auto;
+    font-family:"JetBrains Mono",monospace;letter-spacing:.02em;line-height:1.7}
+
+  @keyframes rise{to{opacity:1;transform:translateY(0)}}
+  @media (max-width:620px){ .arrow{transform:rotate(90deg);width:100%;padding:6px 0} .flow{flex-direction:column} }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<canvas id="graph"></canvas>
+
+<header class="bar">
+  <div class="brand">lex<span class="dot">.</span></div>
+  <nav>
+    <a href="#what">About</a>
+    <a href="#tools">Tools</a>
+    <a href="#start">Start</a>
+    <a href="https://github.com/tggo/lex">GitHub ↗</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="hero" style="border:none">
+    <p class="eyebrow">open · self-hosted · model context protocol</p>
+    <h1>
+      <span class="l" style="animation-delay:.10s">The law,</span><br>
+      <span class="l em" style="animation-delay:.28s">as a graph</span><br>
+      <span class="l" style="animation-delay:.46s">you can ask.</span>
+    </h1>
+    <p class="lede">
+      <b>lex</b> is an open-source MCP server that puts a country's laws and
+      subordinate legislation at the fingertips of an AI assistant —
+      searchable, retrievable, and linked as a knowledge graph. Run it locally,
+      ask in plain language, get the current text <em>with its as-of date</em>.
+    </p>
+    <div class="cta">
+      <a class="btn solid" href="https://github.com/tggo/lex">View on GitHub</a>
+      <a class="btn" href="#start">Quick start</a>
+    </div>
+  </section>
+
+  <section id="what">
+    <p class="kicker">What it is</p>
+    <h2>Ingestion is separated from serving.</h2>
+    <p class="body">
+      Each country ships Go scrapers that pull its <span class="dim">official open data</span>
+      and emit RDF in a shared <a href="https://eur-lex.europa.eu/eli">ELI</a> ontology.
+      One country-agnostic server indexes that graph and answers over MCP. Adding a
+      country is writing a scraper — the server never changes.
+    </p>
+    <div class="flow">
+      <div class="node"><span class="t">Official open data</span><span class="s">zakon.rada, e-Gov, Sejm ELI…</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><span class="t">Scraper → RDF</span><span class="s">ELI / FRBR triples, per country</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><span class="t">Graph + index</span><span class="s">goRDFlib · Badger · SPARQL · FTS5</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><span class="t">lex server</span><span class="s">MCP tools → Claude Code</span></div>
+    </div>
+  </section>
+
+  <section id="tools">
+    <p class="kicker">MCP tools</p>
+    <h2>Five ways to interrogate a corpus.</h2>
+    <div class="grid">
+      <div class="tool"><code>search_laws</code><p>Full-text search over titles and article text. Returns ranked hits.</p></div>
+      <div class="tool"><code>get_act</code><p>An act's metadata, in-force status, source, and articles — always with its as-of date.</p></div>
+      <div class="tool"><code>get_article</code><p>A single article of an act, by number.</p></div>
+      <div class="tool"><code>list_amendments</code><p>What this act amends, is amended by, or repeals.</p></div>
+      <div class="tool"><code>find_related</code><p>What this act cites or consolidates — the reference web.</p></div>
+      <div class="tool" style="background:var(--ink)"><code class="dim">one country / instance</code><p>Each dataset is one jurisdiction, so answers are never silently mixed.</p></div>
+    </div>
+  </section>
+
+  <section id="start">
+    <p class="kicker">Quick start</p>
+    <h2>Build a dataset, serve it, ask.</h2>
+    <p class="body dim">A dataset is a directory: an RDF graph plus a full-text index. Build it from
+    the source, or download a prebuilt one from Releases.</p>
+<pre><span class="c"># 1 — build the Ukraine dataset (graph/ + index.fts)</span>
+go run ./ua/scripts/import <span class="k">-out</span> ua/data <span class="k">-articles -relations</span>
+
+<span class="c"># 2 — build and run the MCP server over it</span>
+go build <span class="k">-o</span> lex ./cmd/lex
+./lex <span class="k">-data</span> ua/data
+<span class="c"># → lex: serving country "ua"</span>
+
+<span class="c"># 3 — register `lex` as a stdio MCP server in Claude Code, then ask:</span>
+<span class="f">"What does Article 1 of the Civil Code say, and is it in force?"</span></pre>
+  </section>
+
+  <section id="countries">
+    <p class="kicker">Coverage</p>
+    <h2>Ukraine first. The world next.</h2>
+    <p class="body dim">The architecture is country-agnostic — validated across three jurisdictions and counting.</p>
+    <div class="countries">
+      <div class="ct"><span class="flag">🇺🇦</span><span><span class="nm">Ukraine</span><span class="st">zakon.rada · CC BY 4.0</span></span><span class="badge live">2941 acts</span></div>
+      <div class="ct"><span class="flag">🇯🇵</span><span><span class="nm">Japan</span><span class="st">e-Gov 法令API v2</span></span><span class="badge wip">in progress</span></div>
+      <div class="ct"><span class="flag">🇵🇱</span><span><span class="nm">Poland</span><span class="st">Sejm ELI API</span></span><span class="badge wip">in progress</span></div>
+      <div class="ct" style="border-style:dashed"><span class="flag">➕</span><span><span class="nm">Your country</span><span class="st">write a scraper · PRs welcome</span></span></div>
+    </div>
+  </section>
+
+  <section id="why">
+    <p class="kicker">Principles</p>
+    <h2>Built to be trusted with the law.</h2>
+    <div class="ps">
+      <div><div class="num">01</div><h3>Honest by date</h3><p>Every answer carries the as-of date and in-force status. A legal tool that hides staleness is harmful.</p></div>
+      <div><div class="num">02</div><h3>Official sources only</h3><p>Open-data exports under their stated licenses — never scraped where robots forbid it.</p></div>
+      <div><div class="num">03</div><h3>Links are first-class</h3><p>Amendments, repeals and citations are graph edges, queryable with SPARQL — not buried in prose.</p></div>
+      <div><div class="num">04</div><h3>Local & open</h3><p>Apache-2.0, runs on your machine, your data. No gatekeeper between you and your country's law.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="brand">lex<span class="dot">.</span></div>
+  <p>Open legislation as an MCP knowledge graph.<br>
+     Apache-2.0 · legislative texts retain their official public status.</p>
+  <p><a href="https://github.com/tggo/lex">github.com/tggo/lex</a></p>
+</footer>
+
+<script>
+// Subtle knowledge-graph backdrop: drifting nodes joined by faint edges.
+(function(){
+  var c=document.getElementById('graph'),x=c.getContext('2d'),N=[],W,H,DPR;
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function size(){DPR=Math.min(devicePixelRatio||1,2);W=c.width=innerWidth*DPR;H=c.height=innerHeight*DPR;}
+  function init(){size();N=[];var n=Math.min(64,Math.floor(innerWidth/22));
+    for(var i=0;i<n;i++)N.push({x:Math.random()*W,y:Math.random()*H,
+      vx:(Math.random()-.5)*.12*DPR,vy:(Math.random()-.5)*.12*DPR,r:(Math.random()*1.6+.7)*DPR});}
+  function step(){
+    x.clearRect(0,0,W,H);
+    for(var i=0;i<N.length;i++){var a=N[i];a.x+=a.vx;a.y+=a.vy;
+      if(a.x<0||a.x>W)a.vx*=-1;if(a.y<0||a.y>H)a.vy*=-1;
+      for(var j=i+1;j<N.length;j++){var b=N[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.hypot(dx,dy),m=170*DPR;
+        if(d<m){x.strokeStyle='rgba(205,163,73,'+(0.10*(1-d/m))+')';x.lineWidth=DPR*.6;
+          x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();}}
+      x.fillStyle='rgba(231,200,120,.55)';x.beginPath();x.arc(a.x,a.y,a.r,0,7);x.fill();}
+    requestAnimationFrame(step);
+  }
+  addEventListener('resize',init);init();
+  if(!reduce)step(); else {/* draw one static frame */ step.call(null);}
+})();
+</script>
+</body>
+</html>
