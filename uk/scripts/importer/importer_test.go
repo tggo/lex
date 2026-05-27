@@ -202,14 +202,95 @@ func TestImportYear_badFeedXML(t *testing.T) {
 	}
 }
 
-func TestImportAct_fetchError(t *testing.T) {
+// A per-act resource 404 (e.g. an old regnal-year act) must be skipped, not
+// fatal: importAct returns (false, nil) and importYear keeps going.
+func TestImportAct_fetch404Skipped(t *testing.T) {
 	srv := httptest.NewServer(http.NotFoundHandler())
 	defer srv.Close()
 	c := &client{cfg: baseCfg(t, srv), limiter: newLimiter(0)}
 	st, _ := store.Open(filepath.Join(t.TempDir(), "g"))
 	defer st.Close()
-	if err := c.importAct(context.Background(), st, "ukpga/2023/57"); err == nil {
-		t.Error("expected fetch error")
+	stored, err := c.importAct(context.Background(), st, "ukpga/Geo3/41")
+	if err != nil {
+		t.Fatalf("importAct: expected nil error for 404, got %v", err)
+	}
+	if stored {
+		t.Error("expected stored=false for a 404 act")
+	}
+}
+
+// An unparseable data.xml is likewise skipped, not fatal.
+func TestImportAct_badXMLSkipped(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`<not valid`))
+	}))
+	defer srv.Close()
+	c := &client{cfg: baseCfg(t, srv), limiter: newLimiter(0)}
+	st, _ := store.Open(filepath.Join(t.TempDir(), "g"))
+	defer st.Close()
+	stored, err := c.importAct(context.Background(), st, "ukpga/2023/57")
+	if err != nil {
+		t.Fatalf("importAct: expected nil error for bad XML, got %v", err)
+	}
+	if stored {
+		t.Error("expected stored=false for unparseable XML")
+	}
+}
+
+// Context cancellation during a fetch stays fatal.
+func TestImportAct_cancelledFatal(t *testing.T) {
+	srv := httptest.NewServer(http.NotFoundHandler())
+	defer srv.Close()
+	c := &client{cfg: baseCfg(t, srv), limiter: newLimiter(0)}
+	st, _ := store.Open(filepath.Join(t.TempDir(), "g"))
+	defer st.Close()
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := c.importAct(ctx, st, "ukpga/2023/57"); err == nil {
+		t.Error("expected fatal error on cancelled context")
+	}
+}
+
+// A year feed containing a missing act and a good act imports the good one and
+// skips the missing one rather than aborting the whole year.
+func TestImportYear_skipsMissingActContinues(t *testing.T) {
+	fxDir := filepath.Join("..", "clml", "testdata")
+	mux := http.NewServeMux()
+	mux.HandleFunc("/ukpga/2023/data.feed", func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom" ` +
+			`xmlns:leg="http://www.legislation.gov.uk/namespaces/legislation" ` +
+			`xmlns:ukm="http://www.legislation.gov.uk/namespaces/metadata">` +
+			`<leg:page>1</leg:page><leg:morePages>1</leg:morePages>` +
+			`<entry><id>http://www.legislation.gov.uk/id/ukpga/2023/999</id>` +
+			`<title>Missing Act 2023</title>` +
+			`<ukm:Year Value="2023"/><ukm:Number Value="999"/>` +
+			`<ukm:DocumentMainType Value="UnitedKingdomPublicGeneralAct"/></entry>` +
+			`<entry><id>http://www.legislation.gov.uk/id/ukpga/2023/57</id>` +
+			`<title>National Insurance Contributions (Reduction in Rates) Act 2023</title>` +
+			`<ukm:Year Value="2023"/><ukm:Number Value="57"/>` +
+			`<ukm:DocumentMainType Value="UnitedKingdomPublicGeneralAct"/></entry></feed>`))
+	})
+	// 999 has no data.xml handler -> 404 (skipped); 57 is served.
+	mux.HandleFunc("/ukpga/2023/57/data.xml", func(w http.ResponseWriter, r *http.Request) {
+		b, err := os.ReadFile(filepath.Join(fxDir, "act.sample.xml"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		_, _ = w.Write(b)
+	})
+	srv := httptest.NewServer(mux)
+	defer srv.Close()
+
+	c := &client{cfg: baseCfg(t, srv), limiter: newLimiter(0)}
+	st, _ := store.Open(filepath.Join(t.TempDir(), "g"))
+	defer st.Close()
+	n, err := c.importYear(context.Background(), st, "ukpga", 2023)
+	if err != nil {
+		t.Fatalf("importYear: %v", err)
+	}
+	if n != 1 {
+		t.Fatalf("imported %d acts, want 1 (skipping the 404)", n)
 	}
 }
 

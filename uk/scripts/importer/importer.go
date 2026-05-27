@@ -10,6 +10,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"sort"
 	"time"
@@ -127,10 +128,15 @@ func (c *client) importYear(ctx context.Context, st *store.Store, typ string, ye
 			if !ok {
 				continue
 			}
-			if err := c.importAct(ctx, st, path); err != nil {
+			stored, err := c.importAct(ctx, st, path)
+			if err != nil {
+				// Store/index failures are fatal: they indicate a broken sink,
+				// not a quirk of one source page.
 				return n, fmt.Errorf("import %s: %w", path, err)
 			}
-			n++
+			if stored {
+				n++
+			}
 		}
 		if !feed.HasMore() {
 			break
@@ -139,29 +145,43 @@ func (c *client) importYear(ctx context.Context, st *store.Store, typ string, ye
 	return n, nil
 }
 
-// importAct fetches one act's CLML XML (…/data.xml) and stores it.
-func (c *client) importAct(ctx context.Context, st *store.Store, path string) error {
+// importAct fetches one act's CLML XML (…/data.xml) and stores it. It returns
+// (true, nil) when the act was stored, (false, nil) when the act was skipped
+// because its source resource is missing or unparseable (a non-fatal source
+// quirk), and (false, err) only for fatal store/index failures.
+//
+// legislation.gov.uk lists some acts (notably older ones cited by regnal year,
+// e.g. ukpga/Geo3/41) whose data.xml resource 404s or fails to parse. A missing
+// or unparseable resource must not abort an otherwise-healthy run, so those are
+// logged and skipped. Context cancellation stays fatal.
+func (c *client) importAct(ctx context.Context, st *store.Store, path string) (bool, error) {
 	b, err := c.fetch(ctx, c.cfg.BaseURL+"/"+path+"/data.xml")
 	if err != nil {
-		return err
+		if ctx.Err() != nil {
+			return false, err // cancellation/timeout is fatal
+		}
+		log.Printf("uk import: skipping %s: fetch: %v", path, err)
+		return false, nil
 	}
 	l, err := clml.ParseLegislation(b)
 	if err != nil {
-		return err
+		log.Printf("uk import: skipping %s: parse: %v", path, err)
+		return false, nil
 	}
 	act, err := clml.ToAct(l, c.cfg.Now)
 	if err != nil {
-		return err
+		log.Printf("uk import: skipping %s: map: %v", path, err)
+		return false, nil
 	}
 	if err := st.AddAct(act); err != nil {
-		return err
+		return false, err
 	}
 	if c.idx != nil {
 		if err := c.idx.ReplaceAct(act); err != nil {
-			return fmt.Errorf("index act %s: %w", act.Number, err)
+			return false, fmt.Errorf("index act %s: %w", act.Number, err)
 		}
 	}
-	return nil
+	return true, nil
 }
 
 // fetch GETs url with the configured User-Agent, throttled and retried on
