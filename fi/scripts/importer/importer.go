@@ -26,7 +26,9 @@ const (
 	DefaultRatePerSec = 5.0
 	// collection is the AKN collection path for consolidated ("ajantasa") statutes.
 	collection = "akn/fi/act/statute-consolidated"
-	pageLimit  = 100
+	// pageLimit is the per-request page size. The Finlex open-data API caps
+	// "limit" at 10 (a higher value yields HTTP 400), so we page in tens.
+	pageLimit  = 10
 	maxRetries = 4
 )
 

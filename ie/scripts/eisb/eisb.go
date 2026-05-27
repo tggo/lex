@@ -102,12 +102,33 @@ func ParseActList(b []byte) (*ActList, error) {
 }
 
 // statuteBookID extracts the ELI path ("2015/act/60") from a statutebookURI
-// like "http://www.irishstatutebook.ie/eli/2015/act/60".
+// like "http://www.irishstatutebook.ie/eli/2015/act/60", normalised to the
+// shape the eISB actually serves.
+//
+// The Oireachtas open-data API reports private acts with a "P"-prefixed number
+// (statutebookURI ".../eli/2023/prv/P1", actNo "P1"), but the eISB serves the
+// page at the un-prefixed path (".../eli/2023/prv/1/..."). Normalise that here
+// so the print URL resolves instead of 404ing. See ADR-0022.
 func statuteBookID(uri string) string {
-	if i := strings.Index(uri, "/eli/"); i >= 0 {
-		return strings.Trim(uri[i+len("/eli/"):], "/")
+	i := strings.Index(uri, "/eli/")
+	if i < 0 {
+		return ""
 	}
-	return ""
+	return normalizeELIPath(strings.Trim(uri[i+len("/eli/"):], "/"))
+}
+
+// normalizeELIPath rewrites an act ELI path to the form the eISB serves. For
+// private acts the API uses a "P"-prefixed number ("2023/prv/P1") that the eISB
+// publishes without the prefix ("2023/prv/1"); other paths pass through.
+func normalizeELIPath(p string) string {
+	parts := strings.Split(p, "/")
+	if len(parts) == 3 && parts[1] == "prv" {
+		if num := strings.TrimPrefix(parts[2], "P"); num != parts[2] && num != "" {
+			parts[2] = num
+			return strings.Join(parts, "/")
+		}
+	}
+	return p
 }
 
 // PrintPath returns the eISB English print-HTML path (without host) for an act

@@ -25,8 +25,10 @@ const (
 	DefaultUA   = "lex/0.1 (+https://github.com/tggo/lex)"
 	// DefaultRatePerSec throttles requests to be a polite client.
 	DefaultRatePerSec = 5.0
-	pageLimit         = 200
-	maxRetries        = 4
+	// pageLimit is the OData $top page size. The FRL API rejects $top > 100
+	// with HTTP 400, so 100 is the maximum the server accepts.
+	pageLimit  = 100
+	maxRetries = 4
 )
 
 // Config controls an import run.

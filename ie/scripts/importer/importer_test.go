@@ -162,9 +162,15 @@ func TestRun_listFetchError(t *testing.T) {
 	}
 }
 
-func TestImportYear_actFetchError(t *testing.T) {
+// A 404 on an individual act's print page (e.g. a private act the eISB only
+// publishes as a bare page) must be skipped, not abort the whole run.
+func TestImportYear_actFetchSkipped(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/legislation", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("skip") != "0" {
+			_, _ = w.Write([]byte(`{"head":{"counts":{"resultCount":1}},"results":[]}`))
+			return
+		}
 		_, _ = w.Write([]byte(`{"head":{"counts":{"resultCount":1}},"results":[` +
 			`{"bill":{"act":{"actYear":"2015","actNo":"60","statutebookURI":"http://x/eli/2015/act/60"}}}]}`))
 	})
@@ -172,8 +178,43 @@ func TestImportYear_actFetchError(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	defer srv.Close()
 	cfg := baseCfg(t, srv)
-	if _, err := Run(context.Background(), cfg); err == nil {
-		t.Error("expected error when act print page 404s")
+	n, err := Run(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("Run should tolerate a 404 act page, got: %v", err)
+	}
+	if n != 0 {
+		t.Errorf("imported %d acts, want 0 (the only act 404s)", n)
+	}
+}
+
+// An unparseable act page (no ELI RDFa) is skipped too, not fatal.
+func TestImportYear_unparseableActSkipped(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v1/legislation", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("skip") != "0" {
+			_, _ = w.Write([]byte(`{"head":{"counts":{"resultCount":1}},"results":[]}`))
+			return
+		}
+		_, _ = w.Write([]byte(`{"head":{"counts":{"resultCount":1}},"results":[` +
+			`{"bill":{"act":{"actYear":"2023","actNo":"P1","statutebookURI":"http://x/eli/2023/prv/P1"}}}]}`))
+	})
+	mux.HandleFunc("/eli/", func(w http.ResponseWriter, r *http.Request) {
+		// Private-act print path is the normalised prv/1, and the page lacks ELI metadata.
+		if r.URL.Path != "/eli/2023/prv/1/enacted/en/print.html" {
+			t.Errorf("fetched %q, want normalised prv/1 print path", r.URL.Path)
+		}
+		_, _ = w.Write([]byte("<html><body><p>bare private act</p></body></html>"))
+	})
+	srv := httptest.NewServer(mux)
+	defer srv.Close()
+	cfg := baseCfg(t, srv)
+	cfg.FromYear, cfg.ToYear = 2023, 2023
+	n, err := Run(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("Run should tolerate an unparseable act page, got: %v", err)
+	}
+	if n != 0 {
+		t.Errorf("imported %d acts, want 0", n)
 	}
 }
 
@@ -186,9 +227,12 @@ func TestImportAct_noStatuteBookID(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer st.Close()
-	err = c.importAct(context.Background(), st, eisb.ListItem{Year: 2015, Number: "60"})
-	if err == nil {
-		t.Error("expected error for item with no statutebook id")
+	ok, err := c.importAct(context.Background(), st, eisb.ListItem{Year: 2015, Number: "60"})
+	if err != nil {
+		t.Errorf("importAct with no statutebook id should skip, not error: %v", err)
+	}
+	if ok {
+		t.Error("expected importAct to report skipped (false) for item with no statutebook id")
 	}
 }
 

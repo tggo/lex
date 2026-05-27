@@ -11,6 +11,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 
@@ -126,10 +127,15 @@ func (c *client) importYear(ctx context.Context, st *store.Store, year int) (int
 			break
 		}
 		for _, item := range list.Items {
-			if err := c.importAct(ctx, st, item); err != nil {
+			ok, err := c.importAct(ctx, st, item)
+			if err != nil {
+				// Store/index failures are fatal: they indicate a broken sink,
+				// not a quirk of one source page.
 				return n, fmt.Errorf("import %d/act/%s: %w", item.Year, item.Number, err)
 			}
-			n++
+			if ok {
+				n++
+			}
 		}
 		skip += len(list.Items)
 		if list.ResultCount > 0 && skip >= list.ResultCount {
@@ -139,34 +145,48 @@ func (c *client) importYear(ctx context.Context, st *store.Store, year int) (int
 	return n, nil
 }
 
-// importAct fetches one act's eISB print page and stores it.
-func (c *client) importAct(ctx context.Context, st *store.Store, item eisb.ListItem) error {
+// importAct fetches one act's eISB print page and stores it. It returns
+// (true, nil) when the act was stored, (false, nil) when the act was skipped
+// because its source page is missing or unparseable (a non-fatal source quirk),
+// and (false, err) only for fatal store/index failures.
+//
+// Some acts the Oireachtas API lists are published by the eISB without the
+// native-ELI RDFa print page lex parses (notably private acts, whose print
+// pages are bare HTML). A 404 or an unparseable page must not abort an
+// otherwise-healthy year range, so those are logged and skipped.
+func (c *client) importAct(ctx context.Context, st *store.Store, item eisb.ListItem) (bool, error) {
 	id := item.StatuteBookID
 	if id == "" {
-		return fmt.Errorf("item has no statutebook id")
+		log.Printf("ie import: skipping %d/act/%s: no statutebook id", item.Year, item.Number)
+		return false, nil
 	}
 	url := c.cfg.EISBBase + eisb.PrintPath(id)
 
 	b, err := c.fetch(ctx, url, "text/html")
 	if err != nil {
-		return err
+		if ctx.Err() != nil {
+			return false, err // cancellation/timeout is fatal
+		}
+		log.Printf("ie import: skipping %s: fetch: %v", id, err)
+		return false, nil
 	}
 	act, err := eisb.ParseAct(b, c.cfg.Now)
 	if err != nil {
-		return err
+		log.Printf("ie import: skipping %s: parse: %v", id, err)
+		return false, nil
 	}
 	if !c.cfg.WithArticles {
 		act.Expression.Articles = nil
 	}
 	if err := st.AddAct(act); err != nil {
-		return err
+		return false, err
 	}
 	if c.idx != nil {
 		if err := c.idx.ReplaceAct(act); err != nil {
-			return fmt.Errorf("index act %s: %w", act.Number, err)
+			return false, fmt.Errorf("index act %s: %w", act.Number, err)
 		}
 	}
-	return nil
+	return true, nil
 }
 
 // fetch GETs url with the configured User-Agent, throttled and retried on

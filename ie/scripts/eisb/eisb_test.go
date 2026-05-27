@@ -215,6 +215,34 @@ func TestStatuteBookID(t *testing.T) {
 	}
 }
 
+func TestStatuteBookID_privateAct(t *testing.T) {
+	// The API reports private acts with a P-prefixed number; the eISB serves
+	// them at the un-prefixed prv path.
+	if got := statuteBookID("http://www.irishstatutebook.ie/eli/2023/prv/P1"); got != "2023/prv/1" {
+		t.Errorf("statuteBookID(prv/P1) = %q, want 2023/prv/1", got)
+	}
+	// Regular acts pass through unchanged.
+	if got := statuteBookID("http://www.irishstatutebook.ie/eli/2015/act/60"); got != "2015/act/60" {
+		t.Errorf("statuteBookID(act/60) = %q, want 2015/act/60", got)
+	}
+}
+
+func TestNormalizeELIPath(t *testing.T) {
+	cases := []struct{ in, want string }{
+		{"2023/prv/P1", "2023/prv/1"},
+		{"2023/prv/P12", "2023/prv/12"},
+		{"2015/act/60", "2015/act/60"},
+		{"2023/prv/1", "2023/prv/1"}, // already normalised
+		{"2023/prv/P", "2023/prv/P"}, // P with no number: leave alone
+		{"2015/act/60/extra", "2015/act/60/extra"},
+	}
+	for _, c := range cases {
+		if got := normalizeELIPath(c.in); got != c.want {
+			t.Errorf("normalizeELIPath(%q) = %q, want %q", c.in, got, c.want)
+		}
+	}
+}
+
 func TestEliPathFromURL(t *testing.T) {
 	if got := eliPathFromURL("http://x/eli/2015/act/60/enacted/en"); got != "2015/act/60" {
 		t.Errorf("eliPathFromURL = %q", got)
