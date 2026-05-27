@@ -24,14 +24,17 @@ Two halves, joined by one contract — the **ELI/RDF ontology**:
 
 - **Language**: Go everywhere (scrapers + server). Single static binary.
 - **Storage**: RDF triplestore via [`goRDFlib`](https://github.com/tggo/goRDFlib)
-  with the **SQLite backend**. The SQLite file *is* the distributable artifact.
+  with the **Badger backend** (`store.Open(dir)`); tests use the in-memory graph.
+  See ADR-0010. The dataset artifact is the Badger *directory*, archived.
 - **Ontology**: [ELI](https://eur-lex.europa.eu/eli) (European Legislation
   Identifier) as the backbone, FRBR work/expression layering for versioning.
 - **Structural queries**: SPARQL 1.1 (amendments, citations, repeals).
-- **Full-text search**: SQLite **FTS5** table in the same file, keyed by act /
-  article URI (SPARQL text matching is too weak for real search).
-- **Distribution**: build locally OR download a prebuilt `.db` from GitHub
-  Releases. Data is **never committed** to git (`./*/data/` is gitignored).
+- **Search (decoupled)**: a sibling index built from the triples — SQLite
+  **FTS5** is the v1 plan (vector/other engines open later). Not co-located with
+  the graph (SPARQL text matching is too weak for real search).
+- **Distribution**: build locally OR download a prebuilt dataset (archived
+  Badger dir) from GitHub Releases. Data is **never committed** (`./*/data/`
+  gitignored). `testdata/` fixtures/goldens ARE committed.
 
 ## Repository layout
 
@@ -60,6 +63,21 @@ Store the **current consolidated text** plus metadata: `eli:version_date`,
 Always be able to answer "as of what date is this text". Full historical
 redaction history is a later phase. **Never** return text without its as-of
 date — a legal tool that hides staleness is harmful.
+
+## Testing policy (non-negotiable)
+
+- **TDD**: write the test first, watch it fail, then implement. No production
+  code without a failing test that demanded it.
+- **Coverage > 80%** for every package (`go test -cover ./...`). CI enforces it.
+- **Golden tests** for any parsing/serialization (OGD → RDF, RDF → Turtle, FTS
+  rows): inputs and expected outputs live in `testdata/`; update goldens via an
+  explicit `-update` flag, never by hand.
+- **Real test data, minimal mocks.** Commit small real fixtures (a few OGD
+  cards, one act HTML body) under `testdata/`. Prefer a real SQLite/RDF store in
+  a temp dir over mocking the store. Mock only true external boundaries (network).
+- **No network in tests.** Tests must run fully offline and fast — fixtures are
+  captured once and committed; never fetch from `data.rada.gov.ua` at test time.
+  A separate, opt-in (`-tags live`) check may hit the network manually.
 
 ## Conventions
 

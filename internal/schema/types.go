@@ -1,7 +1,10 @@
 package schema
 
 import (
+	"fmt"
 	"net/url"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -31,26 +34,26 @@ func (s Status) InForceURI() string {
 
 // Act is the FRBR work — stable identity across amendments.
 type Act struct {
-	Country      CountryCode // "ua"
-	TypeSlug     string      // country-mapped, e.g. "zakon", "kodeks"
-	Year         int         // adoption/registration year used in the URI
-	Number       string      // native id, e.g. "435-15" (eli:id_local)
-	IDLocal      string      // source's native id, usually == Number
-	Expression   *Expression // current consolidated version
+	Country    CountryCode // "ua"
+	TypeSlug   string      // country-mapped, e.g. "zakon", "kodeks"
+	Year       int         // adoption/registration year used in the URI
+	Number     string      // native id, e.g. "435-15" (eli:id_local)
+	IDLocal    string      // source's native id, usually == Number
+	Expression *Expression // current consolidated version
 }
 
 // Expression is one consolidated version of an Act at a point in time.
 type Expression struct {
-	Title             string    // dct:title (natural language)
-	LangTag           string    // BCP-47, e.g. "uk"
-	LangAlpha3        string    // ELI authority code, e.g. "UKR"
-	VersionDate       time.Time // eli:version_date (MANDATORY — as-of date)
-	FirstInForceDate  time.Time // eli:first_date_entry_in_force (zero if unknown)
-	Status            Status
-	NoLongerInForce   time.Time // only meaningful when Status == StatusRepealed
-	SourceURL         string    // lex:sourceURL (human page)
-	RetrievedAt       time.Time // lex:retrievedAt
-	Articles          []Article
+	Title            string    // dct:title (natural language)
+	LangTag          string    // BCP-47, e.g. "uk"
+	LangAlpha3       string    // ELI authority code, e.g. "UKR"
+	VersionDate      time.Time // eli:version_date (MANDATORY — as-of date)
+	FirstInForceDate time.Time // eli:first_date_entry_in_force (zero if unknown)
+	Status           Status
+	NoLongerInForce  time.Time // only meaningful when Status == StatusRepealed
+	SourceURL        string    // lex:sourceURL (human page)
+	RetrievedAt      time.Time // lex:retrievedAt
+	Articles         []Article
 
 	// Relations to other acts, by their Resource URI.
 	Amends       []string
@@ -83,6 +86,36 @@ func ResourceURI(cc CountryCode, typeSlug string, year int, number string) strin
 // ResourceURI returns the URI for this act's work node.
 func (a *Act) ResourceURI() string {
 	return ResourceURI(a.Country, a.TypeSlug, a.Year, a.Number)
+}
+
+// ParseResourceURI is the inverse of ResourceURI. It recovers the identifying
+// parts of a work URI, undoing the per-segment escaping.
+func ParseResourceURI(uri string) (cc CountryCode, typeSlug string, year int, number string, err error) {
+	rest, ok := strings.CutPrefix(uri, NSid)
+	if !ok {
+		return "", "", 0, "", fmt.Errorf("schema: %q is not a lex resource URI", uri)
+	}
+	parts := strings.Split(rest, "/")
+	if len(parts) != 4 {
+		return "", "", 0, "", fmt.Errorf("schema: resource URI has %d segments, want 4: %q", len(parts), uri)
+	}
+	ccRaw, err := url.PathUnescape(parts[0])
+	if err != nil {
+		return "", "", 0, "", fmt.Errorf("schema: bad country segment: %w", err)
+	}
+	typeSlug, err = url.PathUnescape(parts[1])
+	if err != nil {
+		return "", "", 0, "", fmt.Errorf("schema: bad type segment: %w", err)
+	}
+	year, err = strconv.Atoi(parts[2])
+	if err != nil {
+		return "", "", 0, "", fmt.Errorf("schema: bad year segment %q: %w", parts[2], err)
+	}
+	number, err = url.PathUnescape(parts[3])
+	if err != nil {
+		return "", "", 0, "", fmt.Errorf("schema: bad number segment: %w", err)
+	}
+	return CountryCode(ccRaw), typeSlug, year, number, nil
 }
 
 // ExpressionURI builds the version URI:

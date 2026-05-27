@@ -1,0 +1,24 @@
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk/art_1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://lex.dev/ontology#Article> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk/art_1> <http://www.w3.org/2004/02/skos/core#prefLabel> "Стаття 1"@uk .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk/art_1> <https://lex.dev/ontology#number> "1" .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk/art_1> <https://lex.dev/ontology#text> "Цивільним законодавством регулюються відносини."@uk .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk/art_2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://lex.dev/ontology#Article> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk/art_2> <http://www.w3.org/2004/02/skos/core#prefLabel> "Стаття 2"@uk .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk/art_2> <https://lex.dev/ontology#number> "2" .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk/art_2> <https://lex.dev/ontology#text> "Учасниками цивільних відносин є фізичні та юридичні особи."@uk .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> <http://data.europa.eu/eli/ontology#cites> <https://lex.dev/eli/ua/konstytutsiya/1996/254%D0%BA%2F96-%D0%B2%D1%80> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> <http://data.europa.eu/eli/ontology#first_date_entry_in_force> "2004-01-01"^^<http://www.w3.org/2001/XMLSchema#date> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> <http://data.europa.eu/eli/ontology#in_force> <http://data.europa.eu/eli/ontology#InForce-inForce> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> <http://data.europa.eu/eli/ontology#language> <http://publications.europa.eu/resource/authority/language/UKR> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> <http://data.europa.eu/eli/ontology#realizes> <https://lex.dev/eli/ua/kodeks/2003/435-15> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> <http://data.europa.eu/eli/ontology#version_date> "2026-01-01"^^<http://www.w3.org/2001/XMLSchema#date> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> <http://purl.org/dc/terms/title> "Цивільний кодекс України"@uk .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://data.europa.eu/eli/ontology#LegalExpression> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> <https://lex.dev/ontology#hasArticle> <https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk/art_1> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> <https://lex.dev/ontology#hasArticle> <https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk/art_2> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> <https://lex.dev/ontology#retrievedAt> "2026-05-27T10:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> <https://lex.dev/ontology#sourceURL> <https://zakon.rada.gov.ua/laws/show/435-15> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15> <http://data.europa.eu/eli/ontology#id_local> "435-15" .
+<https://lex.dev/eli/ua/kodeks/2003/435-15> <http://data.europa.eu/eli/ontology#is_realized_by> <https://lex.dev/eli/ua/kodeks/2003/435-15/2026-01-01/uk> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15> <http://data.europa.eu/eli/ontology#type_document> <https://lex.dev/eli/ua/type/kodeks> .
+<https://lex.dev/eli/ua/kodeks/2003/435-15> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://data.europa.eu/eli/ontology#LegalResource> .

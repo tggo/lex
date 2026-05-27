@@ -36,6 +36,42 @@ func TestExpressionAndArticleURI(t *testing.T) {
 	}
 }
 
+func TestParseResourceURI_roundTrip(t *testing.T) {
+	cases := []struct {
+		cc     CountryCode
+		slug   string
+		year   int
+		number string
+	}{
+		{"ua", "kodeks", 2003, "435-15"},
+		{"ua", "konstytutsiya", 1996, "254к/96-вр"}, // slash + Cyrillic
+		{"jp", "act", 2020, "plain"},
+	}
+	for _, c := range cases {
+		uri := ResourceURI(c.cc, c.slug, c.year, c.number)
+		cc, slug, year, number, err := ParseResourceURI(uri)
+		if err != nil {
+			t.Fatalf("ParseResourceURI(%q) error: %v", uri, err)
+		}
+		if cc != c.cc || slug != c.slug || year != c.year || number != c.number {
+			t.Errorf("round trip = (%q,%q,%d,%q), want (%q,%q,%d,%q)",
+				cc, slug, year, number, c.cc, c.slug, c.year, c.number)
+		}
+	}
+}
+
+func TestParseResourceURI_errors(t *testing.T) {
+	for _, bad := range []string{
+		"https://example.com/foo",          // wrong prefix
+		NSid + "ua/kodeks/2003",            // too few segments
+		NSid + "ua/kodeks/notayear/435-15", // bad year
+	} {
+		if _, _, _, _, err := ParseResourceURI(bad); err == nil {
+			t.Errorf("ParseResourceURI(%q) expected error, got nil", bad)
+		}
+	}
+}
+
 func TestStatusInForceURI(t *testing.T) {
 	if StatusInForce.InForceURI() != InForceInForce {
 		t.Error("StatusInForce should map to InForce individual")

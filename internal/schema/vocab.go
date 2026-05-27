@@ -9,11 +9,11 @@ import "strings"
 
 // Namespaces used across the graph. See docs/ontology.md.
 const (
-	NSeli  = "http://data.europa.eu/eli/ontology#"     // European Legislation Identifier
-	NSdct  = "http://purl.org/dc/terms/"               // Dublin Core terms
-	NSskos = "http://www.w3.org/2004/02/skos/core#"     // SKOS labels
-	NSxsd  = "http://www.w3.org/2001/XMLSchema#"        // XSD datatypes
-	NSlex  = "https://lex.dev/ontology#"                // lex extensions (Article, provenance)
+	NSeli  = "http://data.europa.eu/eli/ontology#"  // European Legislation Identifier
+	NSdct  = "http://purl.org/dc/terms/"            // Dublin Core terms
+	NSskos = "http://www.w3.org/2004/02/skos/core#" // SKOS labels
+	NSxsd  = "http://www.w3.org/2001/XMLSchema#"    // XSD datatypes
+	NSlex  = "https://lex.dev/ontology#"            // lex extensions (Article, provenance)
 
 	// NSid is the base for minted instance URIs (acts, expressions, articles).
 	NSid = "https://lex.dev/eli/"
@@ -41,10 +41,10 @@ const (
 	PredLanguage = NSeli + "language"
 
 	// Temporal / status (the versioning backbone).
-	PredVersionDate          = NSeli + "version_date"
+	PredVersionDate           = NSeli + "version_date"
 	PredFirstDateEntryInForce = NSeli + "first_date_entry_in_force"
-	PredInForce              = NSeli + "in_force"
-	PredDateNoLongerInForce  = NSeli + "date_no_longer_in_force"
+	PredInForce               = NSeli + "in_force"
+	PredDateNoLongerInForce   = NSeli + "date_no_longer_in_force"
 
 	// Relationships (graph edges, queried via SPARQL).
 	PredAmends       = NSeli + "amends"

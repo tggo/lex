@@ -1,6 +1,7 @@
 # ADR 0004 — SQLite FTS5 for full-text search, alongside the RDF graph
 
-- **Status**: Accepted
+- **Status**: Accepted; "same SQLite file" premise **amended by ADR-0010** —
+  the search index is now a decoupled sibling (FTS5 still the v1 plan).
 - **Date**: 2026-05-27
 
 ## Context

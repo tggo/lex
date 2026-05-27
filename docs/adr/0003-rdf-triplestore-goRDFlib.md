@@ -1,6 +1,7 @@
 # ADR 0003 — RDF triplestore (goRDFlib + SQLite) as the store
 
-- **Status**: Accepted
+- **Status**: Accepted; storage-backend choice **superseded by ADR-0010**
+  (Badger instead of SQLite). The RDF/goRDFlib/SPARQL decision still stands.
 - **Date**: 2026-05-27
 
 ## Context

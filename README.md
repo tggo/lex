@@ -24,18 +24,19 @@ own country locally and query them with an AI assistant.
 official source ──scraper (Go, per country)──▶ RDF (ELI ontology)
                                                    │
                                                    ▼
-                                      goRDFlib + SQLite triplestore
-                                          + FTS5 full-text index
+                                      goRDFlib + Badger triplestore
+                                       + decoupled search index (FTS5)
                                                    │
                                                    ▼
                                           lex MCP server  ◀── Claude Code
 ```
 
 - **Storage / linking**: RDF triplestore via
-  [`goRDFlib`](https://github.com/tggo/goRDFlib), modelled with the
-  [ELI](https://eur-lex.europa.eu/eli) vocabulary so amendments, repeals, and
+  [`goRDFlib`](https://github.com/tggo/goRDFlib) (Badger backend), modelled with
+  the [ELI](https://eur-lex.europa.eu/eli) vocabulary so amendments, repeals, and
   citations are first-class graph edges queryable with SPARQL.
-- **Search**: SQLite FTS5 over act titles and article text.
+- **Search**: a decoupled sibling index (SQLite FTS5 to start) over act titles
+  and article text.
 - **Distribution**: build the database yourself with the scrapers, or download
   a prebuilt one from GitHub Releases.
 
