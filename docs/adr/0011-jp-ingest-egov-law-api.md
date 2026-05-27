@@ -76,8 +76,10 @@ The JP scraper:
    - `law_id` → `eli:id_local` on the `eli:LegalResource`;
    - the current `law_revision_id` → one `eli:LegalExpression`, with
      `amendment_enforcement_date` → `eli:version_date` (MANDATORY as-of date),
-     `promulgation_date` → context for `eli:first_date_entry_in_force`,
+     `promulgation_date` → the work's identifying year in the resource URI,
      `repeal_status`/`current_revision_status` → in-force vs. repealed;
+     (`eli:first_date_entry_in_force` is left unset — the API's per-revision
+     enforcement dates are not the act's original entry-into-force);
    - `lex:sourceURL` → the human page `https://laws.e-gov.go.jp/law/<law_id>`;
 4. attributes the source per CC BY 4.0 in output and docs.
 
@@ -86,9 +88,9 @@ JP `eli:type_document` slugs are mapped from `law_type` in `jp/README.md`.
 ## Consequences
 
 - Legally clean (CC BY-compatible), API-sanctioned, no HTML crawling.
-- v2's revision model fits FRBR: v1 stores the **current enforced** expression
-  now; historical revisions (other `law_revision_id`s) are a later phase, no
-  schema change needed.
+- v2's revision model fits FRBR: this ADR stores only the **current enforced**
+  expression. The historical revision timeline was added later as metadata-only
+  expressions — see ADR-0014 (JP historical revisions).
 - Japanese article granularity (条 article, 項 paragraph, 号 item) is richer than
   the flat UA article model; v1 maps each 条 to one `lex:Article` and keeps the
   full 条 text (incl. its 項/号) in `lex:text`. Finer structure is additive later.
