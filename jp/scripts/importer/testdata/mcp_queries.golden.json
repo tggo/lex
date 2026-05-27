@@ -1,0 +1,72 @@
+{
+  "find_related": {
+    "cites": null,
+    "consolidates": null
+  },
+  "get_act": {
+    "act": {
+      "uri": "https://lex.dev/eli/jp/act/1896/129AC0000000089",
+      "country": "jp",
+      "type": "act",
+      "year": 1896,
+      "number": "129AC0000000089",
+      "title": "民法",
+      "version_date": "2026-04-01",
+      "status": "in_force",
+      "source_url": "https://laws.e-gov.go.jp/law/129AC0000000089",
+      "articles": [
+        {
+          "number": "1",
+          "label": "第一条",
+          "text": "本文。"
+        }
+      ]
+    }
+  },
+  "get_article_1": {
+    "article": {
+      "number": "1",
+      "label": "第一条",
+      "text": "本文。"
+    }
+  },
+  "list_amendments": {
+    "amends": null,
+    "amended_by": [
+      "https://lex.dev/eli/jp/cabinet-order/1872/105DF0000000337"
+    ],
+    "repeals": null
+  },
+  "search_honbun": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/jp/act/1896/129AC0000000089/2026-04-01/ja/art_1",
+        "act_uri": "https://lex.dev/eli/jp/act/1896/129AC0000000089",
+        "kind": "article",
+        "snippet": "第一条 本文。"
+      },
+      {
+        "uri": "https://lex.dev/eli/jp/cabinet-order/1872/105DF0000000337/1872-11-09/ja/art_1",
+        "act_uri": "https://lex.dev/eli/jp/cabinet-order/1872/105DF0000000337",
+        "kind": "article",
+        "snippet": "第一条 本文。"
+      },
+      {
+        "uri": "https://lex.dev/eli/jp/act/1880/113DF0000000036/1908-10-01/ja/art_1",
+        "act_uri": "https://lex.dev/eli/jp/act/1880/113DF0000000036",
+        "kind": "article",
+        "snippet": "第一条 本文。"
+      }
+    ]
+  },
+  "search_minpou": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/jp/act/1896/129AC0000000089/2026-04-01/ja",
+        "act_uri": "https://lex.dev/eli/jp/act/1896/129AC0000000089",
+        "kind": "title",
+        "snippet": "[民法]"
+      }
+    ]
+  }
+}

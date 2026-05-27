@@ -1,0 +1,74 @@
+{
+  "find_related_2020_0038": {
+    "cites": null,
+    "consolidates": null
+  },
+  "get_act_2020_0038": {
+    "act": {
+      "uri": "https://lex.dev/eli/nz/public-act/2020/0038",
+      "country": "nz",
+      "type": "public-act",
+      "year": 2020,
+      "number": "0038",
+      "title": "Sample Reform Act 2020",
+      "version_date": "2023-04-12",
+      "status": "in_force",
+      "source_url": "https://www.legislation.govt.nz/act/public/2020/0038/latest/whole.html",
+      "articles": [
+        {
+          "number": "1",
+          "label": "Section 1",
+          "text": "Title This Act is the Sample Reform Act 2020."
+        },
+        {
+          "number": "2",
+          "label": "Section 2",
+          "text": "Commencement This Act comes into force on 1 August 2020."
+        },
+        {
+          "number": "3",
+          "label": "Section 3",
+          "text": "Interpretation In this Act, regulator means the responsible authority."
+        }
+      ]
+    }
+  },
+  "get_article_2020_0038_2": {
+    "article": {
+      "number": "2",
+      "label": "Section 2",
+      "text": "Commencement This Act comes into force on 1 August 2020."
+    }
+  },
+  "list_amendments_2020_0038": {
+    "amends": null,
+    "amended_by": null,
+    "repeals": null
+  },
+  "search_reform": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/nz/public-act/2020/0038/2023-04-12/en",
+        "act_uri": "https://lex.dev/eli/nz/public-act/2020/0038",
+        "kind": "title",
+        "snippet": "Sample [Reform] Act 2020"
+      },
+      {
+        "uri": "https://lex.dev/eli/nz/public-act/2020/0038/2023-04-12/en/art_1",
+        "act_uri": "https://lex.dev/eli/nz/public-act/2020/0038",
+        "kind": "article",
+        "snippet": "…1 Title This Act is the Sample [Reform] Act 2020."
+      }
+    ]
+  },
+  "search_regulator": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/nz/public-act/2020/0038/2023-04-12/en/art_3",
+        "act_uri": "https://lex.dev/eli/nz/public-act/2020/0038",
+        "kind": "article",
+        "snippet": "Section 3 Interpretation In this Act, [regulator] means the responsible authority."
+      }
+    ]
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "find_related": {
+    "cites": null,
+    "consolidates": null
+  },
+  "get_act": {
+    "act": {
+      "uri": "https://lex.dev/eli/pl/ustawa/2023/DU%2F2777",
+      "country": "pl",
+      "type": "ustawa",
+      "year": 2023,
+      "number": "DU/2777",
+      "title": "Ustawa z dnia 21 grudnia 2023 r. o zmianie ustawy o szczególnych rozwiązaniach służących realizacji ustawy budżetowej na rok 2023",
+      "version_date": "2024-03-14",
+      "status": "repealed",
+      "source_url": "https://eli.gov.pl/eli/DU/2023/2777",
+      "articles": [
+        {
+          "number": "1",
+          "label": "Art. 1.",
+          "text": "Art. 1. W ustawie z dnia 1 grudnia 2022 r. o szczególnych rozwiązaniach służących realizacji ustawy budżetowej na rok 2023 (Dz. U. poz. 2666 oraz z 2023 r. poz. 1586, 1672 i 2479) po art. 10 dodaje się art. 10a i art. 10b w brzmieniu: „ Art. 10a. 1. W roku 2023 wynagrodzenie zasadnicze prokuratora podlega zwiększeniu o różnicę pomiędzy kwotą należnego wynagrodzenia zasadniczego prokuratora ustalonego zgodnie z art. 123 § 1 ustawy z dnia 28 stycznia 2016 r. - Prawo o prokuraturze a kwotą należnego wynagrodzenia zasadniczego prokuratora wypłaconego zgodnie z art. 10. 2. Kwotę zwiększonego wynagrodzenia zasadniczego prokuratora, o którym mowa w ust. 1, wypłaca się do dnia 31 grudnia 2023 r., z wyrównaniem od dnia 1 stycznia 2023 r. 3. Przepisy ust. 1 i 2 stosuje się odpowiednio w przypadku, o którym mowa w art. 10 ust. 2. Art. 10b. 1. W roku 2023 w celu sfinansowania wypłaty kwot zwiększonego wynagrodzenia, o których mowa w art. 10a, minister właściwy do spraw finansów publicznych, na wniosek Ministra Sprawiedliwości - Prokuratora Generalnego, tworzy rezerwę celową z kwoty wydatków zablokowanych na podstawie art. 177 ust. 1 ustawy z dnia 27 sierpnia 2009 r. o finansach publicznych (Dz. U. z 2023 r. poz. 1270, z późn. zm.1)Zmiany tekstu jednolitego wymienionej ustawy zostały ogłoszone w Dz. U. z 2023 r. poz. 1273, 1407, 1429, 1641, 1693 i 1872.), do wysokości 240 360 tys. zł. 2. Do utworzenia rezerwy celowej, o której mowa w ust. 1, nie stosuje się przepisów art. 177 ust. 6-8 ustawy z dnia 27 sierpnia 2009 r. o finansach publicznych. 3. Podziału rezerwy, o której mowa w ust. 1, dokonuje minister właściwy do spraw finansów publicznych na wniosek właściwego dysponenta części budżetowej. ” ."
+        },
+        {
+          "number": "2",
+          "label": "Art. 2.",
+          "text": "Art. 2. Ustawa wchodzi w życie z dniem następującym po dniu ogłoszenia."
+        }
+      ]
+    }
+  },
+  "get_article_1": {
+    "article": {
+      "number": "1",
+      "label": "Art. 1.",
+      "text": "Art. 1. W ustawie z dnia 1 grudnia 2022 r. o szczególnych rozwiązaniach służących realizacji ustawy budżetowej na rok 2023 (Dz. U. poz. 2666 oraz z 2023 r. poz. 1586, 1672 i 2479) po art. 10 dodaje się art. 10a i art. 10b w brzmieniu: „ Art. 10a. 1. W roku 2023 wynagrodzenie zasadnicze prokuratora podlega zwiększeniu o różnicę pomiędzy kwotą należnego wynagrodzenia zasadniczego prokuratora ustalonego zgodnie z art. 123 § 1 ustawy z dnia 28 stycznia 2016 r. - Prawo o prokuraturze a kwotą należnego wynagrodzenia zasadniczego prokuratora wypłaconego zgodnie z art. 10. 2. Kwotę zwiększonego wynagrodzenia zasadniczego prokuratora, o którym mowa w ust. 1, wypłaca się do dnia 31 grudnia 2023 r., z wyrównaniem od dnia 1 stycznia 2023 r. 3. Przepisy ust. 1 i 2 stosuje się odpowiednio w przypadku, o którym mowa w art. 10 ust. 2. Art. 10b. 1. W roku 2023 w celu sfinansowania wypłaty kwot zwiększonego wynagrodzenia, o których mowa w art. 10a, minister właściwy do spraw finansów publicznych, na wniosek Ministra Sprawiedliwości - Prokuratora Generalnego, tworzy rezerwę celową z kwoty wydatków zablokowanych na podstawie art. 177 ust. 1 ustawy z dnia 27 sierpnia 2009 r. o finansach publicznych (Dz. U. z 2023 r. poz. 1270, z późn. zm.1)Zmiany tekstu jednolitego wymienionej ustawy zostały ogłoszone w Dz. U. z 2023 r. poz. 1273, 1407, 1429, 1641, 1693 i 1872.), do wysokości 240 360 tys. zł. 2. Do utworzenia rezerwy celowej, o której mowa w ust. 1, nie stosuje się przepisów art. 177 ust. 6-8 ustawy z dnia 27 sierpnia 2009 r. o finansach publicznych. 3. Podziału rezerwy, o której mowa w ust. 1, dokonuje minister właściwy do spraw finansów publicznych na wniosek właściwego dysponenta części budżetowej. ” ."
+    }
+  },
+  "list_amendments": {
+    "amends": [
+      "https://lex.dev/eli/pl/ustawa/2022/DU%2F2666"
+    ],
+    "amended_by": null,
+    "repeals": null
+  },
+  "search_budzetowej": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/pl/ustawa/2023/DU%2F2777/2024-03-14/pl",
+        "act_uri": "https://lex.dev/eli/pl/ustawa/2023/DU%2F2777",
+        "kind": "title",
+        "snippet": "…ustawy o szczególnych rozwiązaniach służących realizacji ustawy [budżetowej] na rok 2023"
+      },
+      {
+        "uri": "https://lex.dev/eli/pl/ustawa/2023/DU%2F2777/2024-03-14/pl/art_1",
+        "act_uri": "https://lex.dev/eli/pl/ustawa/2023/DU%2F2777",
+        "kind": "article",
+        "snippet": "…r. o szczególnych rozwiązaniach służących realizacji ustawy [budżetowej] na rok 2023 (Dz. U. poz. 2666…"
+      }
+    ]
+  },
+  "search_wynagrodzenie": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/pl/ustawa/2023/DU%2F2777/2024-03-14/pl/art_1",
+        "act_uri": "https://lex.dev/eli/pl/ustawa/2023/DU%2F2777",
+        "kind": "article",
+        "snippet": "…„ Art. 10a. 1. W roku 2023 [wynagrodzenie] zasadnicze prokuratora podlega zwiększeniu o różnicę pomiędzy…"
+      }
+    ]
+  }
+}

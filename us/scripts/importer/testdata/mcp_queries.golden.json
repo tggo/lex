@@ -1,0 +1,68 @@
+{
+  "find_related": {
+    "cites": null,
+    "consolidates": null
+  },
+  "get_act": {
+    "act": {
+      "uri": "https://lex.dev/eli/us/usc-title/2024/title-1",
+      "country": "us",
+      "type": "usc-title",
+      "year": 2024,
+      "number": "title-1",
+      "title": "Title 1 - General Provisions",
+      "version_date": "2024-01-08",
+      "status": "in_force",
+      "source_url": "http://fixture/dl/us/pl/119/4/xml_usc01@119-4.zip",
+      "articles": [
+        {
+          "number": "1",
+          "label": "§ 1. Words denoting number, gender, and so forth",
+          "text": "In determining the meaning of any Act of Congress, unless the context indicates otherwise— words importing the singular include and apply to several persons, parties, or things;"
+        },
+        {
+          "number": "2",
+          "label": "§ 2. \"County\" as including \"parish\", and so forth",
+          "text": "The word \"county\" includes a parish, or any other equivalent subdivision of a State or Territory of the United States."
+        },
+        {
+          "number": "5",
+          "label": "§ 5. Repealed",
+          "text": "Repealed. Pub. L. 99-514, title XVIII, §1899A(1), Oct. 22, 1986, 100 Stat. 2958."
+        }
+      ]
+    }
+  },
+  "get_article_1": {
+    "article": {
+      "number": "1",
+      "label": "§ 1. Words denoting number, gender, and so forth",
+      "text": "In determining the meaning of any Act of Congress, unless the context indicates otherwise— words importing the singular include and apply to several persons, parties, or things;"
+    }
+  },
+  "list_amendments": {
+    "amends": null,
+    "amended_by": null,
+    "repeals": null
+  },
+  "search_congress": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/us/usc-title/2024/title-1/2024-01-08/en/art_1",
+        "act_uri": "https://lex.dev/eli/us/usc-title/2024/title-1",
+        "kind": "article",
+        "snippet": "…determining the meaning of any Act of [Congress,] unless the context indicates otherwise— words importing…"
+      }
+    ]
+  },
+  "search_provisions": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/us/usc-title/2024/title-1/2024-01-08/en",
+        "act_uri": "https://lex.dev/eli/us/usc-title/2024/title-1",
+        "kind": "title",
+        "snippet": "Title 1 - General [Provisions]"
+      }
+    ]
+  }
+}

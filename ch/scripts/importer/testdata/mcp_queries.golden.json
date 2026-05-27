@@ -1,0 +1,44 @@
+{
+  "find_related_zgb": {
+    "cites": null,
+    "consolidates": null
+  },
+  "get_act_zgb": {
+    "act": {
+      "uri": "https://lex.dev/eli/ch/gesetzbuch/1912/210",
+      "country": "ch",
+      "type": "gesetzbuch",
+      "year": 1912,
+      "number": "210",
+      "title": "Schweizerisches Zivilgesetzbuch vom 10. Dezember 1907",
+      "version_date": "1912-01-01",
+      "status": "in_force",
+      "source_url": "https://fedlex.data.admin.ch/eli/cc/24/233_245_233"
+    }
+  },
+  "list_amendments_zgb": {
+    "amends": null,
+    "amended_by": null,
+    "repeals": null
+  },
+  "search_strafgesetzbuch": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/ch/gesetzbuch/1942/311.0/1942-01-01/de",
+        "act_uri": "https://lex.dev/eli/ch/gesetzbuch/1942/311.0",
+        "kind": "title",
+        "snippet": "Schweizerisches [Strafgesetzbuch] vom 21. Dezember 1937"
+      }
+    ]
+  },
+  "search_zivilgesetzbuch": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/ch/gesetzbuch/1912/210/1912-01-01/de",
+        "act_uri": "https://lex.dev/eli/ch/gesetzbuch/1912/210",
+        "kind": "title",
+        "snippet": "Schweizerisches [Zivilgesetzbuch] vom 10. Dezember 1907"
+      }
+    ]
+  }
+}

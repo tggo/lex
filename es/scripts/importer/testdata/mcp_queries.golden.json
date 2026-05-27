@@ -1,0 +1,77 @@
+{
+  "find_related": {
+    "cites": [
+      "https://lex.dev/eli/es/norma/1985/BOE-A-1985-12534",
+      "https://lex.dev/eli/es/norma/1994/BOE-A-1994-28968",
+      "https://lex.dev/eli/es/norma/2004/BOE-A-2004-21831"
+    ],
+    "consolidates": null
+  },
+  "get_act": {
+    "act": {
+      "uri": "https://lex.dev/eli/es/ley/2021/BOE-A-2021-6945",
+      "country": "es",
+      "type": "ley",
+      "year": 2021,
+      "number": "BOE-A-2021-6945",
+      "title": "Ley 6/2021, de 28 de abril, por la que se modifica la Ley 20/2011, de 21 de julio, del Registro Civil.",
+      "version_date": "2026-05-27",
+      "status": "in_force",
+      "source_url": "https://www.boe.es/eli/es/l/2021/04/28/6",
+      "articles": [
+        {
+          "number": "da",
+          "label": "Disposición adicional única",
+          "text": "Disposición adicional única. Modificación del plazo previsto en la Ley 16/1985, de 25 de junio, del Patrimonio Histórico Español, en relación con el Inventario de Bienes Muebles de la Iglesia. Se amplía por cinco años el plazo previsto en la Ley 16/1985, de 25 de junio, del Patrimonio Histórico Español, en relación con el Inventario de Bienes Muebles de la Iglesia, y en relación a su vez con la disposición adicional segunda de la Ley 4/2004, de 29 de diciembre, de modificación de tasas y de beneficios fiscales de acontecimientos de excepcional interés público, con la disposición transitoria primera de la Ley 42/1994, de 30 de diciembre, de medidas fiscales, administrativas y del orden social, y con la disposición transitoria quinta de la propia Ley 16/1985, de 25 de junio."
+        },
+        {
+          "number": "df",
+          "label": "Disposición final primera",
+          "text": "Disposición final primera. Título competencial. La presente Ley se dicta al amparo del artículo 149.1.5.ª y 8.ª de la Constitución, que atribuye al Estado la competencia exclusiva en materia de Administración de Justicia y de ordenación de los registros e instrumentos públicos."
+        }
+      ]
+    }
+  },
+  "get_article_da": {
+    "article": {
+      "number": "da",
+      "label": "Disposición adicional única",
+      "text": "Disposición adicional única. Modificación del plazo previsto en la Ley 16/1985, de 25 de junio, del Patrimonio Histórico Español, en relación con el Inventario de Bienes Muebles de la Iglesia. Se amplía por cinco años el plazo previsto en la Ley 16/1985, de 25 de junio, del Patrimonio Histórico Español, en relación con el Inventario de Bienes Muebles de la Iglesia, y en relación a su vez con la disposición adicional segunda de la Ley 4/2004, de 29 de diciembre, de modificación de tasas y de beneficios fiscales de acontecimientos de excepcional interés público, con la disposición transitoria primera de la Ley 42/1994, de 30 de diciembre, de medidas fiscales, administrativas y del orden social, y con la disposición transitoria quinta de la propia Ley 16/1985, de 25 de junio."
+    }
+  },
+  "list_amendments": {
+    "amends": [
+      "https://lex.dev/eli/es/norma/2011/BOE-A-2011-12628"
+    ],
+    "amended_by": null,
+    "repeals": [
+      "https://lex.dev/eli/es/norma/1988/BOE-A-1988-29622"
+    ]
+  },
+  "search_disposicion": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/es/ley/2021/BOE-A-2021-6945/2026-05-27/es/art_da",
+        "act_uri": "https://lex.dev/eli/es/ley/2021/BOE-A-2021-6945",
+        "kind": "article",
+        "snippet": "[Disposición] adicional única [Disposición] adicional única. Modificación del…"
+      },
+      {
+        "uri": "https://lex.dev/eli/es/ley/2021/BOE-A-2021-6945/2026-05-27/es/art_df",
+        "act_uri": "https://lex.dev/eli/es/ley/2021/BOE-A-2021-6945",
+        "kind": "article",
+        "snippet": "[Disposición] final primera [Disposición] final primera. Título competencial.…"
+      }
+    ]
+  },
+  "search_registro": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/es/ley/2021/BOE-A-2021-6945/2026-05-27/es",
+        "act_uri": "https://lex.dev/eli/es/ley/2021/BOE-A-2021-6945",
+        "kind": "title",
+        "snippet": "…Ley 20/2011, de 21 de julio, del [Registro] Civil."
+      }
+    ]
+  }
+}

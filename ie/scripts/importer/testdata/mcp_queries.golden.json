@@ -1,0 +1,76 @@
+{
+  "find_related_2015_60": {
+    "cites": null,
+    "consolidates": null
+  },
+  "get_act_2015_60": {
+    "act": {
+      "uri": "https://lex.dev/eli/ie/act/2015/60",
+      "country": "ie",
+      "type": "act",
+      "year": 2015,
+      "number": "60",
+      "title": "Bankruptcy (Amendment) Act 2015",
+      "version_date": "2015-12-25",
+      "status": "in_force",
+      "source_url": "http://www.irishstatutebook.ie/eli/2015/act/60",
+      "articles": [
+        {
+          "number": "1",
+          "label": "Section 1",
+          "text": "Definitions 1. In this Act— “Act of 1988” means the Bankruptcy Act 1988 ; “Act of 2012” means the Personal Insolvency Act 2012 ."
+        },
+        {
+          "number": "2",
+          "label": "Section 2",
+          "text": "Amendment of section 3 of Act of 1988 2. Section 3 of the Act of 1988 is amended in subsection (1) by the insertion of the following definition: “ ‘principal private residence’ has the same meaning as it has in section 2 of the Personal Insolvency Act 2012 subject to the modification that a reference to the debtor shall be taken to be a reference to the bankrupt;”."
+        },
+        {
+          "number": "3",
+          "label": "Section 3",
+          "text": "Amendment of section 12 of Act of 1988 3. Section 12 (amended by section 146 of the Act of 2012) of the Act of 1988 is amended by the substitution of the following subsection for subsection (1): “(1) The petitioning creditor shall at his own cost present his petition and prosecute it and, subject to subsection (2), the Court shall, at or after the hearing of the creditors’ petition under section 14, make an order for the payment of such costs out of the estate of the bankrupt in course of priority to be settled by rules of court.”."
+        }
+      ]
+    }
+  },
+  "get_article_2015_60_1": {
+    "article": {
+      "number": "1",
+      "label": "Section 1",
+      "text": "Definitions 1. In this Act— “Act of 1988” means the Bankruptcy Act 1988 ; “Act of 2012” means the Personal Insolvency Act 2012 ."
+    }
+  },
+  "list_amendments_2015_60": {
+    "amends": [
+      "https://lex.dev/eli/ie/act/1988/27"
+    ],
+    "amended_by": null,
+    "repeals": null
+  },
+  "search_bankruptcy": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/ie/act/2015/60/2015-12-25/en",
+        "act_uri": "https://lex.dev/eli/ie/act/2015/60",
+        "kind": "title",
+        "snippet": "[Bankruptcy] (Amendment) Act 2015"
+      },
+      {
+        "uri": "https://lex.dev/eli/ie/act/2015/60/2015-12-25/en/art_1",
+        "act_uri": "https://lex.dev/eli/ie/act/2015/60",
+        "kind": "article",
+        "snippet": "…this Act— “Act of 1988” means the [Bankruptcy] Act 1988 ; “Act of 2012” means…"
+      }
+    ]
+  },
+  "search_creditor": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/ie/act/2015/60/2015-12-25/en/art_3",
+        "act_uri": "https://lex.dev/eli/ie/act/2015/60",
+        "kind": "article",
+        "snippet": "…subsection for subsection (1): “(1) The petitioning [creditor] shall at his own cost present his…"
+      }
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "find_related_1854": {
+    "cites": [
+      "https://lex.dev/eli/lu//1933/etat%2Fleg%2Floi%2F1933%2F11%2F27%2Fn1%2Fjo",
+      "https://lex.dev/eli/lu//2003/dir_ue%2F2003%2F109%2Fjo"
+    ],
+    "consolidates": null
+  },
+  "get_act_1854": {
+    "act": {
+      "uri": "https://lex.dev/eli/lu/arrete/1854/etat%2Fadm%2Fa%2F1854%2F04%2F21%2Fn1%2Fjo",
+      "country": "lu",
+      "type": "arrete",
+      "year": 1854,
+      "number": "etat/adm/a/1854/04/21/n1/jo",
+      "title": "Publication du 21 avril 1854 de la liste générale des personnes autorisées d'exercer une branche quelconque de l'art de guérir ou une profession qui s'y rattache.",
+      "version_date": "1854-04-21",
+      "status": "in_force",
+      "source_url": "http://data.legilux.public.lu/eli/etat/adm/a/1854/04/21/n1/jo"
+    }
+  },
+  "list_amendments_1854": {
+    "amends": [
+      "https://lex.dev/eli/lu//1988/etat%2Fleg%2Floi%2F1988%2F12%2F13%2Fn1%2Fjo"
+    ],
+    "amended_by": null,
+    "repeals": null
+  },
+  "search_milice": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/lu/arrete/1854/etat%2Fadm%2Fa%2F1854%2F04%2F24%2Fn1%2Fjo/1854-04-24/fr",
+        "act_uri": "https://lex.dev/eli/lu/arrete/1854/etat%2Fadm%2Fa%2F1854%2F04%2F24%2Fn1%2Fjo",
+        "kind": "title",
+        "snippet": "…des hommes de la levée de la [milice] de 1854."
+      }
+    ]
+  },
+  "search_publication": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/lu/arrete/1854/etat%2Fadm%2Fa%2F1854%2F04%2F21%2Fn1%2Fjo/1854-04-21/fr",
+        "act_uri": "https://lex.dev/eli/lu/arrete/1854/etat%2Fadm%2Fa%2F1854%2F04%2F21%2Fn1%2Fjo",
+        "kind": "title",
+        "snippet": "[Publication] du 21 avril 1854 de la liste…"
+      }
+    ]
+  }
+}

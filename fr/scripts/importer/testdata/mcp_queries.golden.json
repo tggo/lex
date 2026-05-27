@@ -1,0 +1,65 @@
+{
+  "find_related": {
+    "cites": [
+      "https://lex.dev/eli/fr/texte/0/LEGITEXT000006070721"
+    ],
+    "consolidates": null
+  },
+  "get_act": {
+    "act": {
+      "uri": "https://lex.dev/eli/fr/code/1804/LEGITEXT000006070721",
+      "country": "fr",
+      "type": "code",
+      "year": 1804,
+      "number": "LEGITEXT000006070721",
+      "title": "Code civil",
+      "version_date": "2024-07-01",
+      "status": "in_force",
+      "source_url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006070721",
+      "articles": [
+        {
+          "number": "1",
+          "label": "Article 1",
+          "text": "Les lois et, lorsqu'ils sont publiés au Journal officiel de la République française, les actes administratifs entrent en vigueur à la date qu'ils fixent ou, à défaut, le lendemain de leur publication."
+        },
+        {
+          "number": "2",
+          "label": "Article 2",
+          "text": "La loi ne dispose que pour l'avenir ; elle n'a point d'effet rétroactif."
+        }
+      ]
+    }
+  },
+  "get_article_1": {
+    "article": {
+      "number": "1",
+      "label": "Article 1",
+      "text": "Les lois et, lorsqu'ils sont publiés au Journal officiel de la République française, les actes administratifs entrent en vigueur à la date qu'ils fixent ou, à défaut, le lendemain de leur publication."
+    }
+  },
+  "list_amendments": {
+    "amends": null,
+    "amended_by": null,
+    "repeals": null
+  },
+  "search_civil": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/fr/code/1804/LEGITEXT000006070721/2024-07-01/fr",
+        "act_uri": "https://lex.dev/eli/fr/code/1804/LEGITEXT000006070721",
+        "kind": "title",
+        "snippet": "Code [civil]"
+      }
+    ]
+  },
+  "search_vigueur": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/fr/code/1804/LEGITEXT000006070721/2024-07-01/fr/art_1",
+        "act_uri": "https://lex.dev/eli/fr/code/1804/LEGITEXT000006070721",
+        "kind": "article",
+        "snippet": "…République française, les actes administratifs entrent en [vigueur] à la date qu'ils fixent ou, à…"
+      }
+    ]
+  }
+}

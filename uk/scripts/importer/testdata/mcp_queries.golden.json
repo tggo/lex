@@ -1,0 +1,86 @@
+{
+  "find_related": {
+    "cites": [
+      "https://lex.dev/eli/uk/ukpga/2024/5"
+    ],
+    "consolidates": null
+  },
+  "get_act": {
+    "act": {
+      "uri": "https://lex.dev/eli/uk/ukpga/2023/57",
+      "country": "uk",
+      "type": "ukpga",
+      "year": 2023,
+      "number": "57",
+      "title": "National Insurance Contributions (Reduction in Rates) Act 2023",
+      "version_date": "2023-12-18",
+      "status": "in_force",
+      "source_url": "https://www.legislation.gov.uk/ukpga/2023/57",
+      "articles": [
+        {
+          "number": "1",
+          "label": "Reduction of Class 1 main primary percentage",
+          "text": "Reduction of Class 1 main primary percentage 1 1 In the Social Security Contributions and Benefits Act 1992, in section 8(2)(a) (main primary percentage), for “12 per cent” substitute “10%”. 2 In the Social Security Contributions and Benefits (Northern Ireland) Act 1992, in section 8(2)(a) (main primary percentage), for “12 per cent” substitute “10%”. 3 In regulation 131 of the Social Security (Contributions) Regulations 2001— a omit “On and after 6th April 2011”, and b for “5.85 per cent” substitute “3.85%”. 4 The amendments made by this section come into force on 6 January 2024."
+        },
+        {
+          "number": "2",
+          "label": "Reduction of main Class 4 percentage",
+          "text": "Reduction of main Class 4 percentage2. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ."
+        },
+        {
+          "number": "3",
+          "label": "Removal of requirement to pay Class 2 contributions",
+          "text": "Removal of requirement to pay Class 2 contributions 3 1 In section 11 of the Social Security Contributions and Benefits Act 1992 (Class 2 contributions)— a omit subsection (2), b in subsection (4), omit paragraph (a), c omit subsection (5), d in subsection (5A), omit the words from “but” to the end, e in subsection (5B), omit “under subsection (2)”, and f in subsection (8), for “subsections (2) and” substitute “subsection”. 2 In section 11 of the Social Security Contributions and Benefits (Northern Ireland) Act 1992 (Class 2 contributions)— a omit subsection (2), b in subsection (4), omit paragraph (a), c omit subsection (5), d in subsection (5A), omit the words from “but” to the end, e in subsection (5B), omit “under subsection (2)”, and f in subsection (8), for “subsections (2) and” substitute “subsection”. 3 The amendments made by this section come into force on 6 April 2024."
+        },
+        {
+          "number": "4",
+          "label": "Transitional and consequential provision",
+          "text": "Transitional and consequential provision 4 The Schedule contains transitional and consequential provision."
+        },
+        {
+          "number": "5",
+          "label": "Short title",
+          "text": "Short title 5 This Act may be cited as the National Insurance Contributions (Reduction in Rates) Act 2023."
+        }
+      ]
+    }
+  },
+  "get_article_1": {
+    "article": {
+      "number": "1",
+      "label": "Reduction of Class 1 main primary percentage",
+      "text": "Reduction of Class 1 main primary percentage 1 1 In the Social Security Contributions and Benefits Act 1992, in section 8(2)(a) (main primary percentage), for “12 per cent” substitute “10%”. 2 In the Social Security Contributions and Benefits (Northern Ireland) Act 1992, in section 8(2)(a) (main primary percentage), for “12 per cent” substitute “10%”. 3 In regulation 131 of the Social Security (Contributions) Regulations 2001— a omit “On and after 6th April 2011”, and b for “5.85 per cent” substitute “3.85%”. 4 The amendments made by this section come into force on 6 January 2024."
+    }
+  },
+  "list_amendments": {
+    "amends": null,
+    "amended_by": null,
+    "repeals": null
+  },
+  "search_insurance": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/uk/ukpga/2023/57/2023-12-18/en",
+        "act_uri": "https://lex.dev/eli/uk/ukpga/2023/57",
+        "kind": "title",
+        "snippet": "National [Insurance] Contributions (Reduction in Rates) Act 2023"
+      },
+      {
+        "uri": "https://lex.dev/eli/uk/ukpga/2023/57/2023-12-18/en/art_5",
+        "act_uri": "https://lex.dev/eli/uk/ukpga/2023/57",
+        "kind": "article",
+        "snippet": "…Act may be cited as the National [Insurance] Contributions (Reduction in Rates) Act 2023."
+      }
+    ]
+  },
+  "search_regulation": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/uk/ukpga/2023/57/2023-12-18/en/art_1",
+        "act_uri": "https://lex.dev/eli/uk/ukpga/2023/57",
+        "kind": "article",
+        "snippet": "…“12 per cent” substitute “10%”. 3 In [regulation] 131 of the Social Security (Contributions) Regulations…"
+      }
+    ]
+  }
+}

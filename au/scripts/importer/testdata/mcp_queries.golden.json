@@ -1,0 +1,46 @@
+{
+  "find_related": {
+    "cites": null,
+    "consolidates": null
+  },
+  "get_act": {
+    "act": {
+      "uri": "https://lex.dev/eli/au/act/1901/C1901A00002",
+      "country": "au",
+      "type": "act",
+      "year": 1901,
+      "number": "C1901A00002",
+      "title": "Acts Interpretation Act 1901",
+      "version_date": "2026-03-28",
+      "status": "in_force",
+      "source_url": "https://www.legislation.gov.au/C1901A00002"
+    }
+  },
+  "list_amendments": {
+    "amends": null,
+    "amended_by": [
+      "https://lex.dev/eli/au/act/2026/C2026A00004"
+    ],
+    "repeals": null
+  },
+  "search_acts": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/au/act/1901/C1901A00002/2026-03-28/en",
+        "act_uri": "https://lex.dev/eli/au/act/1901/C1901A00002",
+        "kind": "title",
+        "snippet": "[Acts] Interpretation Act 1901"
+      }
+    ]
+  },
+  "search_interpretation": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/au/act/1901/C1901A00002/2026-03-28/en",
+        "act_uri": "https://lex.dev/eli/au/act/1901/C1901A00002",
+        "kind": "title",
+        "snippet": "Acts [Interpretation] Act 1901"
+      }
+    ]
+  }
+}

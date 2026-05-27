@@ -1,0 +1,220 @@
+{
+  "find_related": {
+    "cites": null,
+    "consolidates": null
+  },
+  "get_act": {
+    "act": {
+      "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+      "country": "fi",
+      "type": "laki",
+      "year": 2019,
+      "number": "2019/469",
+      "title": "Laki valtion etuosto-oikeudesta eräillä alueilla",
+      "version_date": "2022-12-20",
+      "status": "in_force",
+      "source_url": "http://data.finlex.fi/eli/sd/2019/469/ajantasa",
+      "articles": [
+        {
+          "number": "1",
+          "label": "1 §",
+          "text": "Valtion etuosto-oikeus Valtiolla on etuosto-oikeus kiinteistön kaupassa, jos kiinteistön hankkiminen on tarpeen maanpuolustuksen, rajavalvonnan tai rajaturvallisuuden varmistamiseksi taikka alueellisen koskemattomuuden valvonnan ja turvaamisen takia. Mitä tässä laissa säädetään kiinteistöstä, koskee myös määräosaa kiinteistöstä sekä kiinteistöstä luovutettua määräalaa. Kiinteistön kauppana pidetään sellaista vastikkeellista kiinteistön luovutusta, jossa vastikkeen arvosta muu kuin kiinteä omaisuus muodostaa pääosan. Etuosto käsittää samalla kauppakirjalla myydyn kiinteän ja irtaimen omaisuuden kokonaisuudessaan."
+        },
+        {
+          "number": "2",
+          "label": "2 §",
+          "text": "Etuosto-oikeuden alueellinen soveltamisala Alueista, jotka kuuluvat valtion etuosto-oikeuden soveltamisalaan, voidaan säätää tarkemmin valtioneuvoston asetuksella. Tätä lakia ei sovelleta Ahvenanmaan maakunnan alueella."
+        },
+        {
+          "number": "3",
+          "label": "3 §",
+          "text": "Etuosto-oikeuden rajoitukset"
+        },
+        {
+          "number": "4",
+          "label": "4 §",
+          "text": "Ennakkotieto etuosto-oikeuden käyttämisestä Kiinteistönomistaja voi ennen kiinteistön luovutusta pyytää puolustusministeriöltä ennakkotiedon siitä, aikooko valtio käyttää etuosto-oikeutta. Hakemuksessa on ilmoitettava tiedot luovutuksen kohteesta ja ehdoista, ostajasta sekä muut etuosto-oikeuden käyttämisen arvioimiseksi tarpeelliset tiedot. Puolustusministeriö voi ilmoittaa, ettei valtio käytä etuosto-oikeutta, jos kiinteistö luovutetaan ennakkotietohakemuksen mukaisesti. Ennakkotieto sitoo valtiota siinä määrätyn ajan, kuitenkin enintään kahden vuoden ajan ennakkotiedon antamisesta."
+        },
+        {
+          "number": "5",
+          "label": "5 §",
+          "text": "Päätös etuosto-oikeuden käyttämisestä Etuosto-oikeuden käyttämistä koskevan asian ratkaisee valtiovarainministeriö sen ministeriön esityksestä, jonka hallinnonalan tehtävien hoitamiseen etuosto-oikeuden kohteena oleva kiinteistö liittyy. Valtiovarainministeriön on annettava päätös viipymättä tiedoksi ostajalle ja myyjälle todisteellisena tiedoksiantona siten kuin hallintolaissa (434/2003) säädetään sekä ilmoitettava asiasta Maanmittauslaitokselle. Päätös etuosto-oikeuden käyttämisestä on tehtävä ja siitä ilmoitettava Maanmittauslaitokselle kolmen kuukauden kuluessa luovutuksen vahvistamisesta tai siitä, kun kauppa on syntynyt maakaaren (540/1995) 9 a luvussa tarkoitetussa sähköisessä kaupankäyntijärjestelmässä."
+        },
+        {
+          "number": "6",
+          "label": "6 §",
+          "text": "Kiinteistön edelleenluovutus Kiinteistön edelleenluovutus, joka on tapahtunut ennen 5 §:ssä säädetyn määräajan päättymistä tai etuosto-oikeutta koskevan päätöksen lainvoimaiseksi tulemista, ei estä valtiota käyttämästä etuosto-oikeuttaan."
+        },
+        {
+          "number": "7",
+          "label": "7 §",
+          "text": "Ostajan velvollisuudet Ostaja vastaa luovutukseen liittyvien velvoitteiden täyttämisestä myyjälle siihen asti, kun etuosto on saatettu päätökseen. Kun etuosto-oikeuden käyttämistä koskeva päätös on saanut lainvoiman, ostajan on viipymättä toimitettava valtiolle luovutuskirja ja haltuun saamansa kiinteistöä koskevat asiakirjat, joilla on merkitystä valtiolle kiinteistön omistajana."
+        },
+        {
+          "number": "8",
+          "label": "8 §",
+          "text": "Lainvoimaisen etuoston oikeusvaikutukset ja valtion suoritusvelvollisuus myyjälle Kun etuostoa koskeva päätös on saanut lainvoiman, valtion katsotaan tulleen kaupantekohetkellä ostajan sijaan kaupassa sovituilla ehdoilla. Myyjä ei voi vedota sellaiseen kaupan ehtoon, jota hän ei ole ilmoittanut valtiolle ja josta valtio ei päättäessään etuosto-oikeuden käyttämisestä muutoinkaan tiennyt. Valtion asema kolmanteen nähden on sama kuin ostajan. Mikäli ostaja on ennen etuoston loppuunsaattamista täyttänyt kauppaan perustuvia velvoitteita, valtio saa lukea nämä hyväkseen suhteessa myyjään. Mikäli kauppaan sisältyy ehto, jota valtio ei ehdon luonteen vuoksi voi kohtuudella täyttää, velvoite on muunnettava sen täyttä arvoa vastaavaksi rahasuoritukseksi."
+        },
+        {
+          "number": "9",
+          "label": "9 §",
+          "text": "Lainhuuto- ja kiinnitysrekisteriin tehtävät merkinnät Maanmittauslaitoksen on tehtävä 5 §:ssä tarkoitetun ilmoituksen perusteella tarpeelliset merkinnät lainhuuto- ja kiinnitysrekisteriin. Merkinnät on poistettava, kun etuosto on saatettu loppuun."
+        },
+        {
+          "number": "10",
+          "label": "10 §",
+          "text": "Ostajan oikeus saada korvaus suorituksista ja kustannuksista Kun etuosto on saatettu loppuun, valtion on viipymättä korvattava ostajalle 8 §:ssä tarkoitetut suoritukset tämän mahdollisesta laiminlyönnistä aiheutuneita suorituksia lukuun ottamatta. Lisäksi valtion on korvattava ostajalle kaupan johdosta syntyneet rahoitus- ja muut tarpeelliset kustannukset sekä kiinteistön hallinnasta, hoidosta ja kunnossapidosta syntyneet tarpeelliset kustannukset. Korvauksille on maksettava kunkin ostajan suorituksen maksupäivästä lukien korkolain (633/1982) 3 §:n 2 momentin mukaista korkoa. Edellä 1 momentissa tarkoitetusta korvauksesta ja korosta vähennetään ostajan kiinteistöstä saama tuotto ja muu taloudellinen hyöty."
+        },
+        {
+          "number": "11",
+          "label": "11 §",
+          "text": "Korvaus kiinteistön arvon alenemisesta Jos myydyn omaisuuden arvo on ostajan toimenpiteiden tai laiminlyöntien johdosta alentunut, valtiolla on oikeus saada ostajalta kohtuullinen korvaus."
+        },
+        {
+          "number": "12",
+          "label": "12 §",
+          "text": "Etuostomenettelyn vaikutus lainhuudatusmenettelyyn Tämän lain soveltamisalaan kuuluvan kiinteistön saannolle ei saa myöntää lainhuutoa ennen kuin 5 §:ssä säädetty määräaika on päättynyt, etuosto-oikeutta koskeva asia on saanut lainvoiman tai valtio on 4 §:n mukaisesti ilmoittanut, ettei se käytä etuosto-oikeuttaan. Aika, jonka kuluessa valtion on lainhuudatettava etuostolla hankittu kiinteistö, luetaan siitä, kun etuostoa koskeva päätös on saanut lainvoiman."
+        },
+        {
+          "number": "13",
+          "label": "13 §",
+          "text": "Tiedonsaantioikeus Puolustusministeriöllä, sisäministeriöllä ja valtiovarainministeriöllä on oikeus saada tässä laissa säädettyjen tehtävien hoitamiseksi välttämättömät tiedot Maanmittauslaitokselta maksutta ja salassapitosäännösten estämättä."
+        },
+        {
+          "number": "14",
+          "label": "14 §",
+          "text": "Muutoksenhaku Valtiovarainministeriön 5 §:ssä tarkoitettuun päätökseen saa hakea muutosta valittamalla hallinto-oikeuteen siten kuin hallintolainkäyttölaissa (586/1996) säädetään. Hallinto-oikeuden päätökseen saa hakea muutosta valittamalla vain, jos korkein hallinto-oikeus myöntää valitusluvan."
+        },
+        {
+          "number": "15",
+          "label": "15 §",
+          "text": "Voimaantulo Tämä laki tulee voimaan 1 päivänä tammikuuta 2020."
+        }
+      ]
+    }
+  },
+  "get_article_1": {
+    "article": {
+      "number": "1",
+      "label": "1 §",
+      "text": "Valtion etuosto-oikeus Valtiolla on etuosto-oikeus kiinteistön kaupassa, jos kiinteistön hankkiminen on tarpeen maanpuolustuksen, rajavalvonnan tai rajaturvallisuuden varmistamiseksi taikka alueellisen koskemattomuuden valvonnan ja turvaamisen takia. Mitä tässä laissa säädetään kiinteistöstä, koskee myös määräosaa kiinteistöstä sekä kiinteistöstä luovutettua määräalaa. Kiinteistön kauppana pidetään sellaista vastikkeellista kiinteistön luovutusta, jossa vastikkeen arvosta muu kuin kiinteä omaisuus muodostaa pääosan. Etuosto käsittää samalla kauppakirjalla myydyn kiinteän ja irtaimen omaisuuden kokonaisuudessaan."
+    }
+  },
+  "list_amendments": {
+    "amends": null,
+    "amended_by": [
+      "https://lex.dev/eli/fi/statute/2022/2022%2F1099"
+    ],
+    "repeals": null
+  },
+  "search_etuosto": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_3",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "3 § Etuosto-oikeuden rajoitukset"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_4",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "4 § Ennakkotieto etuosto-oikeuden käyttämisestä Kiinteistönomistaja voi ennen kiinteistön luovutusta pyytää puolustusministeriöltä ennakkotiedon siitä,…"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_2",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "2 § Etuosto-oikeuden alueellinen soveltamisala Alueista, jotka kuuluvat valtion etuosto-oikeuden soveltamisalaan, voidaan säätää tarkemmin…"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "title",
+        "snippet": "Laki valtion etuosto-oikeudesta eräillä alueilla"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_6",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "6 § Kiinteistön edelleenluovutus Kiinteistön edelleenluovutus, joka on tapahtunut ennen 5 §:ssä säädetyn määräajan…"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_5",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "5 § Päätös etuosto-oikeuden käyttämisestä Etuosto-oikeuden käyttämistä koskevan asian ratkaisee valtiovarainministeriö sen ministeriön esityksestä,…"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_1",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "…arvosta muu kuin kiinteä omaisuus muodostaa pääosan. [Etuosto] käsittää samalla kauppakirjalla myydyn kiinteän ja irtaimen…"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_7",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "…liittyvien velvoitteiden täyttämisestä myyjälle siihen asti, kun [etuosto] on saatettu päätökseen. Kun etuosto-oikeuden käyttämistä koskeva…"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_12",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "12 § Etuostomenettelyn vaikutus lainhuudatusmenettelyyn Tämän lain soveltamisalaan kuuluvan kiinteistön saannolle ei saa myöntää…"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_9",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "…lainhuuto- ja kiinnitysrekisteriin. Merkinnät on poistettava, kun [etuosto] on saatettu loppuun."
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_10",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "…oikeus saada korvaus suorituksista ja kustannuksista Kun [etuosto] on saatettu loppuun, valtion on viipymättä korvattava…"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_8",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "8 § Lainvoimaisen etuoston oikeusvaikutukset ja valtion suoritusvelvollisuus myyjälle Kun etuostoa koskeva päätös on…"
+      }
+    ]
+  },
+  "search_valtion": {
+    "hits": [
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "title",
+        "snippet": "Laki [valtion] etuosto-oikeudesta eräillä alueilla"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_8",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "8 § Lainvoimaisen etuoston oikeusvaikutukset ja [valtion] suoritusvelvollisuus myyjälle Kun etuostoa koskeva päätös on…"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_2",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "…§ Etuosto-oikeuden alueellinen soveltamisala Alueista, jotka kuuluvat [valtion] etuosto-oikeuden soveltamisalaan, voidaan säätää tarkemmin valtioneuvoston asetuksella.…"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_10",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "…ja kustannuksista Kun etuosto on saatettu loppuun, [valtion] on viipymättä korvattava ostajalle 8 §:ssä tarkoitetut…"
+      },
+      {
+        "uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469/2022-12-20/fi/art_12",
+        "act_uri": "https://lex.dev/eli/fi/laki/2019/2019%2F469",
+        "kind": "article",
+        "snippet": "…ettei se käytä etuosto-oikeuttaan. Aika, jonka kuluessa [valtion] on lainhuudatettava etuostolla hankittu kiinteistö, luetaan siitä,…"
+      }
+    ]
+  }
+}
