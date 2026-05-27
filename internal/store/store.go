@@ -144,6 +144,7 @@ func (s *Store) AddAct(a *schema.Act) error {
 	addRel(schema.PredAmends, e.Amends)
 	addRel(schema.PredAmendedBy, e.AmendedBy)
 	addRel(schema.PredRepeals, e.Repeals)
+	addRel(schema.PredRepealedBy, e.RepealedBy)
 	addRel(schema.PredCites, e.Cites)
 	addRel(schema.PredConsolidates, e.Consolidates)
 	return nil
@@ -251,6 +252,7 @@ func (s *Store) GetAct(resURI string) (*schema.Act, error) {
 	e.Amends = s.relTargets(exprURI, schema.PredAmends)
 	e.AmendedBy = s.relTargets(exprURI, schema.PredAmendedBy)
 	e.Repeals = s.relTargets(exprURI, schema.PredRepeals)
+	e.RepealedBy = s.relTargets(exprURI, schema.PredRepealedBy)
 	e.Cites = s.relTargets(exprURI, schema.PredCites)
 	e.Consolidates = s.relTargets(exprURI, schema.PredConsolidates)
 

@@ -130,13 +130,15 @@ func TestEachAct_propagatesError(t *testing.T) {
 	}
 }
 
-func TestRoundTrip_amendedBy(t *testing.T) {
+func TestRoundTrip_amendedAndRepealedBy(t *testing.T) {
 	s, _ := OpenMemory()
 	defer s.Close()
 
 	amending := schema.ResourceURI("jp", "act", 2024, "506AC0000000033")
+	repealing := schema.ResourceURI("jp", "act", 1907, "140AC0000000045")
 	in := sampleAct()
 	in.Expression.AmendedBy = []string{amending}
+	in.Expression.RepealedBy = []string{repealing}
 	if err := s.AddAct(in); err != nil {
 		t.Fatal(err)
 	}
@@ -146,6 +148,9 @@ func TestRoundTrip_amendedBy(t *testing.T) {
 	}
 	if len(got.Expression.AmendedBy) != 1 || got.Expression.AmendedBy[0] != amending {
 		t.Errorf("amendedBy = %v, want [%s]", got.Expression.AmendedBy, amending)
+	}
+	if len(got.Expression.RepealedBy) != 1 || got.Expression.RepealedBy[0] != repealing {
+		t.Errorf("repealedBy = %v, want [%s]", got.Expression.RepealedBy, repealing)
 	}
 }
 

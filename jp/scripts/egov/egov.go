@@ -47,12 +47,15 @@ type revisionInfo struct {
 
 // Record pairs a mapped Act with the e-Gov ids the importer needs for follow-up
 // passes: RevisionID to fetch the act's full text (GET /api/2/law_data/{id}),
-// and AmendedByLawID — the law_id that produced this revision — which the
-// importer resolves into an eli:amended_by edge once the full law list is known.
+// and the law_id that produced the current revision. That producing law is an
+// amendment for a live act (AmendedByLawID) or the repealing law for a repealed
+// one (RepealedByLawID) — the importer resolves whichever is set into an
+// eli:amended_by / eli:repealed_by edge once the full law list is known.
 type Record struct {
-	Act            *schema.Act
-	RevisionID     string
-	AmendedByLawID string
+	Act             *schema.Act
+	RevisionID      string
+	AmendedByLawID  string
+	RepealedByLawID string
 }
 
 // TypeSlug maps an e-Gov law_type to an ELI type_document slug. Known types use
@@ -156,15 +159,21 @@ func BuildRecords(lawsJSON []byte, retrievedAt time.Time) ([]Record, error) {
 	out := make([]Record, 0, len(resp.Laws))
 	for _, e := range resp.Laws {
 		if act, ok := toAct(e, retrievedAt); ok {
-			amendedBy := e.RevisionInfo.AmendmentLawID
-			if amendedBy == e.LawInfo.LawID {
-				amendedBy = "" // a self-reference (initial enactment) is not an amendment
+			// The law that produced this revision. A self-reference (initial
+			// enactment) is neither an amendment nor a repeal.
+			producedBy := e.RevisionInfo.AmendmentLawID
+			if producedBy == e.LawInfo.LawID {
+				producedBy = ""
 			}
-			out = append(out, Record{
-				Act:            act,
-				RevisionID:     e.RevisionInfo.LawRevisionID,
-				AmendedByLawID: amendedBy,
-			})
+			rec := Record{Act: act, RevisionID: e.RevisionInfo.LawRevisionID}
+			// When the revision is a repeal, the producing law is the repealer;
+			// otherwise it is an amending law.
+			if act.Expression.Status == schema.StatusRepealed {
+				rec.RepealedByLawID = producedBy
+			} else {
+				rec.AmendedByLawID = producedBy
+			}
+			out = append(out, rec)
 		}
 	}
 	return out, nil

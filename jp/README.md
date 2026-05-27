@@ -60,9 +60,10 @@ as `lex:sourceURL`.
 
 Each revision's `amendment_law_id` is the `law_id` of the law that produced it.
 Since it lives in the same id space as the acts we ingest, the importer resolves
-it against the full law list and emits an `eli:amended_by` edge when the target
-is in the set (unresolvable targets are dropped, not asserted). See ADR-0013.
-Repeals are recorded as in-force status only for now.
+it against the full law list and emits an edge when the target is in the set
+(unresolvable targets are dropped, not asserted). The edge is `eli:repealed_by`
+when the revision is a repeal (`repeal_status` = "Repeal"), otherwise
+`eli:amended_by`. See ADR-0013.
 
 ## Article structure (条/項/号)
 

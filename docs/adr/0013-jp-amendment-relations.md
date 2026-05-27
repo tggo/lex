@@ -1,4 +1,4 @@
-# ADR 0013 — Japan: ingest amendment relations (eli:amended_by)
+# ADR 0013 — Japan: ingest amendment & repeal relations (eli:amended_by / eli:repealed_by)
 
 - **Status**: Accepted
 - **Date**: 2026-05-27
@@ -24,20 +24,26 @@ Japan's e-Gov API does not have either blocker:
 
 ## Decision
 
-Ingest the amendment relation for Japan as **`eli:amended_by`** edges:
+Ingest both relations from the same `amendment_law_id` field, switching on
+`repeal_status`:
 
-- `egov.BuildRecords` carries `amendment_law_id` on each `Record` (dropping a
-  self-reference, i.e. an initial enactment where the field equals the act's own
-  `law_id`).
+- `amendment_law_id` is the law that produced the current revision. When that
+  revision is a repeal (`repeal_status` = "Repeal", in which case `repeal_date`
+  equals `amendment_enforcement_date`), the producing law *is* the repealing law
+  — so it becomes an **`eli:repealed_by`** edge. Otherwise it is an amending
+  law — an **`eli:amended_by`** edge.
+- `egov.BuildRecords` carries the producing law on each `Record` as either
+  `AmendedByLawID` or `RepealedByLawID` (dropping a self-reference, i.e. an
+  initial enactment where the field equals the act's own `law_id`).
 - After listing all laws, `importer.resolveAmendments` builds a
-  `law_id → resource URI` map over the listed set and, for each record, adds an
-  `eli:amended_by` edge **only when the target is in the set**. Unresolvable
-  targets (an amending law not in the current listing) are dropped, never
-  asserted — same honesty rule as ADR-0012.
+  `law_id → resource URI` map over the listed set and adds the edge **only when
+  the target is in the set**. Unresolvable targets (a law not in the current
+  listing) are dropped, never asserted — same honesty rule as ADR-0012.
 
-This required one additive ontology change: a new `AmendedBy []string` field on
-`schema.Expression`, written/read by the store as the already-defined
-`eli:amended_by` predicate. The change is country-agnostic.
+This required two additive ontology changes: new `AmendedBy []string` and
+`RepealedBy []string` fields on `schema.Expression`, written/read by the store
+as the already-defined `eli:amended_by` / `eli:repealed_by` predicates. The
+change is country-agnostic.
 
 ## Consequences
 
@@ -45,10 +51,10 @@ This required one additive ontology change: a new `AmendedBy []string` field on
 - Only the *current* revision's amending law is captured in v1 (one edge per
   act); the full amendment chain across historical revisions is a later phase,
   alongside historical expressions (ADR-0011).
-- We model only `eli:amended_by`, not the inverse `eli:amends`, to avoid
-  fabricating an edge direction we did not observe; the server can query the
-  inverse via SPARQL.
-- Repeals (`repeal_status` = "Repeal") are recorded as in-force status only; we
-  do not yet have a reliable repealing-law id to emit `eli:repealed_by`.
-- The schema field is additive (ADR-0005 / ontology "additive optional triples
+- We model only the `*_by` direction, not the inverse `eli:amends` / `eli:repeals`,
+  to avoid fabricating an edge direction we did not observe; the server can query
+  the inverse via SPARQL.
+- A repealed act still carries its repealed-by edge (and no amended-by), so
+  `list_amendments` can show both why text changed and what ended it.
+- The schema fields are additive (ADR-0005 / ontology "additive optional triples
   are fine"), so existing UA data and the store are unaffected.

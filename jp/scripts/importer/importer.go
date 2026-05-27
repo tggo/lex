@@ -118,21 +118,22 @@ func listAll(ctx context.Context, cfg Config) ([]egov.Record, error) {
 	return out, nil
 }
 
-// resolveAmendments turns each record's AmendedByLawID into an eli:amended_by
-// edge, but only when the amending law is itself in the listed set — so every
-// edge points at a real act node in the graph. Unresolvable targets (e.g. an
-// amending law not in the current listing) are dropped rather than asserted.
+// resolveAmendments turns each record's amending/repealing law_id into an
+// eli:amended_by / eli:repealed_by edge, but only when that law is itself in
+// the listed set — so every edge points at a real act node in the graph.
+// Unresolvable targets (a law not in the current listing) are dropped rather
+// than asserted.
 func resolveAmendments(recs []egov.Record) {
 	byLawID := make(map[string]string, len(recs)) // law_id -> resource URI
 	for _, r := range recs {
 		byLawID[r.Act.IDLocal] = r.Act.ResourceURI()
 	}
 	for _, r := range recs {
-		if r.AmendedByLawID == "" {
-			continue
-		}
-		if target, ok := byLawID[r.AmendedByLawID]; ok {
+		if target, ok := byLawID[r.AmendedByLawID]; ok && r.AmendedByLawID != "" {
 			r.Act.Expression.AmendedBy = append(r.Act.Expression.AmendedBy, target)
+		}
+		if target, ok := byLawID[r.RepealedByLawID]; ok && r.RepealedByLawID != "" {
+			r.Act.Expression.RepealedBy = append(r.Act.Expression.RepealedBy, target)
 		}
 	}
 }

@@ -59,6 +59,7 @@ type Expression struct {
 	Amends       []string
 	AmendedBy    []string // this expression was amended by these acts
 	Repeals      []string
+	RepealedBy   []string // this expression was repealed by these acts
 	Cites        []string
 	Consolidates []string
 }

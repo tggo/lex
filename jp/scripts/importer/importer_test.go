@@ -28,12 +28,17 @@ func fakeEgov(t *testing.T) *httptest.Server {
 	     "amendment_enforcement_date":"2026-04-01","repeal_status":"None",
 	     "amendment_law_id":"105DF0000000337",
 	     "current_revision_status":"CurrentEnforced"}}]}`
-	page1 := `{"count":1,"next_offset":2,"laws":[
+	page1 := `{"count":2,"next_offset":3,"laws":[
 	  {"law_info":{"law_type":"CabinetOrder","law_id":"105DF0000000337","promulgation_date":"1872-11-09"},
 	   "revision_info":{"law_revision_id":"REV2","law_title":"改暦ノ布告",
 	     "amendment_enforcement_date":"1872-11-09","repeal_status":"None",
-	     "current_revision_status":"CurrentEnforced"}}]}`
-	pageEmpty := `{"count":0,"next_offset":2,"laws":[]}`
+	     "current_revision_status":"CurrentEnforced"}},
+	  {"law_info":{"law_type":"Act","law_id":"113DF0000000036","promulgation_date":"1880-07-17"},
+	   "revision_info":{"law_revision_id":"REV3","law_title":"旧刑法",
+	     "amendment_enforcement_date":"1908-10-01","repeal_status":"Repeal",
+	     "amendment_law_id":"105DF0000000337",
+	     "current_revision_status":"Repeal"}}]}`
+	pageEmpty := `{"count":0,"next_offset":3,"laws":[]}`
 	lawData := `{"law_full_text":{"tag":"Law","attr":{},"children":[
 	  {"tag":"LawBody","attr":{},"children":[
 	    {"tag":"MainProvision","attr":{},"children":[
@@ -74,8 +79,8 @@ func TestRun_endToEnd(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Run: %v", err)
 	}
-	if n != 2 {
-		t.Fatalf("imported %d acts, want 2", n)
+	if n != 3 {
+		t.Fatalf("imported %d acts, want 3", n)
 	}
 
 	// Reopen the store and confirm the Civil Code round-trips with its article.
@@ -104,31 +109,56 @@ func TestRun_endToEnd(t *testing.T) {
 	if len(got.Expression.AmendedBy) != 1 || got.Expression.AmendedBy[0] != wantTarget {
 		t.Errorf("amendedBy = %v, want [%s]", got.Expression.AmendedBy, wantTarget)
 	}
+
+	// The repealed act resolves its repealing law to an eli:repealed_by edge,
+	// and carries no amended_by.
+	rep, err := st.GetAct("https://lex.dev/eli/jp/act/1880/113DF0000000036")
+	if err != nil {
+		t.Fatalf("GetAct repealed: %v", err)
+	}
+	if rep.Expression.Status != schema.StatusRepealed {
+		t.Errorf("status = %v, want Repealed", rep.Expression.Status)
+	}
+	if len(rep.Expression.RepealedBy) != 1 || rep.Expression.RepealedBy[0] != wantTarget {
+		t.Errorf("repealedBy = %v, want [%s]", rep.Expression.RepealedBy, wantTarget)
+	}
+	if len(rep.Expression.AmendedBy) != 0 {
+		t.Errorf("repealed act amendedBy = %v, want empty", rep.Expression.AmendedBy)
+	}
 }
 
 func TestResolveAmendments(t *testing.T) {
-	mk := func(lawID, slug string, year int, amendedBy string) egov.Record {
+	rec := func(lawID, slug string, year int) egov.Record {
 		return egov.Record{
 			Act: &schema.Act{
 				Country: "jp", TypeSlug: slug, Year: year, Number: lawID, IDLocal: lawID,
 				Expression: &schema.Expression{},
 			},
-			AmendedByLawID: amendedBy,
 		}
 	}
-	a := mk("AAA", "act", 2000, "BBB") // amended by B (in set) -> resolves
-	b := mk("BBB", "act", 1990, "")    // the amending law
-	c := mk("CCC", "act", 2010, "ZZZ") // amended by Z (not in set) -> dropped
-	recs := []egov.Record{a, b, c}
+	a := rec("AAA", "act", 2000)
+	a.AmendedByLawID = "BBB" // amended by B (in set) -> resolves
+	b := rec("BBB", "act", 1990)
+	c := rec("CCC", "act", 2010)
+	c.AmendedByLawID = "ZZZ" // amending law not in set -> dropped
+	d := rec("DDD", "act", 1880)
+	d.RepealedByLawID = "BBB" // repealed by B (in set) -> resolves as repealed_by
+	recs := []egov.Record{a, b, c, d}
 
 	resolveAmendments(recs)
 
-	want := "https://lex.dev/eli/jp/act/1990/BBB"
-	if len(recs[0].Act.Expression.AmendedBy) != 1 || recs[0].Act.Expression.AmendedBy[0] != want {
-		t.Errorf("A.AmendedBy = %v, want [%s]", recs[0].Act.Expression.AmendedBy, want)
+	wantB := "https://lex.dev/eli/jp/act/1990/BBB"
+	if got := recs[0].Act.Expression.AmendedBy; len(got) != 1 || got[0] != wantB {
+		t.Errorf("A.AmendedBy = %v, want [%s]", got, wantB)
 	}
-	if len(recs[2].Act.Expression.AmendedBy) != 0 {
-		t.Errorf("C.AmendedBy = %v, want empty (target not in set)", recs[2].Act.Expression.AmendedBy)
+	if got := recs[2].Act.Expression.AmendedBy; len(got) != 0 {
+		t.Errorf("C.AmendedBy = %v, want empty (target not in set)", got)
+	}
+	if got := recs[3].Act.Expression.RepealedBy; len(got) != 1 || got[0] != wantB {
+		t.Errorf("D.RepealedBy = %v, want [%s]", got, wantB)
+	}
+	if got := recs[3].Act.Expression.AmendedBy; len(got) != 0 {
+		t.Errorf("D.AmendedBy = %v, want empty (it was repealed, not amended)", got)
 	}
 }
 
