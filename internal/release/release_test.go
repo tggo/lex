@@ -105,6 +105,23 @@ func TestExtractTarGz_dirEntry(t *testing.T) {
 	}
 }
 
+func TestExtractTarGz_skipsAppleDouble(t *testing.T) {
+	dest := t.TempDir()
+	arc := makeTarGz(t, map[string]string{
+		"graph/000001.vlog":   "data",
+		"graph/._000001.vlog": "junk", // macOS AppleDouble — must be skipped
+	})
+	if err := ExtractTarGz(bytes.NewReader(arc), dest); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(dest, "graph", "._000001.vlog")); err == nil {
+		t.Error("AppleDouble sidecar should not be extracted")
+	}
+	if b, _ := os.ReadFile(filepath.Join(dest, "graph", "000001.vlog")); string(b) != "data" {
+		t.Errorf("real file = %q", b)
+	}
+}
+
 func TestExtractTarGz_badGzip(t *testing.T) {
 	if err := ExtractTarGz(bytes.NewReader([]byte("not a gzip stream")), t.TempDir()); err == nil {
 		t.Error("expected error on non-gzip input")

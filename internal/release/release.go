@@ -64,6 +64,10 @@ func ExtractTarGz(r io.Reader, dest string) error {
 		if err != nil {
 			return fmt.Errorf("release: tar: %w", err)
 		}
+		// Skip macOS AppleDouble sidecar files (._*); they confuse Badger.
+		if strings.HasPrefix(filepath.Base(hdr.Name), "._") {
+			continue
+		}
 		target := filepath.Join(cleanDest, hdr.Name)
 		if target != cleanDest && !strings.HasPrefix(target, cleanDest+string(os.PathSeparator)) {
 			return fmt.Errorf("release: unsafe path in archive: %q", hdr.Name)
