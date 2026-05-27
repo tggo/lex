@@ -17,6 +17,7 @@ func main() {
 	flag.StringVar(&cfg.BaseURL, "base", importer.DefaultBase, "OGD base URL (…/ogd/zak)")
 	flag.StringVar(&cfg.OutDir, "out", "ua/data/graph", "Badger store directory")
 	flag.StringVar(&cfg.UA, "ua", importer.DefaultUA, "HTTP User-Agent")
+	flag.BoolVar(&cfg.WithArticles, "articles", false, "also fetch each act's HTML body and parse articles (one request per act)")
 	flag.Parse()
 
 	n, err := importer.Run(context.Background(), cfg)

@@ -2,7 +2,10 @@ module github.com/tggo/lex
 
 go 1.25.0
 
-require github.com/tggo/goRDFlib v0.1.9
+require (
+	github.com/tggo/goRDFlib v0.1.9
+	golang.org/x/net v0.43.0
+)
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -18,7 +21,6 @@ require (
 	go.opentelemetry.io/otel v1.37.0 // indirect
 	go.opentelemetry.io/otel/metric v1.37.0 // indirect
 	go.opentelemetry.io/otel/trace v1.37.0 // indirect
-	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	google.golang.org/protobuf v1.36.7 // indirect
 )

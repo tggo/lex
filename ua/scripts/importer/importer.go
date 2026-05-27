@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/tggo/lex/internal/schema"
 	"github.com/tggo/lex/internal/store"
 	"github.com/tggo/lex/ua/scripts/ogd"
 )
@@ -23,11 +24,12 @@ const (
 
 // Config controls an import run.
 type Config struct {
-	BaseURL string       // OGD base, e.g. https://data.rada.gov.ua/ogd/zak
-	OutDir  string       // Badger store directory
-	UA      string       // HTTP User-Agent
-	Client  *http.Client // defaults to http.DefaultClient if nil
-	Now     time.Time    // retrieval timestamp recorded on each act
+	BaseURL      string       // OGD base, e.g. https://data.rada.gov.ua/ogd/zak
+	OutDir       string       // Badger store directory
+	UA           string       // HTTP User-Agent
+	Client       *http.Client // defaults to http.DefaultClient if nil
+	Now          time.Time    // retrieval timestamp recorded on each act
+	WithArticles bool         // also fetch each act's HTML body and parse articles
 }
 
 // Run fetches the datasets, builds acts, and writes them to the store. It
@@ -64,7 +66,7 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	inForce := union(ogd.ParseIDList(perv1), ogd.ParseIDList(perv2))
 	si := ogd.NewStatusIndex(inForce, ogd.ParseIDList(perv0))
 
-	acts, err := ogd.BuildActs(cards, texts, si, cfg.Now)
+	recs, err := ogd.BuildRecords(cards, texts, si, cfg.Now)
 	if err != nil {
 		return 0, err
 	}
@@ -75,12 +77,28 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 	defer st.Close()
 
-	for _, a := range acts {
-		if err := st.AddAct(a); err != nil {
-			return 0, fmt.Errorf("add act %s: %w", a.Number, err)
+	for _, r := range recs {
+		if cfg.WithArticles && r.TextFile != "" {
+			if arts, err := fetchArticles(ctx, cfg, r.TextFile); err != nil {
+				return 0, fmt.Errorf("articles for %s: %w", r.Act.Number, err)
+			} else {
+				r.Act.Expression.Articles = arts
+			}
+		}
+		if err := st.AddAct(r.Act); err != nil {
+			return 0, fmt.Errorf("add act %s: %w", r.Act.Number, err)
 		}
 	}
-	return len(acts), nil
+	return len(recs), nil
+}
+
+// fetchArticles downloads an act's HTML body and parses its articles.
+func fetchArticles(ctx context.Context, cfg Config, file string) ([]schema.Article, error) {
+	b, err := fetch(ctx, cfg, "/perv/text/"+file)
+	if err != nil {
+		return nil, err
+	}
+	return ogd.ParseArticles(b)
 }
 
 // fetch GETs baseURL+path with the configured User-Agent.

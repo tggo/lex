@@ -150,9 +150,17 @@ func ToAct(c Card, t *TextInfo, st schema.Status, retrievedAt time.Time) (*schem
 	}, nil
 }
 
-// BuildActs parses the cards and texts datasets, joins them by document id, and
-// maps each into a schema.Act with status resolved from si.
-func BuildActs(cardsJSON, textsJSON []byte, si StatusIndex, retrievedAt time.Time) ([]*schema.Act, error) {
+// Record pairs a mapped act with the source provenance needed for follow-up
+// passes (e.g. fetching the HTML body to parse articles).
+type Record struct {
+	Act      *schema.Act
+	Dokid    int    // source document id
+	TextFile string // HTML body filename, e.g. "d553665.htm" ("" if none)
+}
+
+// BuildRecords parses the cards and texts datasets, joins them by document id,
+// and maps each into a Record (act + provenance) with status resolved from si.
+func BuildRecords(cardsJSON, textsJSON []byte, si StatusIndex, retrievedAt time.Time) ([]Record, error) {
 	cards, err := ParseCards(cardsJSON)
 	if err != nil {
 		return nil, err
@@ -165,17 +173,32 @@ func BuildActs(cardsJSON, textsJSON []byte, si StatusIndex, retrievedAt time.Tim
 	for _, t := range texts {
 		byDok[t.Dokid] = t
 	}
-	out := make([]*schema.Act, 0, len(cards))
+	out := make([]Record, 0, len(cards))
 	for _, c := range cards {
 		var tp *TextInfo
+		var file string
 		if t, ok := byDok[c.Dokid]; ok {
 			tp = &t
+			file = t.File
 		}
 		act, err := ToAct(c, tp, si.Status(c.Nreg), retrievedAt)
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, act)
+		out = append(out, Record{Act: act, Dokid: c.Dokid, TextFile: file})
 	}
 	return out, nil
+}
+
+// BuildActs is BuildRecords projected to just the acts.
+func BuildActs(cardsJSON, textsJSON []byte, si StatusIndex, retrievedAt time.Time) ([]*schema.Act, error) {
+	recs, err := BuildRecords(cardsJSON, textsJSON, si, retrievedAt)
+	if err != nil {
+		return nil, err
+	}
+	acts := make([]*schema.Act, len(recs))
+	for i, r := range recs {
+		acts[i] = r.Act
+	}
+	return acts, nil
 }

@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -37,6 +38,17 @@ func fixtureServer(t *testing.T) *httptest.Server {
 			_, _ = w.Write(b)
 		})
 	}
+	// Act HTML bodies: only act 4840-20 (dokid 553665) has the article fixture;
+	// the others return an empty (article-less) body.
+	articleFixture := filepath.Join(fxDir, "act_articles.sample.htm")
+	mux.HandleFunc("/perv/text/", func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "d553665.htm") {
+			b, _ := os.ReadFile(articleFixture)
+			_, _ = w.Write(b)
+			return
+		}
+		_, _ = w.Write([]byte(`<html><body></body></html>`))
+	})
 	return httptest.NewServer(mux)
 }
 
@@ -79,6 +91,41 @@ func TestRun_endToEnd(t *testing.T) {
 	}
 	if a.IDLocal != "4840-IX" {
 		t.Errorf("idLocal = %q, want 4840-IX", a.IDLocal)
+	}
+}
+
+func TestRun_withArticles(t *testing.T) {
+	srv := fixtureServer(t)
+	defer srv.Close()
+
+	dir := filepath.Join(t.TempDir(), "graph")
+	cfg := Config{
+		BaseURL:      srv.URL,
+		OutDir:       dir,
+		UA:           "lex-test",
+		Client:       srv.Client(),
+		Now:          time.Date(2026, 5, 27, 0, 0, 0, 0, time.UTC),
+		WithArticles: true,
+	}
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+
+	st, err := store.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer st.Close()
+
+	a, err := st.GetAct(schema.ResourceURI("ua", "zakon", 2026, "4840-20"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(a.Expression.Articles) != 2 {
+		t.Fatalf("got %d articles, want 2", len(a.Expression.Articles))
+	}
+	if a.Expression.Articles[0].Number != "1" {
+		t.Errorf("article[0].Number = %q, want 1", a.Expression.Articles[0].Number)
 	}
 }
 
