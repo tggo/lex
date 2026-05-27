@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/tggo/lex/au/scripts/frl"
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 )
 
@@ -32,6 +33,8 @@ const (
 type Config struct {
 	BaseURL    string       // OData base, e.g. https://api.prod.legislation.gov.au/v1
 	OutDir     string       // Badger store directory
+	IndexPath  string       // FTS index file; if empty, no index is built
+	Lang       string       // stemming language for the FTS index (e.g. "en")
 	UA         string       // HTTP User-Agent
 	Client     *http.Client // defaults to http.DefaultClient if nil
 	Now        time.Time    // retrieval timestamp recorded on each act
@@ -62,12 +65,22 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 	defer st.Close()
 
+	// Optional full-text index, built incrementally alongside the store.
+	var idx *search.Index
+	if cfg.IndexPath != "" {
+		idx, err = search.OpenLang(cfg.IndexPath, cfg.Lang)
+		if err != nil {
+			return 0, err
+		}
+		defer idx.Close()
+	}
+
 	total := 0
 	for y := cfg.FromYear; y <= cfg.ToYear; y++ {
 		if cfg.FromYear == 0 || cfg.ToYear == 0 {
 			return total, fmt.Errorf("importer: -from and -to years are required")
 		}
-		n, err := c.importYear(ctx, st, y)
+		n, err := c.importYear(ctx, st, idx, y)
 		if err != nil {
 			return total, err
 		}
@@ -83,7 +96,7 @@ type client struct {
 }
 
 // importYear pages through one year's titles and imports every act.
-func (c *client) importYear(ctx context.Context, st *store.Store, year int) (int, error) {
+func (c *client) importYear(ctx context.Context, st *store.Store, idx *search.Index, year int) (int, error) {
 	n := 0
 	for skip := 0; ; {
 		filter := fmt.Sprintf("year eq %d and collection eq '%s'", year, c.cfg.Collection)
@@ -106,7 +119,7 @@ func (c *client) importYear(ctx context.Context, st *store.Store, year int) (int
 			break
 		}
 		for _, item := range list.Value {
-			if err := c.importTitle(ctx, st, item.ID); err != nil {
+			if err := c.importTitle(ctx, st, idx, item.ID); err != nil {
 				return n, fmt.Errorf("import %s: %w", item.ID, err)
 			}
 			n++
@@ -120,7 +133,7 @@ func (c *client) importYear(ctx context.Context, st *store.Store, year int) (int
 }
 
 // importTitle fetches one title's detail + current version and stores it.
-func (c *client) importTitle(ctx context.Context, st *store.Store, id string) error {
+func (c *client) importTitle(ctx context.Context, st *store.Store, idx *search.Index, id string) error {
 	db, err := c.fetch(ctx, c.cfg.BaseURL+"/titles/"+url.PathEscape(id))
 	if err != nil {
 		return err
@@ -148,7 +161,15 @@ func (c *client) importTitle(ctx context.Context, st *store.Store, id string) er
 	if err != nil {
 		return err
 	}
-	return st.AddAct(act)
+	if err := st.AddAct(act); err != nil {
+		return err
+	}
+	if idx != nil {
+		if err := idx.ReplaceAct(act); err != nil {
+			return fmt.Errorf("index act %s: %w", act.Number, err)
+		}
+	}
+	return nil
 }
 
 // errNotFound marks a 404 so a missing current version is tolerated (some

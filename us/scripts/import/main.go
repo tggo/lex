@@ -2,7 +2,7 @@
 // Revision Counsel's USLM XML bulk channel and loads them into a lex Badger
 // triplestore. Thin shim over package importer (tested).
 //
-//	go run ./us/scripts/import -out us/data/graph
+//	go run ./us/scripts/import -out us/data
 //	go run ./us/scripts/import -out /tmp/us -titles 1,5,26 -release 119-4
 package main
 
@@ -10,6 +10,7 @@ import (
 	"context"
 	"flag"
 	"log"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -19,13 +20,17 @@ import (
 func main() {
 	cfg := importer.Config{}
 	var titles string
+	root := flag.String("out", "us/data", "dataset root directory (holds graph/ and index.fts)")
 	flag.StringVar(&cfg.BaseURL, "base", importer.DefaultBase, "OLRC release-point directory URL")
 	flag.StringVar(&cfg.Release, "release", importer.DefaultRelease, "release tag in zip filenames, e.g. 119-4")
-	flag.StringVar(&cfg.OutDir, "out", "us/data/graph", "Badger store directory")
 	flag.StringVar(&cfg.UA, "ua", importer.DefaultUA, "HTTP User-Agent")
 	flag.StringVar(&titles, "titles", "", "comma-separated USC title numbers (empty = all 1..54)")
 	flag.Float64Var(&cfg.RatePerSec, "rps", importer.DefaultRatePerSec, "request rate limit per second")
 	flag.Parse()
+
+	cfg.OutDir = filepath.Join(*root, "graph")
+	cfg.IndexPath = filepath.Join(*root, "index.fts")
+	cfg.Lang = "en"
 
 	for _, p := range strings.Split(titles, ",") {
 		if p = strings.TrimSpace(p); p != "" {
@@ -41,5 +46,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("import: %v", err)
 	}
-	log.Printf("imported %d titles into %s", n, cfg.OutDir)
+	log.Printf("imported %d titles into %s (index %s)", n, cfg.OutDir, cfg.IndexPath)
 }

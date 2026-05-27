@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/tggo/lex/ch/scripts/fedlex"
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 )
 
@@ -52,11 +53,13 @@ SELECT ?cc ?srNotation (SAMPLE(?t) AS ?title) (SAMPLE(?ts) AS ?titleShort)
 
 // Config controls an import run.
 type Config struct {
-	Endpoint string       // SPARQL endpoint URL
-	OutDir   string       // Badger store directory
-	UA       string       // HTTP User-Agent
-	Client   *http.Client // defaults to http.DefaultClient if nil
-	Now      time.Time    // retrieval timestamp recorded on each act
+	Endpoint  string       // SPARQL endpoint URL
+	OutDir    string       // Badger store directory
+	IndexPath string       // FTS index file; if empty, no index is built
+	Lang      string       // stemming language for the FTS index (e.g. "de")
+	UA        string       // HTTP User-Agent
+	Client    *http.Client // defaults to http.DefaultClient if nil
+	Now       time.Time    // retrieval timestamp recorded on each act
 
 	// SRNotations, when non-empty, restricts the import to these exact SR
 	// numbers (e.g. ["210","220"]). Empty enumerates everything (subject to
@@ -94,10 +97,25 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 	defer st.Close()
 
+	// Optional full-text index, built incrementally alongside the store.
+	var idx *search.Index
+	if cfg.IndexPath != "" {
+		idx, err = search.OpenLang(cfg.IndexPath, cfg.Lang)
+		if err != nil {
+			return 0, err
+		}
+		defer idx.Close()
+	}
+
 	n := 0
 	for _, a := range acts {
 		if err := st.AddAct(a); err != nil {
 			return n, fmt.Errorf("store %s: %w", a.IDLocal, err)
+		}
+		if idx != nil {
+			if err := idx.ReplaceAct(a); err != nil {
+				return n, fmt.Errorf("index act %s: %w", a.Number, err)
+			}
 		}
 		n++
 	}

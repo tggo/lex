@@ -22,6 +22,7 @@ import (
 
 	"github.com/tggo/lex/fr/scripts/legi"
 	"github.com/tggo/lex/internal/schema"
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 )
 
@@ -41,6 +42,8 @@ const (
 type Config struct {
 	BaseURL      string       // root of the served LEGI XML tree
 	OutDir       string       // Badger store directory
+	IndexPath    string       // FTS index file; if empty, no index is built
+	Lang         string       // search stemming language
 	UA           string       // HTTP User-Agent
 	Client       *http.Client // defaults to http.DefaultClient if nil
 	Now          time.Time    // retrieval timestamp recorded on each act
@@ -67,6 +70,16 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 	defer st.Close()
 
+	// Optional full-text index, built incrementally alongside the store.
+	if cfg.IndexPath != "" {
+		idx, err := search.OpenLang(cfg.IndexPath, cfg.Lang)
+		if err != nil {
+			return 0, err
+		}
+		defer idx.Close()
+		c.idx = idx
+	}
+
 	total := 0
 	for _, cid := range cfg.TextCIDs {
 		if err := c.importText(ctx, st, cid); err != nil {
@@ -81,6 +94,7 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 type client struct {
 	cfg     Config
 	limiter *limiter
+	idx     *search.Index
 }
 
 // shardPath builds the sharded relative path for a LEGI id. LEGI stores objects
@@ -143,7 +157,15 @@ func (c *client) importText(ctx context.Context, st *store.Store, cid string) er
 	if err != nil {
 		return err
 	}
-	return st.AddAct(act)
+	if err := st.AddAct(act); err != nil {
+		return err
+	}
+	if c.idx != nil {
+		if err := c.idx.ReplaceAct(act); err != nil {
+			return fmt.Errorf("index act %s: %w", act.Number, err)
+		}
+	}
+	return nil
 }
 
 // fetch GETs url with the configured User-Agent, throttled and retried on

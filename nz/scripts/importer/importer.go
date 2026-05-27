@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 	"github.com/tggo/lex/nz/scripts/lenz"
 )
@@ -30,6 +31,8 @@ type Config struct {
 	BaseURL      string       // legislation.govt.nz base, e.g. https://www.legislation.govt.nz
 	ListURL      string       // legislation index (XML listing) URL
 	OutDir       string       // Badger store directory
+	IndexPath    string       // FTS index file; if empty, no index is built
+	Lang         string       // search language for stemming (e.g. "en")
 	UA           string       // HTTP User-Agent
 	Client       *http.Client // defaults to http.DefaultClient if nil
 	Now          time.Time    // retrieval timestamp recorded on each act
@@ -60,6 +63,15 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 	defer st.Close()
 
+	if cfg.IndexPath != "" {
+		idx, err := search.OpenLang(cfg.IndexPath, cfg.Lang)
+		if err != nil {
+			return 0, err
+		}
+		defer idx.Close()
+		c.idx = idx
+	}
+
 	lb, err := c.fetch(ctx, cfg.ListURL)
 	if err != nil {
 		return 0, err
@@ -89,6 +101,7 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 type client struct {
 	cfg     Config
 	limiter *limiter
+	idx     *search.Index // optional full-text index; nil if disabled
 }
 
 // actURL builds the per-act whole.xml URL for a list item.
@@ -117,7 +130,15 @@ func (c *client) importAct(ctx context.Context, st *store.Store, item lenz.ListI
 	if err != nil {
 		return err
 	}
-	return st.AddAct(act)
+	if err := st.AddAct(act); err != nil {
+		return err
+	}
+	if c.idx != nil {
+		if err := c.idx.ReplaceAct(act); err != nil {
+			return fmt.Errorf("index act %s: %w", act.Number, err)
+		}
+	}
+	return nil
 }
 
 // fetch GETs url with the configured User-Agent, throttled and retried on

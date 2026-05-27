@@ -16,6 +16,7 @@ import (
 
 	"github.com/tggo/lex/at/scripts/ris"
 	"github.com/tggo/lex/internal/schema"
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 )
 
@@ -36,6 +37,8 @@ const (
 type Config struct {
 	BaseURL        string       // RIS Bundesrecht endpoint
 	OutDir         string       // Badger store directory
+	IndexPath      string       // FTS index file; if empty, no index is built
+	Lang           string       // stemming language for the FTS index (e.g. "de")
 	UA             string       // HTTP User-Agent
 	Client         *http.Client // defaults to http.DefaultClient if nil
 	Now            time.Time    // retrieval timestamp recorded on each act
@@ -62,9 +65,19 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 	defer st.Close()
 
+	// Optional full-text index, built incrementally alongside the store.
+	var idx *search.Index
+	if cfg.IndexPath != "" {
+		idx, err = search.OpenLang(cfg.IndexPath, cfg.Lang)
+		if err != nil {
+			return 0, err
+		}
+		defer idx.Close()
+	}
+
 	total := 0
 	for _, gn := range cfg.Gesetzesnummer {
-		if err := c.importLaw(ctx, st, gn); err != nil {
+		if err := c.importLaw(ctx, st, idx, gn); err != nil {
 			return total, fmt.Errorf("import law %s: %w", gn, err)
 		}
 		total++
@@ -80,7 +93,7 @@ type client struct {
 
 // importLaw fetches all § documents of one law (by Gesetzesnummer), optionally
 // their article text, and stores the assembled act.
-func (c *client) importLaw(ctx context.Context, st *store.Store, gn string) error {
+func (c *client) importLaw(ctx context.Context, st *store.Store, idx *search.Index, gn string) error {
 	docs, err := c.fetchLawDocs(ctx, gn)
 	if err != nil {
 		return err
@@ -117,7 +130,15 @@ func (c *client) importLaw(ctx context.Context, st *store.Store, gn string) erro
 	if err != nil {
 		return err
 	}
-	return st.AddAct(act)
+	if err := st.AddAct(act); err != nil {
+		return err
+	}
+	if idx != nil {
+		if err := idx.ReplaceAct(act); err != nil {
+			return fmt.Errorf("index act %s: %w", act.Number, err)
+		}
+	}
+	return nil
 }
 
 // fetchLawDocs pages the search endpoint for every § document of one law.

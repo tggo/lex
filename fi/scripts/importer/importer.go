@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/tggo/lex/fi/scripts/akn"
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 )
 
@@ -33,6 +34,8 @@ const (
 type Config struct {
 	BaseURL      string       // API base, e.g. https://opendata.finlex.fi/finlex/avoindata/v1
 	OutDir       string       // Badger store directory
+	IndexPath    string       // FTS index file; if empty, no index is built
+	Lang         string       // search stemming language
 	UA           string       // HTTP User-Agent
 	Client       *http.Client // defaults to http.DefaultClient if nil
 	Now          time.Time    // retrieval timestamp recorded on each act
@@ -58,6 +61,16 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 		return 0, err
 	}
 	defer st.Close()
+
+	// Optional full-text index, built incrementally alongside the store.
+	if cfg.IndexPath != "" {
+		idx, err := search.OpenLang(cfg.IndexPath, cfg.Lang)
+		if err != nil {
+			return 0, err
+		}
+		defer idx.Close()
+		c.idx = idx
+	}
 
 	total := 0
 	for offset := 0; ; {
@@ -99,6 +112,7 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 type client struct {
 	cfg     Config
 	limiter *limiter
+	idx     *search.Index
 }
 
 // store maps one parsed document into a schema.Act and writes it. The list
@@ -120,7 +134,15 @@ func (c *client) store(st *store.Store, d *akn.Document) (int, error) {
 		// rather than guess (see docs/ontology.md invariant 1).
 		return 0, nil
 	}
-	return 1, st.AddAct(act)
+	if err := st.AddAct(act); err != nil {
+		return 0, err
+	}
+	if c.idx != nil {
+		if err := c.idx.ReplaceAct(act); err != nil {
+			return 0, fmt.Errorf("index act %s: %w", act.Number, err)
+		}
+	}
+	return 1, nil
 }
 
 // fetchFull retrieves the full Finnish expression document for d, which

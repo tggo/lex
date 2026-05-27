@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/tggo/lex/internal/schema"
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 	"github.com/tggo/lex/jp/scripts/egov"
 )
@@ -174,6 +175,77 @@ func TestRun_withRevisions(t *testing.T) {
 	wantTarget := "https://lex.dev/eli/jp/cabinet-order/1872/105DF0000000337"
 	if len(rv.AmendedBy) != 1 || rv.AmendedBy[0] != wantTarget {
 		t.Errorf("revision amendedBy = %v, want [%s]", rv.AmendedBy, wantTarget)
+	}
+}
+
+func TestRun_buildsPersistentIndex(t *testing.T) {
+	srv := fakeEgov(t)
+	defer srv.Close()
+
+	root := t.TempDir()
+	cfg := Config{
+		BaseURL:   srv.URL,
+		OutDir:    filepath.Join(root, "graph"),
+		IndexPath: filepath.Join(root, "index.fts"),
+		Lang:      "ja",
+		UA:        "lex-test",
+		Now:       fixedTime,
+	}
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+
+	// The persistent index is searchable on its own (no rebuild).
+	idx, err := search.Open(cfg.IndexPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer idx.Close()
+	n, err := idx.Count()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n == 0 {
+		t.Errorf("persisted index Count = %d, want > 0", n)
+	}
+}
+
+func TestFetch_retriesTransient(t *testing.T) {
+	var hits int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		hits++
+		if hits < 3 { // fail twice, then succeed
+			http.Error(w, "busy", http.StatusServiceUnavailable)
+			return
+		}
+		fmt.Fprint(w, "ok")
+	}))
+	defer srv.Close()
+
+	cfg := Config{BaseURL: srv.URL, UA: "t", Client: srv.Client()}
+	b, err := fetch(context.Background(), cfg, "/x")
+	if err != nil {
+		t.Fatalf("fetch: %v", err)
+	}
+	if string(b) != "ok" || hits != 3 {
+		t.Errorf("body=%q hits=%d, want \"ok\" after 3 attempts", b, hits)
+	}
+}
+
+func TestFetch_failsFastOn404(t *testing.T) {
+	var hits int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		hits++
+		http.NotFound(w, r)
+	}))
+	defer srv.Close()
+
+	cfg := Config{BaseURL: srv.URL, UA: "t", Client: srv.Client()}
+	if _, err := fetch(context.Background(), cfg, "/missing"); err == nil {
+		t.Fatal("expected error on 404")
+	}
+	if hits != 1 {
+		t.Errorf("404 should not be retried: hits=%d", hits)
 	}
 }
 

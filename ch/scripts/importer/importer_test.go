@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/tggo/lex/internal/schema"
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 )
 
@@ -84,6 +85,29 @@ func TestRun_endToEnd(t *testing.T) {
 	}
 	if a.Expression.SourceURL != "https://fedlex.data.admin.ch/eli/cc/24/233_245_233" {
 		t.Errorf("sourceURL = %q", a.Expression.SourceURL)
+	}
+}
+
+func TestRun_buildsPersistentIndex(t *testing.T) {
+	srv := fixtureServer(t)
+	defer srv.Close()
+
+	cfg := baseCfg(t, srv)
+	cfg.IndexPath = filepath.Join(t.TempDir(), "index.fts")
+	cfg.Lang = "de"
+
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+
+	// The persistent index is searchable on its own (no rebuild).
+	idx, err := search.Open(cfg.IndexPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer idx.Close()
+	if n, _ := idx.Count(); n == 0 {
+		t.Error("expected the persisted index to hold at least one doc")
 	}
 }
 

@@ -19,6 +19,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 	"github.com/tggo/lex/us/scripts/uslm"
 )
@@ -41,6 +42,8 @@ type Config struct {
 	BaseURL    string       // release-point dir, e.g. https://uscode.house.gov/download/releasepoints/us/pl/119/4
 	Release    string       // release tag used in the filename, e.g. "119-4"
 	OutDir     string       // Badger store directory
+	IndexPath  string       // FTS index file; if empty, no index is built
+	Lang       string       // search language for stemming (e.g. "en")
 	UA         string       // HTTP User-Agent
 	Client     *http.Client // defaults to http.DefaultClient if nil
 	Now        time.Time    // retrieval timestamp recorded on each act
@@ -81,6 +84,16 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 	defer st.Close()
 
+	// Optional full-text index, built incrementally alongside the store.
+	if cfg.IndexPath != "" {
+		idx, err := search.OpenLang(cfg.IndexPath, cfg.Lang)
+		if err != nil {
+			return 0, err
+		}
+		defer idx.Close()
+		c.idx = idx
+	}
+
 	total := 0
 	for _, n := range cfg.Titles {
 		if err := c.importTitle(ctx, st, n); err != nil {
@@ -91,10 +104,11 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	return total, nil
 }
 
-// client bundles the run config with a rate limiter.
+// client bundles the run config with a rate limiter and optional FTS index.
 type client struct {
 	cfg     Config
 	limiter *limiter
+	idx     *search.Index // nil if no index is built
 }
 
 // titleZipURL builds the per-title release-point zip URL, e.g.
@@ -122,7 +136,15 @@ func (c *client) importTitle(ctx context.Context, st *store.Store, n int) error 
 	if err != nil {
 		return err
 	}
-	return st.AddAct(act)
+	if err := st.AddAct(act); err != nil {
+		return err
+	}
+	if c.idx != nil {
+		if err := c.idx.ReplaceAct(act); err != nil {
+			return fmt.Errorf("index act %s: %w", act.Number, err)
+		}
+	}
+	return nil
 }
 
 // extractXML returns the first *.xml entry from a USLM per-title zip.

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/tggo/lex/internal/schema"
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 )
 
@@ -98,6 +99,29 @@ func TestRun_endToEnd(t *testing.T) {
 	}
 }
 
+func TestRun_buildsPersistentIndex(t *testing.T) {
+	srv := fixtureServer(t)
+	defer srv.Close()
+
+	cfg := baseCfg(t, srv)
+	cfg.IndexPath = filepath.Join(t.TempDir(), "index.fts")
+	cfg.Lang = "en"
+
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+
+	// The persistent index is searchable on its own (no rebuild).
+	idx, err := search.Open(cfg.IndexPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer idx.Close()
+	if n, _ := idx.Count(); n == 0 {
+		t.Error("expected the persisted index to hold at least one doc")
+	}
+}
+
 func TestRun_missingVersionTolerated(t *testing.T) {
 	fxDir := filepath.Join("..", "frl", "testdata")
 	mux := http.NewServeMux()
@@ -179,7 +203,7 @@ func TestImportTitle_detailParseError(t *testing.T) {
 	c := &client{cfg: Config{BaseURL: srv.URL + "/v1", UA: "x", Client: srv.Client()}, limiter: newLimiter(0)}
 	st, _ := store.Open(filepath.Join(t.TempDir(), "g"))
 	defer st.Close()
-	if err := c.importTitle(context.Background(), st, "X"); err == nil {
+	if err := c.importTitle(context.Background(), st, nil, "X"); err == nil {
 		t.Error("expected detail parse error")
 	}
 }
@@ -210,7 +234,7 @@ func TestURLEncoding_filterHasYear(t *testing.T) {
 	c := &client{cfg: baseCfg(t, srv), limiter: newLimiter(0)}
 	st, _ := store.Open(filepath.Join(t.TempDir(), "g"))
 	defer st.Close()
-	if _, err := c.importYear(context.Background(), st, 1901); err != nil {
+	if _, err := c.importYear(context.Background(), st, nil, 1901); err != nil {
 		t.Fatal(err)
 	}
 	if !strings.Contains(gotURL, "year eq 1901") {

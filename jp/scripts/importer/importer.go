@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/tggo/lex/internal/schema"
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 	"github.com/tggo/lex/jp/scripts/egov"
 )
@@ -23,12 +24,15 @@ const (
 	DefaultBase = "https://laws.e-gov.go.jp/api/2"
 	DefaultUA   = "lex/0.1 (+https://github.com/tggo/lex)"
 	pageSize    = 100 // laws per /laws page request
+	maxRetries  = 4   // transient-error retries per request
 )
 
 // Config controls an import run.
 type Config struct {
 	BaseURL       string       // API base, e.g. https://laws.e-gov.go.jp/api/2
 	OutDir        string       // Badger store directory
+	IndexPath     string       // FTS index file; if empty, no index is built
+	Lang          string       // search language for the FTS index (e.g. "ja")
 	UA            string       // HTTP User-Agent
 	Client        *http.Client // defaults to http.DefaultClient if nil
 	Now           time.Time    // retrieval timestamp recorded on each act
@@ -60,6 +64,16 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 	defer st.Close()
 
+	// Optional full-text index, built incrementally alongside the store.
+	var idx *search.Index
+	if cfg.IndexPath != "" {
+		idx, err = search.OpenLang(cfg.IndexPath, cfg.Lang)
+		if err != nil {
+			return 0, err
+		}
+		defer idx.Close()
+	}
+
 	for _, r := range recs {
 		if cfg.WithArticles && r.RevisionID != "" {
 			arts, err := fetchArticles(ctx, cfg, r.RevisionID)
@@ -77,6 +91,11 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 		}
 		if err := st.AddAct(r.Act); err != nil {
 			return 0, fmt.Errorf("add act %s: %w", r.Act.Number, err)
+		}
+		if idx != nil {
+			if err := idx.ReplaceAct(r.Act); err != nil {
+				return 0, fmt.Errorf("index act %s: %w", r.Act.Number, err)
+			}
 		}
 	}
 	return len(recs), nil
@@ -193,21 +212,53 @@ func fetchArticles(ctx context.Context, cfg Config, revisionID string) ([]schema
 	return egov.ParseArticles(b)
 }
 
-// fetch GETs baseURL+path with the configured User-Agent.
+// fetch GETs baseURL+path with the configured User-Agent, retried on transient
+// errors (network failures, 429, and 5xx) with exponential backoff. Other 4xx
+// fail fast, and context cancellation aborts the retry loop.
 func fetch(ctx context.Context, cfg Config, path string) ([]byte, error) {
 	u := cfg.BaseURL + path
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
-	if err != nil {
-		return nil, err
+	var lastErr error
+	for attempt := 0; attempt <= maxRetries; attempt++ {
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("User-Agent", cfg.UA)
+		resp, err := cfg.Client.Do(req)
+		if err != nil {
+			lastErr = fmt.Errorf("fetch %s: %w", u, err) // network → transient
+			if !sleepBackoff(ctx, attempt) {
+				return nil, lastErr
+			}
+			continue
+		}
+		body, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		switch {
+		case resp.StatusCode == http.StatusOK:
+			return body, nil
+		case resp.StatusCode == http.StatusTooManyRequests || resp.StatusCode >= 500:
+			lastErr = fmt.Errorf("fetch %s: status %d", u, resp.StatusCode)
+			if !sleepBackoff(ctx, attempt) {
+				return nil, lastErr
+			}
+		default:
+			return nil, fmt.Errorf("fetch %s: status %d", u, resp.StatusCode)
+		}
 	}
-	req.Header.Set("User-Agent", cfg.UA)
-	resp, err := cfg.Client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("fetch %s: %w", u, err)
+	return nil, lastErr
+}
+
+// sleepBackoff waits an exponential interval before the next retry. It returns
+// false if the context is cancelled.
+func sleepBackoff(ctx context.Context, attempt int) bool {
+	d := time.Duration(1<<attempt) * 200 * time.Millisecond
+	t := time.NewTimer(d)
+	defer t.Stop()
+	select {
+	case <-ctx.Done():
+		return false
+	case <-t.C:
+		return true
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("fetch %s: status %d", u, resp.StatusCode)
-	}
-	return io.ReadAll(resp.Body)
 }

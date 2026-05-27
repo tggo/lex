@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/tggo/lex/internal/schema"
+	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 )
 
@@ -94,6 +95,43 @@ func TestRun_endToEnd(t *testing.T) {
 	wantRepeal := schema.ResourceURI("es", "norma", 1988, "BOE-A-1988-29622")
 	if len(a.Expression.Repeals) != 1 || a.Expression.Repeals[0] != wantRepeal {
 		t.Errorf("repeals = %v, want [%s]", a.Expression.Repeals, wantRepeal)
+	}
+}
+
+func TestRun_buildsPersistentIndex(t *testing.T) {
+	srv := fixtureServer(t)
+	defer srv.Close()
+
+	root := t.TempDir()
+	cfg := baseCfg(t, srv)
+	cfg.OutDir = filepath.Join(root, "graph")
+	cfg.IndexPath = filepath.Join(root, "index.fts")
+	cfg.Lang = "es"
+
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("Run: %v", err)
+	}
+
+	// The persistent index is searchable on its own (no rebuild).
+	idx, err := search.Open(cfg.IndexPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	n1, _ := idx.Count()
+	if n1 == 0 {
+		t.Error("expected documents in the persisted index")
+	}
+	idx.Close()
+
+	// Re-running the import must not duplicate index docs (incremental replace).
+	if _, err := Run(context.Background(), cfg); err != nil {
+		t.Fatalf("re-run: %v", err)
+	}
+	idx2, _ := search.Open(cfg.IndexPath)
+	defer idx2.Close()
+	n2, _ := idx2.Count()
+	if n1 != n2 {
+		t.Errorf("index doc count changed on re-import: %d -> %d", n1, n2)
 	}
 }
 
