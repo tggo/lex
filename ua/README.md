@@ -78,7 +78,13 @@ live portal: **2941 primary acts** imported in ~2s.
 
 ✅ Metadata pass works end-to-end (act identity, title, version date, status,
 source URL).
-🚧 Next passes: parse article structure from each act's HTML body
-(`text/d<dokid>.htm`) into `lex:Article`; resolve the `links` field into
-`eli:amends`/`eli:cites` edges (needs a `dokid`→`nreg` map); then the MCP server
-+ search index.
+✅ Article parsing — `-articles` fetches each act's HTML body
+(`text/d<dokid>.htm`) and splits `Стаття N` headings into `lex:Article`.
+
+🚧 **Relations deferred** ([ADR-0012](../docs/adr/0012-ua-link-resolution-deferred.md)):
+the `links` field resolves to only 3/2941 targets within the primary set (the
+rest point outside it) and its type codes are undocumented — needs a global
+`dokid→nreg` map + the code legend before `eli:amends`/`eli:cites` edges can be
+emitted honestly.
+
+🚧 Next: the MCP server (`cmd/lex`) + search index.
