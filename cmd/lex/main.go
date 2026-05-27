@@ -11,22 +11,50 @@ import (
 	"context"
 	"flag"
 	"log"
+	"os"
 	"path/filepath"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 
 	"github.com/tggo/lex/internal/mcp"
+	"github.com/tggo/lex/internal/release"
 	"github.com/tggo/lex/internal/search"
 	"github.com/tggo/lex/internal/store"
 )
 
+const repo = "tggo/lex"
+
 func main() {
 	root := flag.String("data", "ua/data", "dataset root directory (holds graph/ and index.fts)")
 	allowMixed := flag.Bool("allow-mixed", false, "allow a dataset containing more than one country (answers may span countries)")
+	country := flag.String("country", "", "country code for the prebuilt dataset (default: inferred from -data)")
+	releaseURL := flag.String("release-url", "", "override the dataset download URL")
+	noPull := flag.Bool("no-pull", false, "do not download a prebuilt dataset from Releases when missing")
 	flag.Parse()
 
 	graphDir := filepath.Join(*root, "graph")
 	indexPath := filepath.Join(*root, "index.fts")
+
+	// If there is no local dataset, fetch a prebuilt one from Releases so users
+	// don't have to re-scrape official sources.
+	if _, err := os.Stat(graphDir); os.IsNotExist(err) {
+		if *noPull {
+			log.Fatalf("lex: no dataset at %s and -no-pull set; build one with the country importer", *root)
+		}
+		cc := *country
+		if cc == "" {
+			cc = filepath.Base(filepath.Dir(filepath.Clean(*root))) // ua/data -> ua
+		}
+		url := *releaseURL
+		if url == "" {
+			url = release.AssetURL(repo, cc)
+		}
+		log.Printf("lex: no local dataset, downloading %s …", url)
+		if err := release.Download(context.Background(), nil, url, *root); err != nil {
+			log.Fatalf("lex: %v\n(build locally with the %q importer, or check %s/releases)", err, cc, repo)
+		}
+		log.Printf("lex: dataset ready at %s", *root)
+	}
 
 	// Logs go to stderr; stdout is the MCP protocol channel.
 	st, err := store.Open(graphDir)

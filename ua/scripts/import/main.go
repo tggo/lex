@@ -20,10 +20,12 @@ func main() {
 	flag.StringVar(&cfg.UA, "ua", importer.DefaultUA, "HTTP User-Agent")
 	flag.BoolVar(&cfg.WithArticles, "articles", false, "also fetch each act's HTML body and parse articles (one request per act)")
 	flag.BoolVar(&cfg.WithRelations, "relations", false, "fetch the global doc index (~48MB) and resolve amend/repeal/cite edges")
+	cache := flag.String("cache", "ua/.cache", "cache directory for fetched act bodies (\"\" to disable); survives dataset rebuilds")
 	flag.Parse()
 
 	cfg.OutDir = filepath.Join(*root, "graph")
 	cfg.IndexPath = filepath.Join(*root, "index.fts")
+	cfg.CacheDir = *cache
 
 	n, err := importer.Run(context.Background(), cfg)
 	if err != nil {

@@ -3,6 +3,9 @@
 */data/
 !*/data/.gitkeep
 
+# Fetch cache for scraped act bodies (keyed by file+version); never committed.
+*/.cache/
+
 # Build output
 /lex
 /dist/

@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"golang.org/x/text/encoding/charmap"
@@ -36,6 +38,7 @@ type Config struct {
 	Now           time.Time    // retrieval timestamp recorded on each act
 	WithArticles  bool         // also fetch each act's HTML body and parse articles
 	WithRelations bool         // fetch the global doc index and resolve amend/cite edges
+	CacheDir      string       // if set, cache act HTML bodies here (keyed by file+version)
 }
 
 // Run fetches the datasets, builds acts, and writes them to the store. It
@@ -104,7 +107,8 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 
 	for _, r := range recs {
 		if cfg.WithArticles && r.TextFile != "" {
-			arts, err := fetchArticles(ctx, cfg, r.TextFile)
+			tag := r.Act.Expression.VersionDate.Format("20060102")
+			arts, err := fetchArticles(ctx, cfg, r.TextFile, tag)
 			if err != nil {
 				return 0, fmt.Errorf("articles for %s: %w", r.Act.Number, err)
 			}
@@ -126,13 +130,33 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	return len(recs), nil
 }
 
-// fetchArticles downloads an act's HTML body and parses its articles.
-func fetchArticles(ctx context.Context, cfg Config, file string) ([]schema.Article, error) {
-	b, err := fetch(ctx, cfg, "/perv/text/"+file)
+// fetchArticles downloads (or reads from cache) an act's HTML body and parses
+// its articles. versionTag (the act's redaction date) is part of the cache key
+// so an amended act re-fetches rather than serving a stale body.
+func fetchArticles(ctx context.Context, cfg Config, file, versionTag string) ([]schema.Article, error) {
+	b, err := fetchBody(ctx, cfg, file, versionTag)
 	if err != nil {
 		return nil, err
 	}
 	return ogd.ParseArticles(b)
+}
+
+func fetchBody(ctx context.Context, cfg Config, file, versionTag string) ([]byte, error) {
+	if cfg.CacheDir == "" {
+		return fetch(ctx, cfg, "/perv/text/"+file)
+	}
+	cachePath := filepath.Join(cfg.CacheDir, file+"@"+versionTag)
+	if b, err := os.ReadFile(cachePath); err == nil {
+		return b, nil // cache hit — no network
+	}
+	b, err := fetch(ctx, cfg, "/perv/text/"+file)
+	if err != nil {
+		return nil, err
+	}
+	if err := os.MkdirAll(cfg.CacheDir, 0o755); err == nil {
+		_ = os.WriteFile(cachePath, b, 0o644) // best-effort cache write
+	}
+	return b, nil
 }
 
 // fetchDocIndex downloads the global document-cards file (CP1251-encoded) and

@@ -17,7 +17,11 @@ import (
 
 // fixtureServer serves the ogd package's committed fixtures at the real OGD
 // paths, so the importer runs end-to-end without the network.
-func fixtureServer(t *testing.T) *httptest.Server {
+func fixtureServer(t *testing.T) *httptest.Server { return fixtureServerOpt(t, false) }
+
+// fixtureServerOpt serves the OGD fixtures; if failArticles is set, act HTML
+// bodies return 500 (to prove the importer serves them from cache instead).
+func fixtureServerOpt(t *testing.T, failArticles bool) *httptest.Server {
 	t.Helper()
 	fxDir := filepath.Join("..", "ogd", "testdata")
 	routes := map[string]string{
@@ -44,6 +48,10 @@ func fixtureServer(t *testing.T) *httptest.Server {
 	// the others return an empty (article-less) body.
 	articleFixture := filepath.Join(fxDir, "act_articles.sample.htm")
 	mux.HandleFunc("/perv/text/", func(w http.ResponseWriter, r *http.Request) {
+		if failArticles {
+			http.Error(w, "gone", http.StatusInternalServerError)
+			return
+		}
 		if strings.HasSuffix(r.URL.Path, "d553665.htm") {
 			b, _ := os.ReadFile(articleFixture)
 			_, _ = w.Write(b)
@@ -217,6 +225,46 @@ func TestRun_withRelations(t *testing.T) {
 	}
 	if len(b.Expression.Cites) != 1 {
 		t.Errorf("4868 cites = %v, want one", b.Expression.Cites)
+	}
+}
+
+func TestRun_cachesArticleBodies(t *testing.T) {
+	cache := t.TempDir()
+	now := time.Date(2026, 5, 27, 0, 0, 0, 0, time.UTC)
+
+	// First run populates the cache from the (working) server.
+	srv1 := fixtureServer(t)
+	cfg1 := Config{BaseURL: srv1.URL, OutDir: filepath.Join(t.TempDir(), "g"), UA: "t",
+		Client: srv1.Client(), Now: now, WithArticles: true, CacheDir: cache}
+	if _, err := Run(context.Background(), cfg1); err != nil {
+		t.Fatalf("first run: %v", err)
+	}
+	srv1.Close()
+	if ents, _ := os.ReadDir(cache); len(ents) == 0 {
+		t.Fatal("cache not populated after first run")
+	}
+
+	// Second run: article bodies now 500, but the cache serves them, so the
+	// import still succeeds and act 4840-20 keeps its articles.
+	srv2 := fixtureServerOpt(t, true)
+	defer srv2.Close()
+	dir2 := filepath.Join(t.TempDir(), "g")
+	cfg2 := Config{BaseURL: srv2.URL, OutDir: dir2, UA: "t",
+		Client: srv2.Client(), Now: now, WithArticles: true, CacheDir: cache}
+	if _, err := Run(context.Background(), cfg2); err != nil {
+		t.Fatalf("second run (should use cache): %v", err)
+	}
+	st, err := store.Open(dir2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer st.Close()
+	a, err := st.GetAct(schema.ResourceURI("ua", "zakon", 2026, "4840-20"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(a.Expression.Articles) != 2 {
+		t.Errorf("articles after cached run = %d, want 2", len(a.Expression.Articles))
 	}
 }
 
