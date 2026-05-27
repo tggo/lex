@@ -55,6 +55,15 @@ a `TextAnalyzer` interface (tokenize → normalize → stem) so CJK languages fi
 
 ## Ops
 
-- **Prebuilt dataset Releases + CI** (`go test -cover` gate >80%, build binary,
-  publish archived datasets per country).
-- **`cmd/lex` logs the dataset language** alongside the served country.
+- ✅ **Prebuilt dataset distribution** — datasets published as
+  `lex-<cc>.tar.gz` on the fixed `datasets` Release; `lex` auto-pulls when no
+  local dataset (ADR-0029).
+- ✅ **Fetch cache** — importers cache act bodies (version-keyed) so re-imports
+  skip the network.
+- ✅ **`cmd/lex` logs the dataset language** alongside the served country.
+- **CI automation** — GitHub Actions to (a) gate `go test -cover` >80%, build
+  the binary; (b) on a schedule, rebuild each country dataset and upload the
+  tarball to the `datasets` release (currently a manual `tar` + `gh release`).
+- **Conditional/incremental cache** — use HTTP `If-Modified-Since`/ETag (or the
+  OGD lastBuildDate) so even the metadata/doc-index downloads can be skipped
+  when unchanged.

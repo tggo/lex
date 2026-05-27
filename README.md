@@ -42,17 +42,25 @@ official source ──scraper (Go, per country)──▶ RDF (ELI ontology)
 
 ## Quick start
 
-```bash
-# 1. Build the Ukraine dataset (or download a prebuilt one from Releases).
-#    A dataset is a directory holding graph/ (Badger) + index.fts (full text):
-go run ./ua/scripts/import -out ua/data                       # metadata
-go run ./ua/scripts/import -out ua/data -articles            # + article text
-go run ./ua/scripts/import -out ua/data -articles -relations # + amend/cite edges
+The fastest path — **don't scrape anything**. `lex` downloads a prebuilt
+dataset (graph + full-text index) from GitHub Releases on first run:
 
-# 2. Build and run the MCP server over that dataset:
+```bash
 go build -o lex ./cmd/lex
-./lex -data ua/data
+./lex -data ua/data        # no local dataset → pulls lex-ua.tar.gz from Releases
 ```
+
+Or build the dataset yourself from the official source (a dataset is a
+directory: `graph/` Badger + `index.fts` full text):
+
+```bash
+go run ./ua/scripts/import -out ua/data                       # titles only
+go run ./ua/scripts/import -out ua/data -articles -relations  # + article text + edges
+./lex -data ua/data                                            # serve it
+```
+
+Fetched act bodies are cached under `ua/.cache` (keyed by version), so
+re-imports skip the network. Pass `-no-pull` to `lex` to never download.
 
 Then register `lex` as a stdio MCP server in your client (e.g. Claude Code).
 It exposes:
