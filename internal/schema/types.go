@@ -57,6 +57,7 @@ type Expression struct {
 
 	// Relations to other acts, by their Resource URI.
 	Amends       []string
+	AmendedBy    []string // this expression was amended by these acts
 	Repeals      []string
 	Cites        []string
 	Consolidates []string

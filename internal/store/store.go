@@ -142,6 +142,7 @@ func (s *Store) AddAct(a *schema.Act) error {
 		}
 	}
 	addRel(schema.PredAmends, e.Amends)
+	addRel(schema.PredAmendedBy, e.AmendedBy)
 	addRel(schema.PredRepeals, e.Repeals)
 	addRel(schema.PredCites, e.Cites)
 	addRel(schema.PredConsolidates, e.Consolidates)
@@ -153,6 +154,40 @@ PREFIX dct: <` + schema.NSdct + `>
 PREFIX skos: <` + schema.NSskos + `>
 PREFIX lex: <` + schema.NSlex + `>
 `
+
+// ListResourceURIs returns the URIs of every act (LegalResource) in the store,
+// sorted for determinism.
+func (s *Store) ListResourceURIs() ([]string, error) {
+	q := prefixes + `SELECT ?r WHERE { ?r a eli:LegalResource }`
+	res, err := sparql.Query(s.g, q)
+	if err != nil {
+		return nil, fmt.Errorf("store: list resources: %w", err)
+	}
+	out := make([]string, 0, len(res.Bindings))
+	for _, row := range res.Bindings {
+		out = append(out, text(row["r"]))
+	}
+	sort.Strings(out)
+	return out, nil
+}
+
+// EachAct calls fn for every act in the store, in URI order.
+func (s *Store) EachAct(fn func(*schema.Act) error) error {
+	uris, err := s.ListResourceURIs()
+	if err != nil {
+		return err
+	}
+	for _, u := range uris {
+		a, err := s.GetAct(u)
+		if err != nil {
+			return err
+		}
+		if err := fn(a); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 // GetAct reconstructs an act from its resource URI. Returns an error if no such
 // act is stored.
@@ -214,6 +249,7 @@ func (s *Store) GetAct(resURI string) (*schema.Act, error) {
 		return nil, err
 	}
 	e.Amends = s.relTargets(exprURI, schema.PredAmends)
+	e.AmendedBy = s.relTargets(exprURI, schema.PredAmendedBy)
 	e.Repeals = s.relTargets(exprURI, schema.PredRepeals)
 	e.Cites = s.relTargets(exprURI, schema.PredCites)
 	e.Consolidates = s.relTargets(exprURI, schema.PredConsolidates)

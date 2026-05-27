@@ -3,6 +3,7 @@ package store
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -82,6 +83,70 @@ func TestRoundTrip_file(t *testing.T) {
 		t.Fatalf("GetAct after reopen: %v", err)
 	}
 	assertActEqual(t, in, got)
+}
+
+func TestListAndEachAct(t *testing.T) {
+	s, _ := OpenMemory()
+	defer s.Close()
+	if err := s.AddAct(sampleAct()); err != nil {
+		t.Fatal(err)
+	}
+	// A second act to confirm listing/ordering.
+	second := sampleAct()
+	second.Number = "100-1"
+	second.Expression.Articles = nil
+	second.Expression.Cites = nil
+	if err := s.AddAct(second); err != nil {
+		t.Fatal(err)
+	}
+
+	uris, err := s.ListResourceURIs()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(uris) != 2 {
+		t.Fatalf("got %d resource URIs, want 2", len(uris))
+	}
+
+	var seen []string
+	if err := s.EachAct(func(a *schema.Act) error {
+		seen = append(seen, a.Number)
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if len(seen) != 2 {
+		t.Errorf("EachAct visited %d acts, want 2", len(seen))
+	}
+}
+
+func TestEachAct_propagatesError(t *testing.T) {
+	s, _ := OpenMemory()
+	defer s.Close()
+	_ = s.AddAct(sampleAct())
+	wantErr := fmt.Errorf("boom")
+	if err := s.EachAct(func(*schema.Act) error { return wantErr }); err != wantErr {
+		t.Errorf("EachAct error = %v, want %v", err, wantErr)
+	}
+}
+
+func TestRoundTrip_amendedBy(t *testing.T) {
+	s, _ := OpenMemory()
+	defer s.Close()
+
+	amending := schema.ResourceURI("jp", "act", 2024, "506AC0000000033")
+	in := sampleAct()
+	in.Expression.AmendedBy = []string{amending}
+	if err := s.AddAct(in); err != nil {
+		t.Fatal(err)
+	}
+	got, err := s.GetAct(in.ResourceURI())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got.Expression.AmendedBy) != 1 || got.Expression.AmendedBy[0] != amending {
+		t.Errorf("amendedBy = %v, want [%s]", got.Expression.AmendedBy, amending)
+	}
 }
 
 func TestGetAct_notFound(t *testing.T) {
