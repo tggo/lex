@@ -39,6 +39,11 @@ type Config struct {
 	WithArticles  bool         // also fetch each act's HTML body and parse articles
 	WithRelations bool         // fetch the global doc index and resolve amend/cite edges
 	CacheDir      string       // if set, cache act HTML bodies here (keyed by file+version)
+
+	// Resilience (matters when scraping many bodies, e.g. from CI).
+	Retries      int           // attempts per request on transient failures (default 4)
+	RetryBackoff time.Duration // base backoff, doubled each retry (default 500ms)
+	RequestDelay time.Duration // pause before each request, to be polite (default 0)
 }
 
 // Run fetches the datasets, builds acts, and writes them to the store. It
@@ -173,23 +178,64 @@ func fetchDocIndex(ctx context.Context, cfg Config) (map[int]ogd.DocRef, error) 
 	return ogd.ParseDocIndex(bytes.NewReader(utf8))
 }
 
-// fetch GETs baseURL+path with the configured User-Agent.
+// fetch GETs baseURL+path with retries (exponential backoff) on transient
+// failures — network errors, 5xx, and 429 — so a long scrape survives blips.
+// 4xx (other than 429) fail fast.
 func fetch(ctx context.Context, cfg Config, path string) ([]byte, error) {
 	url := cfg.BaseURL + path
+	attempts := cfg.Retries
+	if attempts < 1 {
+		attempts = 4
+	}
+	base := cfg.RetryBackoff
+	if base <= 0 {
+		base = 500 * time.Millisecond
+	}
+	var lastErr error
+	for a := 0; a < attempts; a++ {
+		if a > 0 {
+			select {
+			case <-time.After(base << (a - 1)):
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			}
+		}
+		body, retryable, err := tryFetch(ctx, cfg, url)
+		if err == nil {
+			return body, nil
+		}
+		lastErr = err
+		if !retryable {
+			return nil, err
+		}
+	}
+	return nil, fmt.Errorf("fetch %s: gave up after %d attempts: %w", url, attempts, lastErr)
+}
+
+func tryFetch(ctx context.Context, cfg Config, url string) (body []byte, retryable bool, err error) {
+	if cfg.RequestDelay > 0 {
+		select {
+		case <-time.After(cfg.RequestDelay):
+		case <-ctx.Done():
+			return nil, false, ctx.Err()
+		}
+	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	req.Header.Set("User-Agent", cfg.UA)
 	resp, err := cfg.Client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("fetch %s: %w", url, err)
+		return nil, true, fmt.Errorf("fetch %s: %w", url, err) // network → transient
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("fetch %s: status %d", url, resp.StatusCode)
+	if resp.StatusCode == http.StatusOK {
+		b, err := io.ReadAll(resp.Body)
+		return b, err != nil, err
 	}
-	return io.ReadAll(resp.Body)
+	retry := resp.StatusCode >= 500 || resp.StatusCode == http.StatusTooManyRequests
+	return nil, retry, fmt.Errorf("fetch %s: status %d", url, resp.StatusCode)
 }
 
 func union(a, b map[string]bool) map[string]bool {

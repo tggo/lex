@@ -287,6 +287,45 @@ func TestRun_defaultsClientAndNow(t *testing.T) {
 	}
 }
 
+func TestFetch_retriesTransient(t *testing.T) {
+	var hits int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		hits++
+		if hits < 3 { // fail twice, then succeed
+			http.Error(w, "busy", http.StatusServiceUnavailable)
+			return
+		}
+		_, _ = w.Write([]byte("ok"))
+	}))
+	defer srv.Close()
+
+	cfg := Config{BaseURL: srv.URL, UA: "t", Client: srv.Client(), Retries: 5, RetryBackoff: time.Millisecond}
+	b, err := fetch(context.Background(), cfg, "/x")
+	if err != nil {
+		t.Fatalf("fetch: %v", err)
+	}
+	if string(b) != "ok" || hits != 3 {
+		t.Errorf("body=%q hits=%d, want \"ok\" after 3 attempts", b, hits)
+	}
+}
+
+func TestFetch_failsFastOn404(t *testing.T) {
+	var hits int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		hits++
+		http.NotFound(w, r)
+	}))
+	defer srv.Close()
+
+	cfg := Config{BaseURL: srv.URL, UA: "t", Client: srv.Client(), Retries: 5, RetryBackoff: time.Millisecond}
+	if _, err := fetch(context.Background(), cfg, "/missing"); err == nil {
+		t.Fatal("expected error on 404")
+	}
+	if hits != 1 {
+		t.Errorf("404 should not be retried: hits=%d", hits)
+	}
+}
+
 func TestUnion(t *testing.T) {
 	got := union(map[string]bool{"a": true}, map[string]bool{"b": true})
 	if !got["a"] || !got["b"] || len(got) != 2 {
