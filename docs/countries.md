@@ -36,11 +36,9 @@ Legend: ⭐ = native ELI · 🟢 strong fit · 🟡 usable with work · 🔴 cau
 | 🇺🇸 USA (federal) | US Code USLM (OLRC) | Bulk XML (zip) | public domain | [0020](./adr/0020-us-ingest-uslm-bulk.md) |
 | 🇪🇸 Spain | BOE Datos Abiertos | REST JSON + XML | reuse permitted (BOE) | [0021](./adr/0021-es-ingest-boe-open-data.md) |
 | 🇮🇪 Ireland ⭐ | Irish Statute Book (eISB RDFa) | RDFa + Oireachtas API | PSI / CC BY 4.0 | [0022](./adr/0022-ie-ingest-irish-statute-book.md) |
-| 🇦🇹 Austria | RIS OGD API (Bundesrecht) | REST JSON + content XML | CC BY 4.0 | [0023](./adr/0023-at-ingest-ris-ogd-api.md) |
 | 🇦🇺 Australia | Federal Register of Legislation (OData) | REST JSON | CC BY 4.0 | [0024](./adr/0024-au-ingest-frl-odata-api.md) |
-| 🇳🇿 New Zealand | legislation.govt.nz (PCO LENZ XML) | Per-act XML | CC BY 4.0 (NZGOAL) | [0025](./adr/0025-nz-ingest-legislation-govt-nz.md) |
 
-> The 11 rows below Poland were implemented on 2026-05-27, each mirroring the
+> The 9 rows below Poland were implemented on 2026-05-27, each mirroring the
 > Poland scraper (pure offline parser + rate-limited importer + thin CLI, TDD,
 > >80% coverage, offline fixtures). Several deferred relation edges or
 > article-text passes to a next phase — see each ADR's "Consequences" and the
