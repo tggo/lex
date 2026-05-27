@@ -83,17 +83,30 @@ labels carry `@ja`. Finer-grained 項/号 nodes are an additive extension later.
 
 ## Directories
 
-- `scripts/` — Go importer. Lists laws via the v2 API, fetches each act's current
-  enforced revision, parses 条 structure, emits RDF (Turtle) and/or writes
-  directly to the SQLite store under `data/`.
+- `scripts/egov/` — pure, offline parsing/mapping of the e-Gov v2 responses
+  (`/laws`, `/law_data`, `/law_revisions`) into `schema.Act` values; golden-tested.
+- `scripts/importer/` — network + store wiring: paginated list, optional article
+  and revision fetches, writing to the Badger store under `data/`.
+- `scripts/import/` — thin CLI shim (`go run ./jp/scripts/import`).
 - `data/` — built artifacts (**gitignored**). Built locally or downloaded from
   GitHub Releases.
 
 ## Status
 
-🚧 Not yet implemented. Source, endpoints, and license are decided (ADR-0011).
-P1: one act end-to-end — list via `/api/2/laws`, fetch the Civil Code
-(`129AC0000000089`) current revision via `/api/2/law_data`, set status from
-`current_revision_status`, parse into 条, emit ELI RDF per
-[`../docs/ontology.md`](../docs/ontology.md), store, and confirm it is searchable
-via the server.
+✅ **Implemented** (verified live against the API):
+
+- **Acts + metadata** — `/api/2/laws` (paginated, ~9,514 laws) → ELI
+  resource/expression with the mandatory `eli:version_date`.
+- **Articles** (`-articles`) — `/api/2/law_data`, each 条 → one `lex:Article`.
+- **Relations** — `amendment_law_id` → `eli:amended_by` / `eli:repealed_by`
+  (ADR-0013).
+- **Revision timeline** (`-revisions`) — `/api/2/law_revisions`, full history as
+  metadata-only expressions (ADR-0028).
+
+```
+go run ./jp/scripts/import -out jp/data/graph -articles -revisions   # full
+go run ./jp/scripts/import -out jp/data/graph -limit 50              # quick metadata-only sample
+```
+
+Later phases: full historical *text* per revision, and finer 項/号 article
+granularity.
