@@ -18,7 +18,7 @@ Base: `https://opendata.finlex.fi/finlex/avoindata/v1`
 
 | Endpoint | Contents |
 |----------|----------|
-| `GET /akn/fi/act/statute-consolidated?limit=&offset=` | paged list of consolidated ("ajantasa") statutes — `<AknXmlList><Results>` envelope wrapping AKN documents |
+| `GET /akn/fi/act/statute-consolidated?limit=&page=` | paged list of consolidated ("ajantasa") statutes — `<AknXmlList><Results>` envelope wrapping AKN documents. `limit` is capped at 10; paging is by **1-based `page`** (the API silently ignores `offset` and always returns page 1). An out-of-range page returns HTTP 200 with an empty `<Results/>`. |
 | `GET /akn/fi/act/statute-consolidated/{year}/{number}/fin@` | the full Finnish consolidated expression — metadata + body sections (§) |
 
 Responses require `Accept: application/xml`. Each act's ELI alias (e.g.

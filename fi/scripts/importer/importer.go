@@ -76,12 +76,14 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 	}
 
 	total := 0
-	for offset := 0; ; {
-		want := pageLimit
-		if cfg.Limit > 0 && cfg.Limit-total < want {
-			want = cfg.Limit - total
-		}
-		url := fmt.Sprintf("%s/%s?limit=%d&offset=%d", cfg.BaseURL, collection, want, offset)
+	// The Finlex list endpoint pages by a 1-based "page" number, NOT by
+	// "offset": it silently ignores "offset" and always returns page 1, so an
+	// offset-based loop re-fetches the same statutes forever (see ADR-0019 /
+	// the import-loop fix). Walk pages 1,2,3,… until a page comes back empty —
+	// an out-of-range page returns HTTP 200 with an empty <Results/>.
+	processed := 0 // statutes seen across all pages, for the -limit bound
+	for page := 1; ; page++ {
+		url := fmt.Sprintf("%s/%s?limit=%d&page=%d", cfg.BaseURL, collection, pageLimit, page)
 		b, err := c.fetch(ctx, url)
 		if err != nil {
 			return total, err
@@ -91,6 +93,7 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 			return total, err
 		}
 		if len(docs) == 0 {
+			// Source exhausted: an empty page means there is no page+1.
 			break
 		}
 		for _, d := range docs {
@@ -101,12 +104,13 @@ func Run(ctx context.Context, cfg Config) (int, error) {
 				return total, err
 			}
 			total += n
-			if cfg.Limit > 0 && total >= cfg.Limit {
+			processed++
+			if cfg.Limit > 0 && processed >= cfg.Limit {
 				return total, nil
 			}
 		}
-		offset += len(docs)
-		if len(docs) < want {
+		if len(docs) < pageLimit {
+			// A short page is the last page; stop without one extra request.
 			break
 		}
 	}
